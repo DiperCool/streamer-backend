@@ -12,14 +12,28 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools"/>
 
     </ItemGroup>
-  
-    <ItemGroup>
-      <Folder Include="Streamers\Features\" />
-    </ItemGroup>
+  <PropertyGroup>
+    <NoWarn>CS8618</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventBus\EventBus.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <ProjectReference Include="..\streamer.ServiceDefaults\streamer.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Streamers.Features\Streamers.Features.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GraphQl\" />
+    <Folder Include="wwwroot\default\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\default\default-avatar.jpeg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\default\default-channel.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\default\offline-banner.webp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

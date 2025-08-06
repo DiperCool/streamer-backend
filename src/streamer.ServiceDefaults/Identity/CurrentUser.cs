@@ -2,10 +2,12 @@
 
 namespace streamer.ServiceDefaults.Identity;
 
-public class CurrentUser(HttpContextAccessor contextAccessor) : ICurrentUser
+public class CurrentUser(IHttpContextAccessor contextAccessor) : ICurrentUser
 {
-    HttpContextAccessor _contextAccessor = contextAccessor;
+    public string UserId =>
+        contextAccessor.HttpContext?.User.GetUserId()
+        ?? throw new InvalidOperationException("User is not authenticated");
 
-    public bool IsAuthenticated { get; }
-    public Guid? UserId { get; }
+    public bool IsAuthenticated =>
+        contextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 }
