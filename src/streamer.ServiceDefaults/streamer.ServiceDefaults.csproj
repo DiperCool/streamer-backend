@@ -24,5 +24,13 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
     <PackageReference Include="Aspire.Keycloak.Authentication" />
+    <PackageReference Include="HotChocolate" />
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="HotChocolate.Data" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" />
+    <PackageReference Include="HotChocolate.Execution.Abstractions" />
+    <PackageReference Include="HotChocolate.Types.Analyzers" />
+    <PackageReference Include="HotChocolate.Types.OffsetPagination" />
   </ItemGroup>
 </Project>

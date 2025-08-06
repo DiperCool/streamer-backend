@@ -17,7 +17,7 @@ public static partial class Extensions
         builder.AddBasicServiceDefaults();
 
         builder.Services.AddServiceDiscovery();
-
+        builder.Services.AddCors();
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
             // Turn on resilience by default
@@ -36,7 +36,9 @@ public static partial class Extensions
     /// <remarks>
     /// This allows for things like Polly to be trimmed out of the app if it isn't used.
     /// </remarks>
-    public static IHostApplicationBuilder AddBasicServiceDefaults(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddBasicServiceDefaults(
+        this IHostApplicationBuilder builder
+    )
     {
         // Default health checks assume the event bus and self health checks
         builder.AddDefaultHealthChecks();
@@ -46,7 +48,9 @@ public static partial class Extensions
         return builder;
     }
 
-    public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder ConfigureOpenTelemetry(
+        this IHostApplicationBuilder builder
+    )
     {
         builder.Logging.AddOpenTelemetry(logging =>
         {
@@ -54,10 +58,12 @@ public static partial class Extensions
             logging.IncludeScopes = true;
         });
 
-        builder.Services.AddOpenTelemetry()
+        builder
+            .Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
-                metrics.AddAspNetCoreInstrumentation()
+                metrics
+                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddMeter("Experimental.Microsoft.Extensions.AI");
@@ -70,10 +76,11 @@ public static partial class Extensions
                     tracing.SetSampler(new AlwaysOnSampler());
                 }
 
-                tracing.AddAspNetCoreInstrumentation()
+                tracing
+                    .AddAspNetCoreInstrumentation()
                     .AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddSource("Experimental.Microsoft.Extensions.AI");                    
+                    .AddSource("Experimental.Microsoft.Extensions.AI");
             });
 
         builder.AddOpenTelemetryExporters();
@@ -81,23 +88,36 @@ public static partial class Extensions
         return builder;
     }
 
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddOpenTelemetryExporters(
+        this IHostApplicationBuilder builder
+    )
     {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(
+            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+        );
 
         if (useOtlpExporter)
         {
-            builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter());
-            builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter());
-            builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
+            builder.Services.Configure<OpenTelemetryLoggerOptions>(logging =>
+                logging.AddOtlpExporter()
+            );
+            builder.Services.ConfigureOpenTelemetryMeterProvider(metrics =>
+                metrics.AddOtlpExporter()
+            );
+            builder.Services.ConfigureOpenTelemetryTracerProvider(tracing =>
+                tracing.AddOtlpExporter()
+            );
         }
 
         return builder;
     }
 
-    public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddDefaultHealthChecks(
+        this IHostApplicationBuilder builder
+    )
     {
-        builder.Services.AddHealthChecks()
+        builder
+            .Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
@@ -117,10 +137,10 @@ public static partial class Extensions
             app.MapHealthChecks("/health");
 
             // Only health checks tagged with the "live" tag must pass for app to be considered alive
-            app.MapHealthChecks("/alive", new HealthCheckOptions
-            {
-                Predicate = r => r.Tags.Contains("live")
-            });
+            app.MapHealthChecks(
+                "/alive",
+                new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") }
+            );
         }
 
         return app;

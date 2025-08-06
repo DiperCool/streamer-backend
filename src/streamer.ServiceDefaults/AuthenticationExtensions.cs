@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using streamer.ServiceDefaults.Identity;
@@ -12,18 +13,23 @@ public static class AuthenticationExtensions
     {
         var services = builder.Services;
         var configuration = builder.Configuration;
-        var identity = configuration.BindOptions<IdentityOptions>();
-        
-        builder.Services.AddAuthentication()
-            .AddKeycloakJwtBearer(
-                serviceName: "keycloak",
-                realm: identity.Realm,
-                configureOptions: options =>
+
+        builder.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(
+                JwtBearerDefaults.AuthenticationScheme,
+                options =>
                 {
-                    options.RequireHttpsMetadata = false;
-                    options.Audience = identity.Audience;
-                });
+                    options.Authority = configuration["Jwt:Authority"];
+                    options.Audience = configuration["Jwt:Audience"];
+                }
+            );
         builder.Services.AddAuthorizationBuilder();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
         return services;
     }
 }

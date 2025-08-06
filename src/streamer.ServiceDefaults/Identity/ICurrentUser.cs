@@ -3,5 +3,5 @@
 public interface ICurrentUser
 {
     public bool IsAuthenticated { get; }
-    public Guid? UserId { get; }
+    public string UserId { get; }
 }
