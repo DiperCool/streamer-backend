@@ -2,9 +2,10 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.Files;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Settings.Models;
-using Streamers.Features.Shared.Data;
-using Streamers.Features.Shared.Persistence;
+using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
+using Streamers.Features.Streamers.Services;
+using Streamers.Features.Streams.Models;
 
 namespace Streamers.Features.Streamers.Features.CreateUser;
 
@@ -13,7 +14,7 @@ public record CreateUserResponse(string Id);
 public record CreateUser(string Id, string Username, string Email, DateTime CreatedAt)
     : IRequest<CreateUserResponse>;
 
-public class CreateUserHandler(StreamerDbContext context)
+public class CreateUserHandler(StreamerDbContext context, IStreamKeyGenerator streamKeyGenerator)
     : IRequestHandler<CreateUser, CreateUserResponse>
 {
     public async Task<CreateUserResponse> Handle(
@@ -21,6 +22,7 @@ public class CreateUserHandler(StreamerDbContext context)
         CancellationToken cancellationToken
     )
     {
+        var streamSettings = new StreamSettings();
         Streamer streamer = new Streamer(
             request.Id,
             request.Username,
@@ -31,9 +33,12 @@ public class CreateUserHandler(StreamerDbContext context)
                 ChannelBanner = Images.ChannelObject,
             },
             new Setting(),
+            streamSettings,
             request.CreatedAt,
             Images.AvatarObject
         );
+        streamKeyGenerator.GenerateKey(streamSettings);
+
         await context.Streamers.AddAsync(streamer, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return new CreateUserResponse(streamer.Id);

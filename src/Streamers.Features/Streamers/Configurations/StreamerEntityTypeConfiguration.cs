@@ -9,5 +9,15 @@ public class StreamerEntityTypeConfiguration : IEntityTypeConfiguration<Streamer
     public void Configure(EntityTypeBuilder<Streamer> builder)
     {
         builder.HasIndex(u => u.UserName).IsUnique();
+        builder
+            .HasOne(x => x.CurrentStream)
+            .WithOne()
+            .HasForeignKey<Streamer>(x => x.CurrentStreamId)
+            .OnDelete(DeleteBehavior.SetNull);
+        builder
+            .HasMany(x => x.Streams)
+            .WithOne(x => x.Streamer)
+            .HasForeignKey(x => x.StreamerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

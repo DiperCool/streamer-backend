@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -6,15 +7,21 @@ using Shared.Abstractions.Cqrs;
 using Shared.DomainEvents;
 using Shared.Minio;
 using Shared.RabbitMQ.Extensions;
+using Shared.Redis;
 using Shared.Seeds;
 using streamer.ServiceDefaults;
+using Streamers.Features.AntMedia.EventHandlers;
+using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Files.Seeds;
-using Streamers.Features.Shared.Data;
+using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Shared.GraphQl;
-using Streamers.Features.Shared.Persistence;
+using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.EventHandlers;
+using Streamers.Features.Streamers.Services;
+using Streamers.Features.Streams.BackgroundServices;
+using Streamers.Features.Streams.Features;
 
-namespace Streamers.Features.Shared.Extensions;
+namespace Streamers.Features;
 
 public static class Extensions
 {
@@ -27,16 +34,30 @@ public static class Extensions
             options.UseNpgsql(connectionString);
         });
         services.AddScoped<IUserEventHandler, UserEventHandler>();
+        services.AddScoped<IAntmediaWebhook, AntmediaWebhook>();
+        services.AddSingleton<IStreamKeyGenerator, StreamKeyGenerator>();
+        services.AddScoped<IAntMediaWebhookHandlerFabric, AntMediaWebhookHandlerFabric>();
+        services.AddScoped<LiveStreamStartedHandler>();
+        services.AddScoped<LiveStreamEndedHandler>();
+        services.AddScoped<AddReaderHandler>();
+        services.AddScoped<RemoveReaderHandler>();
+        services.AddHostedService<ViewerSyncWorker>();
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, MinioBucketSeeds>();
         builder.Services.AddMediator(typeof(Features).Assembly);
         builder.Services.AddDomainEvents();
         builder.Services.AddBlobStorage(builder.Configuration);
+        services.AddValidatorsFromAssemblyContaining<UpdateProfile.UpdateProfileValidator>();
+        services.AddTransient(
+            typeof(IPipelineBehavior<,>),
+            typeof(Shared.Cqrs.Behaviours.ValidationBehavior<,>)
+        );
 
         builder.Services.AddGraphQl();
         // Add the authentication services to DI
         builder.AddDefaultAuthentication();
         builder.Services.AddRabbitMq(builder.Configuration);
+        builder.Services.AddRedis(builder.Configuration);
     }
 }

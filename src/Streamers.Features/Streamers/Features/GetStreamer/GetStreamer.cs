@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
-using Streamers.Features.Shared.Data;
-using Streamers.Features.Shared.Persistence;
+using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.Models;
 
@@ -30,7 +29,6 @@ public class GetStreamerHandler(StreamerDbContext context)
             Id = streamer.Id,
             UserName = streamer.UserName,
             Avatar = streamer.Avatar,
-            Email = streamer.Email,
             Followers = streamer.Followers,
         };
     }

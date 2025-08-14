@@ -2,7 +2,6 @@
 using HotChocolate.Types;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Profiles.Dtos;
-using Streamers.Features.Shared.Data;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.Features.GetStreamer;
 
