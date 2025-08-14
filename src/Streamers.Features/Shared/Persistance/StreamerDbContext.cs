@@ -2,9 +2,12 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shared.Abstractions.Domain;
 using Streamers.Features.Profiles.Models;
+using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
+using Streamers.Features.Streams.Models;
+using Stream = Streamers.Features.Streams.Models.Stream;
 
-namespace Streamers.Features.Shared.Persistence;
+namespace Streamers.Features.Shared.Persistance;
 
 public class StreamerDbContext(
     DbContextOptions<StreamerDbContext> options,
@@ -13,6 +16,10 @@ public class StreamerDbContext(
 {
     public DbSet<Streamer> Streamers { get; set; }
     public DbSet<Profile> Profiles { get; set; }
+    public DbSet<Setting> Settings { get; set; }
+
+    public DbSet<Stream> Streams { get; set; }
+    public DbSet<StreamSettings> StreamSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

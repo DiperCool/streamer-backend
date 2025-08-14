@@ -5,21 +5,21 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.Streamers.Features.CreateUser;
 
 namespace Streamers.Features.Streamers.EventHandlers;
+
 public interface IUserEventHandler
 {
     Task HandleNewUserAsync(JsonElement evt);
 }
 
-public class UserEventHandler(IMediator mediator)
-    : IUserEventHandler,
-        ICapSubscribe
+public class UserEventHandler(IMediator mediator) : IUserEventHandler, ICapSubscribe
 {
     [CapSubscribe("new_users")]
     public async Task HandleNewUserAsync(JsonElement evt)
     {
-        string username = evt.GetProperty("username").GetString() ?? "";
-        string userId = evt.GetProperty("user_id").GetString() ?? "";
         string email = evt.GetProperty("email").GetString() ?? "";
+
+        string username = evt.GetProperty("username").GetString() ?? email;
+        string userId = evt.GetProperty("user_id").GetString() ?? "";
 
         DateTime createdAt = DateTime.MinValue;
         if (
@@ -35,7 +35,7 @@ public class UserEventHandler(IMediator mediator)
         {
             createdAt = parsedDate;
         }
-        
-        await mediator.Send(new CreateUser(userId,username, email, createdAt));
+
+        await mediator.Send(new CreateUser(userId, username, email, createdAt));
     }
 }

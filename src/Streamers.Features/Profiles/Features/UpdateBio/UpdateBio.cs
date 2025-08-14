@@ -1,14 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Profiles.Features.UpdateProfile;
-using Streamers.Features.Shared.Persistence;
+using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Profiles.Features.UpdateBio;
 
 public record UpdateBioResponse(Guid Id);
 
 public record UpdateBio(string Bio) : IRequest<UpdateBioResponse>;
+
+public class UpdateBioValidator : AbstractValidator<UpdateBio>
+{
+    public UpdateBioValidator()
+    {
+        RuleFor(x => x.Bio)
+            .MaximumLength(300)
+            .WithMessage(x => "Bio length must be less than 300 characters.");
+    }
+}
 
 public class UpdateBioHandler(StreamerDbContext context, ICurrentUser currentUser)
     : IRequestHandler<UpdateBio, UpdateBioResponse>

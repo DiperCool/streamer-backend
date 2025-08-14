@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
-using Streamers.Features.Shared.Persistence;
+using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Streamers.Features.UpdateAvatar;

@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Profiles.Dtos;
-using Streamers.Features.Shared.Data;
-using Streamers.Features.Shared.Persistence;
+using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Profiles.Features.GetProfile;
 

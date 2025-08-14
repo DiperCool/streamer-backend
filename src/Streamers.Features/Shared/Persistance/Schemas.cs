@@ -1,4 +1,4 @@
-namespace Streamers.Features.Shared.Persistence;
+namespace Streamers.Features.Shared.Persistance;
 
 internal static class Schemas
 {
