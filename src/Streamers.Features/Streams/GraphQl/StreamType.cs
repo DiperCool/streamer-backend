@@ -10,16 +10,13 @@ namespace Streamers.Features.Streams.GraphQl;
 [ObjectType<StreamDto>]
 public static partial class StreamType
 {
-    public static async Task<StreamerDto> GetStreamer(
+    public static async Task<StreamerDto?> GetStreamer(
         [Parent(nameof(StreamDto.StreamerId))] StreamDto stream,
         IStreamersByIdDataLoader streamerDataLoader,
         CancellationToken cancellationToken
     )
     {
-        StreamerDto? streamer = await streamerDataLoader.LoadAsync(
-            stream.StreamerId,
-            cancellationToken
-        );
-        return streamer;
+        var streamer = await streamerDataLoader.LoadAsync(stream.StreamerId, cancellationToken);
+        return (StreamerDto?)streamer;
     }
 }
