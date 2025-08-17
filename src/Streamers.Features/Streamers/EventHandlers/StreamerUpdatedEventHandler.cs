@@ -17,7 +17,12 @@ public class StreamerUpdatedEventHandler(ITopicEventSender sender)
             UserName = streamer.UserName,
             Avatar = streamer.Avatar,
             Followers = streamer.Followers,
+            IsLive = streamer.IsLive,
         };
-        await sender.SendAsync(streamerDto.Id, streamer, cancellationToken);
+        await sender.SendAsync(
+            $"{nameof(StreamerUpdated)}-{streamerDto.Id}",
+            streamerDto,
+            cancellationToken
+        );
     }
 }

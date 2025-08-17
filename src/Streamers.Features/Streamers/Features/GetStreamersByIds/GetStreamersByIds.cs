@@ -25,6 +25,7 @@ public class GetStreamersByIdsHandler(StreamerDbContext context)
                 UserName = s.UserName,
                 Avatar = s.Avatar,
                 Followers = s.Followers,
+                IsLive = s.IsLive,
             })
             .ToListAsync(cancellationToken);
 

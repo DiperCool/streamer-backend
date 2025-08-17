@@ -22,6 +22,8 @@ app.UseCors(opt => opt.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseWebSockets();
+
 app.MapDefaultEndpoints();
 
 app.NewVersionedApi("Streamers").MapOrdersApiV1().RequireAuthorization();
@@ -45,5 +47,4 @@ app.MapPost(
 );
 
 app.MapGraphQL();
-
 app.Run();

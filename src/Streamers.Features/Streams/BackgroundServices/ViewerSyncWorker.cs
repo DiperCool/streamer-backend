@@ -35,7 +35,7 @@ public class ViewerSyncWorker(IServiceProvider services, IConnectionMultiplexer 
                 }
             }
 
-            await context.SaveChangesAsync(stoppingToken);
+            // await context.SaveChangesAsync(stoppingToken);
         }
     }
 }

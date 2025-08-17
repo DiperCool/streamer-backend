@@ -24,6 +24,7 @@ public class Stream : Entity
         Started = started;
         StreamSources = streamSources;
         Active = true;
+        SetActive(Active);
     }
 
     public string StreamId { get; set; }

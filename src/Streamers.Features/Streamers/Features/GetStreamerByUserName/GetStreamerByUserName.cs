@@ -33,6 +33,7 @@ public class GetStreamerByUserNameHandler(StreamerDbContext context)
             UserName = streamer.UserName,
             Avatar = streamer.Avatar,
             Followers = streamer.Followers,
+            IsLive = streamer.IsLive,
         };
     }
 }

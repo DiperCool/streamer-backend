@@ -46,7 +46,7 @@ public static class Extensions
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, MinioBucketSeeds>();
         builder.Services.AddMediator(typeof(Features).Assembly);
-        builder.Services.AddDomainEvents();
+        builder.Services.AddDomainEvents(typeof(Features).Assembly);
         builder.Services.AddBlobStorage(builder.Configuration);
         services.AddValidatorsFromAssemblyContaining<UpdateProfile.UpdateProfileValidator>();
         services.AddTransient(
