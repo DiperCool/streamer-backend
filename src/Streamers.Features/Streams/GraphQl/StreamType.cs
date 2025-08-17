@@ -12,11 +12,21 @@ public static partial class StreamType
 {
     public static async Task<StreamerDto?> GetStreamer(
         [Parent(nameof(StreamDto.StreamerId))] StreamDto stream,
-        IStreamersByIdDataLoader streamerDataLoader,
+        IStreamersByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
-        var streamer = await streamerDataLoader.LoadAsync(stream.StreamerId, cancellationToken);
-        return (StreamerDto?)streamer;
+        var streamer = await dataLoader.LoadAsync(stream.StreamerId, cancellationToken);
+        return streamer;
+    }
+
+    public static async Task<StreamSourceDto[]> GetSources(
+        [Parent] StreamDto stream,
+        ISourcesByStreamIdsDataLoader dataLoader,
+        CancellationToken cancellationToken
+    )
+    {
+        var streamers = await dataLoader.LoadAsync(stream.Id, cancellationToken);
+        return streamers ?? [];
     }
 }

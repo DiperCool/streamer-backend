@@ -9,6 +9,6 @@ public static partial class StreamSubscription
 {
     [Subscribe]
     [Topic($"{{{nameof(streamId)}}}")]
-    public static StreamDto StreamerUpdated(Guid streamId, [EventMessage] StreamDto streamer) =>
+    public static StreamDto StreamUpdated(Guid streamId, [EventMessage] StreamDto streamer) =>
         streamer;
 }

@@ -1,7 +1,8 @@
 namespace Shared.Abstractions.Domain;
+
 public abstract class Entity : Entity<Guid>;
 
-public abstract class Entity<T> : IHaveAggregateVersion
+public abstract class Entity<T> : IHaveAggregateVersion, IHasDomainEvents
 {
     public T Id { get; protected set; }
 

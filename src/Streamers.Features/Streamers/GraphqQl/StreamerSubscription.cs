@@ -8,7 +8,7 @@ namespace Streamers.Features.Streamers.GraphqQl;
 public static partial class StreamerSubscription
 {
     [Subscribe]
-    [Topic($"{{{nameof(streamerId)}}}")]
+    [Topic($"{nameof(StreamerUpdated)}-{{{nameof(streamerId)}}}")]
     public static StreamerDto StreamerUpdated(
         string streamerId,
         [EventMessage] StreamerDto streamer

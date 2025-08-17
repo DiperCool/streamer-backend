@@ -10,8 +10,8 @@ public static partial class StreamerDataLoader
 {
     [DataLoader]
     public static async Task<IDictionary<string, StreamerDto>> GetStreamersByIdAsync(
-        [Service] IMediator mediator,
         IReadOnlyList<string> ids,
+        [Service] IMediator mediator,
         CancellationToken cancellationToken
     )
     {

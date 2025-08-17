@@ -20,6 +20,7 @@ public class StreamerDbContext(
 
     public DbSet<Stream> Streams { get; set; }
     public DbSet<StreamSettings> StreamSettings { get; set; }
+    public DbSet<StreamSource> StreamSources { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,16 +54,14 @@ public class StreamerDbContext(
 
     private async Task PublishDomainEventsAsync()
     {
+        var domainEVts2 = ChangeTracker.Entries();
         var domainEvents = ChangeTracker
-            .Entries<Entity>()
-            .Select(entry => entry.Entity)
+            .Entries<IHasDomainEvents>()
             .SelectMany(entity =>
             {
-                List<IDomainEvent> domainEvents = entity.DomainEvents;
-
-                entity.ClearDomainEvents();
-
-                return domainEvents;
+                var events = entity.Entity.DomainEvents;
+                entity.Entity.ClearDomainEvents();
+                return events;
             })
             .ToList();
 

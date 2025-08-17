@@ -48,8 +48,8 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
         };
         Stream stream = new Stream(streamer, request.StreamId, "title", DateTime.UtcNow, sources);
         streamer.SetLive(true, stream);
-        dbContext.Streamers.Update(streamer);
         await dbContext.Streams.AddAsync(stream, cancellationToken);
+        dbContext.Streamers.Update(streamer);
         await dbContext.SaveChangesAsync(cancellationToken);
         return new CreateStreamResponse(stream.Id);
     }
