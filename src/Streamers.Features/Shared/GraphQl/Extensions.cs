@@ -18,7 +18,8 @@ public static class Extensions
             .AddPagingArguments()
             .AddInMemorySubscriptions()
             .AddType<UploadType>()
-            .ModifyRequestOptions(o => o.IncludeExceptionDetails = true);
+            .ModifyRequestOptions(o => o.IncludeExceptionDetails = true)
+            .ModifyCostOptions(o => o.EnforceCostLimits = false);
         return services;
     }
 }

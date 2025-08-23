@@ -2,13 +2,13 @@
 
 namespace Streamers.Features.AntMedia.Services;
 
-public class AddReaderHandler(IConnectionMultiplexer redis) : IAntMediaWebhookHandler
+public class AddReaderHandler(IConnectionMultiplexer redis)
 {
     private readonly IDatabase _db = redis.GetDatabase();
 
-    public async Task HandleAsync(AntMediaWebhookPayload payload)
+    public async Task HandleAsync(Guid streamId)
     {
-        string key = $"stream-viewers-{payload.Id}";
+        string key = $"stream-viewers-{streamId}";
         await _db.StringIncrementAsync(key);
     }
 }

@@ -1,4 +1,5 @@
 using Shared.Abstractions.Cqrs;
+using Streamers.Features.Chats.Models;
 using Streamers.Features.Files;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Settings.Models;
@@ -23,6 +24,7 @@ public class CreateUserHandler(StreamerDbContext context, IStreamKeyGenerator st
     )
     {
         var streamSettings = new StreamSettings();
+        var chatSettings = new ChatSettings();
         Streamer streamer = new Streamer(
             request.Id,
             request.Username,
@@ -34,8 +36,10 @@ public class CreateUserHandler(StreamerDbContext context, IStreamKeyGenerator st
             },
             new Setting(),
             streamSettings,
+            new Chat(chatSettings),
             request.CreatedAt,
-            Images.AvatarObject
+            Images.AvatarObject,
+            chatSettings
         );
         streamKeyGenerator.GenerateKey(streamSettings);
 
