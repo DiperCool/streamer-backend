@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared.Abstractions.Cqrs;
 using Shared.DomainEvents;
+using Shared.Hangfire;
 using Shared.Minio;
 using Shared.RabbitMQ.Extensions;
 using Shared.Redis;
@@ -15,10 +17,10 @@ using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Files.Seeds;
 using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Shared.GraphQl;
+using Streamers.Features.Shared.Hangfire;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.EventHandlers;
 using Streamers.Features.Streamers.Services;
-using Streamers.Features.Streams.BackgroundServices;
 using Streamers.Features.Streams.Features;
 
 namespace Streamers.Features;
@@ -41,7 +43,7 @@ public static class Extensions
         services.AddScoped<LiveStreamEndedHandler>();
         services.AddScoped<AddReaderHandler>();
         services.AddScoped<RemoveReaderHandler>();
-        services.AddHostedService<ViewerSyncWorker>();
+        services.AddHostedService<RecurringJobsHostedService>();
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, MinioBucketSeeds>();
@@ -59,5 +61,6 @@ public static class Extensions
         builder.AddDefaultAuthentication();
         builder.Services.AddRabbitMq(builder.Configuration);
         builder.Services.AddRedis(builder.Configuration);
+        builder.Services.AddHangfire(builder.Configuration);
     }
 }

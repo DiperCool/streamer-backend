@@ -1,41 +1,42 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using Streamers.Features.Shared.Persistance;
 
-namespace Streamers.Features.Streams.BackgroundServices;
-
-public class ViewerSyncWorker(IServiceProvider services, IConnectionMultiplexer redis)
-    : BackgroundService
+public class ViewerSyncJob
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    private readonly StreamerDbContext _context;
+    private readonly IConnectionMultiplexer _redis;
+
+    public ViewerSyncJob(StreamerDbContext context, IConnectionMultiplexer redis)
     {
-        var db = redis.GetDatabase();
+        _context = context;
+        _redis = redis;
+    }
 
-        while (!stoppingToken.IsCancellationRequested)
+    public async Task Run(CancellationToken cancellationToken = default)
+    {
+        var db = _redis.GetDatabase();
+
+        var activeStreams = await _context
+            .Streams.Where(s => s.Active)
+            .ToListAsync(cancellationToken);
+
+        if (activeStreams.Count == 0)
+            return;
+
+        var keys = activeStreams.Select(s => (RedisKey)$"stream-viewers-{s.Id}").ToArray();
+
+        var values = await db.StringGetAsync(keys);
+
+        for (int i = 0; i < activeStreams.Count; i++)
         {
-            await Task.Delay(1000, stoppingToken);
+            if (!values[i].HasValue || !long.TryParse(values[i], out var viewers))
+                continue;
 
-            using var scope = services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<StreamerDbContext>();
-
-            var activeStreams = await context
-                .Streams.Where(s => s.Active)
-                .ToListAsync(stoppingToken);
-
-            foreach (var stream in activeStreams)
-            {
-                string redisKey = $"stream-viewers-{stream.Id}";
-
-                var value = await db.StringGetAsync(redisKey);
-                if (value.HasValue && long.TryParse(value.ToString(), out var viewers))
-                {
-                    stream.SetCurrentViewers(viewers);
-                }
-            }
-
-            // await context.SaveChangesAsync(stoppingToken);
+            if (activeStreams[i].CurrentViewers != viewers)
+                activeStreams[i].SetCurrentViewers(viewers);
         }
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

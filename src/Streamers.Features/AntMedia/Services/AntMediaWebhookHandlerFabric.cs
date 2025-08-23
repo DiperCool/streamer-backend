@@ -10,8 +10,6 @@ public class AntMediaWebhookHandlerFabric(IServiceProvider provider) : IAntMedia
         {
             "liveStreamStarted" => provider.GetRequiredService<LiveStreamStartedHandler>(),
             "liveStreamEnded" => provider.GetRequiredService<LiveStreamEndedHandler>(),
-            "streamRead" => provider.GetRequiredService<AddReaderHandler>(),
-            "streamUnread" => provider.GetRequiredService<RemoveReaderHandler>(),
             _ => throw new ArgumentException($"Unknown event type: {eventType}", nameof(eventType)),
         };
     }

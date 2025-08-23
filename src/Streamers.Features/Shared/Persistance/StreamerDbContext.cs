@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shared.Abstractions.Domain;
+using Streamers.Features.Chats.Models;
+using Streamers.Features.Followers.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
@@ -21,6 +23,11 @@ public class StreamerDbContext(
     public DbSet<Stream> Streams { get; set; }
     public DbSet<StreamSettings> StreamSettings { get; set; }
     public DbSet<StreamSource> StreamSources { get; set; }
+    public DbSet<Chat> Chats { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<ChatSettings> ChatSettings { get; set; }
+    public DbSet<PinnedChatMessage> PinnedChatMessages { get; set; }
+    public DbSet<Follower> Followers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

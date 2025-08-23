@@ -1,4 +1,5 @@
 ﻿using Shared.Abstractions.Domain;
+using Streamers.Features.Chats.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streams.Models;
@@ -20,7 +21,8 @@ public class Streamer : Entity<string>
     public StreamSettings StreamSettings { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<Stream> Streams { get; set; } = new List<Stream>();
-
+    public Chat Chat { get; set; }
+    public ChatSettings ChatSettings { get; set; }
     public Guid? CurrentStreamId { get; set; }
     public Stream? CurrentStream { get; set; }
 
@@ -33,8 +35,10 @@ public class Streamer : Entity<string>
         Profile profile,
         Setting setting,
         StreamSettings streamSettings,
+        Chat chat,
         DateTime createdAt,
-        string? avatar
+        string? avatar,
+        ChatSettings chatSettings
     )
     {
         Id = id;
@@ -44,6 +48,8 @@ public class Streamer : Entity<string>
         Setting = setting;
         CreatedAt = createdAt;
         Avatar = avatar;
+        ChatSettings = chatSettings;
+        Chat = chat;
         StreamSettings = streamSettings;
     }
 
