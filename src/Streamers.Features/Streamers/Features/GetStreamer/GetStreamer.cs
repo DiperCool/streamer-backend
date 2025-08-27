@@ -1,36 +1,44 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.Models;
+using Streamers.Features.Streams.Dtos;
 
 namespace Streamers.Features.Streamers.Features.GetStreamer;
 
-public record GetStreamer(string StreamerId) : IRequest<StreamerDto>;
+public record GetStreamer() : IRequest<StreamerMeDto>;
 
-public class GetStreamerHandler(StreamerDbContext context)
-    : IRequestHandler<GetStreamer, StreamerDto>
+public class GetStreamerHandler(StreamerDbContext context, ICurrentUser currentUser)
+    : IRequestHandler<GetStreamer, StreamerMeDto>
 {
-    public async Task<StreamerDto> Handle(GetStreamer request, CancellationToken cancellationToken)
+    public async Task<StreamerMeDto> Handle(
+        GetStreamer request,
+        CancellationToken cancellationToken
+    )
     {
-        Streamer? streamer = await context.Streamers.FirstOrDefaultAsync(
-            x => x.Id == request.StreamerId,
-            cancellationToken: cancellationToken
-        );
+        Streamer? streamer = await context
+            .Streamers.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(
+                x => x.Id == currentUser.UserId,
+                cancellationToken: cancellationToken
+            );
         if (streamer == null)
         {
             throw new NullReferenceException(
-                $"Streamer with id {request.StreamerId} does not exist"
+                $"Streamer with id {currentUser.UserId} does not exist"
             );
         }
 
-        return new StreamerDto
+        return new StreamerMeDto
         {
             Id = streamer.Id,
             UserName = streamer.UserName,
             Avatar = streamer.Avatar,
             Followers = streamer.Followers,
             IsLive = streamer.IsLive,
+            FinishedAuth = streamer.FinishedAuth,
         };
     }
 }

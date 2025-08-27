@@ -8,6 +8,7 @@ public class MinioBucketSeeds(IMinioService service) : IDataSeeder
     public async Task SeedAllAsync()
     {
         await service.CreateBucketIfNotExistsAsync(Images.Bucket, new ReadonlyBucketPolicy());
+        await service.CreateBucketIfNotExistsAsync(Videos.Bucket, new ReadonlyBucketPolicy());
 
         var defaultFilesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "default");
 

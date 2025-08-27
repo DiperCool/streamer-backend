@@ -11,10 +11,11 @@ public record StreamerUpdated(Streamer Streamer) : IDomainEvent;
 
 public class Streamer : Entity<string>
 {
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
     public bool IsLive { get; private set; }
     public string? Avatar { get; set; }
     public string Email { get; set; }
+    public bool FinishedAuth { get; set; }
     public long Followers { get; set; }
     public Setting Setting { get; set; }
     public Profile Profile { get; set; }
@@ -59,5 +60,11 @@ public class Streamer : Entity<string>
         CurrentStreamId = currentStream?.Id;
         CurrentStream = currentStream;
         Raise(new StreamerUpdated(this));
+    }
+
+    public void FinishAuth(string userName)
+    {
+        UserName = userName;
+        FinishedAuth = true;
     }
 }

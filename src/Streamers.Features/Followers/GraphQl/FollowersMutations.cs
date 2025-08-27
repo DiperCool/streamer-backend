@@ -7,7 +7,7 @@ using Streamers.Features.Followers.Features.Unfollow;
 
 namespace Streamers.Features.Followers.GraphQl;
 
-[QueryType]
+[MutationType]
 public static partial class FollowersMutations
 {
     [Authorize]
@@ -18,10 +18,10 @@ public static partial class FollowersMutations
 
     [Authorize]
     public static async Task<UnfollowResponse> Unfollow(
-        Unfollow follow,
+        Unfollow unfollow,
         [Service] IMediator mediator
     )
     {
-        return await mediator.Send(follow);
+        return await mediator.Send(unfollow);
     }
 }

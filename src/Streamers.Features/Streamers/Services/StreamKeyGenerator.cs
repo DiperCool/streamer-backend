@@ -11,6 +11,7 @@ public class RtmpOptions
     public string App { get; set; }
     public string Hls { get; set; }
     public string WebRtc { get; set; }
+    public string VodProcess { get; set; }
     public string Scheme { get; set; }
 }
 

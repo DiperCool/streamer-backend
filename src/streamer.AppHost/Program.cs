@@ -41,4 +41,13 @@ var mediamtx = builder
     .WithHttpEndpoint(targetPort: 8888, name: "hls", isProxied: false)
     .WithHttpEndpoint(targetPort: 8889, name: "webrtc", isProxied: false)
     .WithHttpEndpoint(targetPort: 9997, name: "api", isProxied: false);
+
+var vodProcessor = builder
+    .AddContainer("vod-processor", "dipercool/vod-processor")
+    .WaitFor(streamerApi)
+    .WithEnvironment(
+        "RABBIT_URL",
+        "amqps://ycxdqxek:dqbA9K8DP4m6IPTboHah9UD8ZTPnM6Qb@kebnekaise.lmq.cloudamqp.com/ycxdqxek"
+    )
+    .WithEnvironment("MINIO_HOST", "minio");
 builder.Build().Run();

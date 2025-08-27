@@ -41,7 +41,7 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
             x => x.FollowerStreamerId == currentUser.UserId && x.StreamerId == request.StreamerId,
             cancellationToken: cancellationToken
         );
-        if (!alreadyFollows)
+        if (alreadyFollows)
         {
             throw new InvalidOperationException(
                 $"Already following streamer with ID {request.StreamerId}"
