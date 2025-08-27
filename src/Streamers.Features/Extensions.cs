@@ -16,12 +16,14 @@ using Streamers.Features.AntMedia.EventHandlers;
 using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Files.Seeds;
 using Streamers.Features.Profiles.Features.UpdateProfile;
+using Streamers.Features.Shared.Cqrs.Behaviours;
 using Streamers.Features.Shared.GraphQl;
 using Streamers.Features.Shared.Hangfire;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.EventHandlers;
 using Streamers.Features.Streamers.Services;
 using Streamers.Features.Streams.Features;
+using Streamers.Features.Vods.EventHandler;
 
 namespace Streamers.Features;
 
@@ -37,6 +39,7 @@ public static class Extensions
         });
         services.AddScoped<IUserEventHandler, UserEventHandler>();
         services.AddScoped<IAntmediaWebhook, AntmediaWebhook>();
+        services.AddScoped<IVodFinishedHandler, VodFinishedHandler>();
         services.AddSingleton<IStreamKeyGenerator, StreamKeyGenerator>();
         services.AddScoped<IAntMediaWebhookHandlerFabric, AntMediaWebhookHandlerFabric>();
         services.AddScoped<LiveStreamStartedHandler>();
@@ -51,10 +54,8 @@ public static class Extensions
         builder.Services.AddDomainEvents(typeof(Features).Assembly);
         builder.Services.AddBlobStorage(builder.Configuration);
         services.AddValidatorsFromAssemblyContaining<UpdateProfile.UpdateProfileValidator>();
-        services.AddTransient(
-            typeof(IPipelineBehavior<,>),
-            typeof(Shared.Cqrs.Behaviours.ValidationBehavior<,>)
-        );
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         builder.Services.AddGraphQl();
         // Add the authentication services to DI

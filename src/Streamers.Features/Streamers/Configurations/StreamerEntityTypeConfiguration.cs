@@ -19,5 +19,6 @@ public class StreamerEntityTypeConfiguration : IEntityTypeConfiguration<Streamer
             .WithOne(x => x.Streamer)
             .HasForeignKey(x => x.StreamerId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.HasQueryFilter(x => x.FinishedAuth);
     }
 }

@@ -17,7 +17,8 @@ public class GetEmailHandler(StreamerDbContext streamerDbContext)
     )
     {
         var email = await streamerDbContext
-            .Streamers.Where(x => x.Id == request.UserId)
+            .Streamers.IgnoreQueryFilters()
+            .Where(x => x.Id == request.UserId)
             .Select(x => x.Email)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (email == null)

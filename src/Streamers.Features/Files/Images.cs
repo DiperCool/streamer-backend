@@ -3,7 +3,7 @@
 public static class Images
 {
     public const string Bucket = "files";
-    public const string AvatarObject = "default/default-avatar.jpeg";
-    public const string BannerObject = "default/offline-banner.webp";
-    public const string ChannelObject = "default/default-channel.jpg";
+    public const string AvatarObject = "files/default/default-avatar.jpeg";
+    public const string BannerObject = "files/default/offline-banner.webp";
+    public const string ChannelObject = "files/default/default-channel.jpg";
 }

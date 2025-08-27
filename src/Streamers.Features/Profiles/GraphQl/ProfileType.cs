@@ -4,17 +4,18 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.Profiles.Dtos;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.Features.GetStreamer;
+using Streamers.Features.Streamers.GraphqQl;
 
 namespace Streamers.Features.Profiles.GraphQl;
 
 [ObjectType<ProfileDto>]
 public static partial class ProfileType
 {
-    public static async Task<StreamerDto> GetStreamerAsync(
+    public static async Task<StreamerDto?> GetStreamerAsync(
         [Parent(nameof(ProfileDto.StreamerId))] ProfileDto profile,
-        IMediator mediator
+        IStreamersByIdDataLoader dataLoader
     )
     {
-        return await mediator.Send(new GetStreamer(profile.StreamerId));
+        return await dataLoader.LoadAsync(profile.StreamerId);
     }
 }

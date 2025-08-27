@@ -27,7 +27,7 @@ public static partial class ChatQuery
         return await mediator.Send(new GetChatSettings());
     }
 
-    [UsePaging(MaxPageSize = 50)]
+    [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]
     public static async Task<Connection<ChatMessageDto>> GetChatMessages(

@@ -7,6 +7,7 @@ using Streamers.Features.Profiles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.Streams.Models;
+using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
 namespace Streamers.Features.Shared.Persistance;
@@ -28,6 +29,7 @@ public class StreamerDbContext(
     public DbSet<ChatSettings> ChatSettings { get; set; }
     public DbSet<PinnedChatMessage> PinnedChatMessages { get; set; }
     public DbSet<Follower> Followers { get; set; }
+    public DbSet<Vod> Vods { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,7 +63,6 @@ public class StreamerDbContext(
 
     private async Task PublishDomainEventsAsync()
     {
-        var domainEVts2 = ChangeTracker.Entries();
         var domainEvents = ChangeTracker
             .Entries<IHasDomainEvents>()
             .SelectMany(entity =>

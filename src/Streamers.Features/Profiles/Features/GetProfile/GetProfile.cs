@@ -12,7 +12,8 @@ public class GetProfileHandler(StreamerDbContext context) : IRequestHandler<GetP
     public async Task<ProfileDto> Handle(GetProfile request, CancellationToken cancellationToken)
     {
         var profile = await context
-            .Profiles.AsNoTracking()
+            .Profiles.IgnoreQueryFilters()
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.StreamerId == request.StreamerId, cancellationToken);
 
         if (profile == null)

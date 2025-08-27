@@ -7,6 +7,8 @@ using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.Features.GetEmail;
 using Streamers.Features.Streamers.Features.GetStreamer;
 using Streamers.Features.Streamers.Features.GetStreamerByUserName;
+using Streamers.Features.Streamers.Features.GetStreamerInteraction;
+using Streamers.Features.Streams.Dtos;
 
 namespace Streamers.Features.Streamers.GraphqQl;
 
@@ -14,12 +16,9 @@ namespace Streamers.Features.Streamers.GraphqQl;
 public static partial class StreamerQuery
 {
     [Authorize]
-    public static async Task<StreamerDto> GetMeAsync(
-        [Service] IMediator mediator,
-        [Service] ICurrentUser currentUser
-    )
+    public static async Task<StreamerMeDto> GetMeAsync([Service] IMediator mediator)
     {
-        var response = await mediator.Send(new GetStreamer(currentUser.UserId));
+        var response = await mediator.Send(new GetStreamer());
         return response;
     }
 
@@ -33,9 +32,20 @@ public static partial class StreamerQuery
         return response;
     }
 
-    public static async Task<StreamerDto> GetStreamer(string userName, [Service] IMediator mediator)
+    public static async Task<StreamerDto> GetStreamerAsync(
+        string userName,
+        [Service] IMediator mediator
+    )
     {
         var response = await mediator.Send(new GetStreamerByUserName(userName));
         return response;
+    }
+
+    public static async Task<StreamerInteractionDto> GetStreamerInteractionAsync(
+        string streamerId,
+        [Service] IMediator mediator
+    )
+    {
+        return await mediator.Send(new GetStreamerInteraction(streamerId));
     }
 }
