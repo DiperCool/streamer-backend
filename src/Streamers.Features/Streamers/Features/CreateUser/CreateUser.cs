@@ -2,6 +2,8 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Files;
 using Streamers.Features.Profiles.Models;
+using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
@@ -41,9 +43,17 @@ public class CreateUserHandler(StreamerDbContext context, IStreamKeyGenerator st
             Images.AvatarObject,
             chatSettings
         );
+        var role = new Role(
+            streamer,
+            RoleType.Broadcaster,
+            streamer,
+            DateTime.UtcNow,
+            Permissions.All
+        );
         streamKeyGenerator.GenerateKey(streamSettings);
 
         await context.Streamers.AddAsync(streamer, cancellationToken);
+        await context.Roles.AddAsync(role, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return new CreateUserResponse(streamer.Id);
     }

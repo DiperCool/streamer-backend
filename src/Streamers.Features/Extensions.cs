@@ -16,6 +16,7 @@ using Streamers.Features.AntMedia.EventHandlers;
 using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Files.Seeds;
 using Streamers.Features.Profiles.Features.UpdateProfile;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Cqrs.Behaviours;
 using Streamers.Features.Shared.GraphQl;
 using Streamers.Features.Shared.Hangfire;
@@ -46,6 +47,9 @@ public static class Extensions
         services.AddScoped<LiveStreamEndedHandler>();
         services.AddScoped<AddReaderHandler>();
         services.AddScoped<RemoveReaderHandler>();
+        services.AddScoped<ICanAssignRole, CanAssignRole>();
+        services.AddScoped<IRolesHierarchy, RolesHierarchy>();
+
         services.AddHostedService<RecurringJobsHostedService>();
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();
         builder.Services.AddHostedService<SeedWorker>();
