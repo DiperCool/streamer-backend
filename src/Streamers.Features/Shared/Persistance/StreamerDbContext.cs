@@ -4,6 +4,7 @@ using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Followers.Models;
 using Streamers.Features.Profiles.Models;
+using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.Streams.Models;
@@ -20,7 +21,7 @@ public class StreamerDbContext(
     public DbSet<Streamer> Streamers { get; set; }
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Setting> Settings { get; set; }
-
+    public DbSet<Role> Roles { get; set; }
     public DbSet<Stream> Streams { get; set; }
     public DbSet<StreamSettings> StreamSettings { get; set; }
     public DbSet<StreamSource> StreamSources { get; set; }

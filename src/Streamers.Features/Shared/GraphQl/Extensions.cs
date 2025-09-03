@@ -19,7 +19,8 @@ public static class Extensions
             .AddInMemorySubscriptions()
             .AddType<UploadType>()
             .ModifyRequestOptions(o => o.IncludeExceptionDetails = true)
-            .ModifyCostOptions(o => o.EnforceCostLimits = false);
+            .ModifyCostOptions(o => o.EnforceCostLimits = false)
+            .ModifyOptions(x => x.EnableFlagEnums = true);
         return services;
     }
 }
