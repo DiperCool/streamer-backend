@@ -1,8 +1,10 @@
 ﻿using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Profiles.Models;
+using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streams.Models;
+using Streamers.Features.SystemRoles.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
 namespace Streamers.Features.Streamers.Models;
@@ -26,6 +28,7 @@ public class Streamer : Entity<string>
     public ChatSettings ChatSettings { get; set; }
     public Guid? CurrentStreamId { get; set; }
     public Stream? CurrentStream { get; set; }
+    public List<SystemRole> SystemRoles { get; set; }
 
     private Streamer() { }
 
