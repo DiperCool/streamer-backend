@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Files;
@@ -17,7 +18,7 @@ public record CreateUserResponse(string Id);
 public record CreateUser(string Id, string Username, string Email, DateTime CreatedAt)
     : IRequest<CreateUserResponse>;
 
-public class CreateUserHandler(StreamerDbContext context, IStreamKeyGenerator streamKeyGenerator)
+public class CreateUserHandler(StreamerDbContext context, IStreamerFabric streamerFabric)
     : IRequestHandler<CreateUser, CreateUserResponse>
 {
     public async Task<CreateUserResponse> Handle(
@@ -25,35 +26,22 @@ public class CreateUserHandler(StreamerDbContext context, IStreamKeyGenerator st
         CancellationToken cancellationToken
     )
     {
-        var streamSettings = new StreamSettings();
-        var chatSettings = new ChatSettings();
-        Streamer streamer = new Streamer(
+        if (
+            await context.Streamers.AnyAsync(
+                x => x.Id == request.Id,
+                cancellationToken: cancellationToken
+            )
+        )
+        {
+            return new CreateUserResponse(request.Id);
+        }
+        var streamer = await streamerFabric.CreateStreamer(
             request.Id,
             request.Username,
             request.Email,
-            new Profile()
-            {
-                OfflineStreamBanner = Images.BannerObject,
-                ChannelBanner = Images.ChannelObject,
-            },
-            new Setting(),
-            streamSettings,
-            new Chat(chatSettings),
-            request.CreatedAt,
-            Images.AvatarObject,
-            chatSettings
+            request.CreatedAt
         );
-        var role = new Role(
-            streamer,
-            RoleType.Broadcaster,
-            streamer,
-            DateTime.UtcNow,
-            Permissions.All
-        );
-        streamKeyGenerator.GenerateKey(streamSettings);
 
-        await context.Streamers.AddAsync(streamer, cancellationToken);
-        await context.Roles.AddAsync(role, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return new CreateUserResponse(streamer.Id);
     }

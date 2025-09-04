@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared.Abstractions.Cqrs;
+using Shared.Auth0.Services;
 using Shared.DomainEvents;
 using Shared.Hangfire;
 using Shared.Minio;
@@ -22,6 +23,7 @@ using Streamers.Features.Shared.GraphQl;
 using Streamers.Features.Shared.Hangfire;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.EventHandlers;
+using Streamers.Features.Streamers.Seed;
 using Streamers.Features.Streamers.Services;
 using Streamers.Features.Streams.Features;
 using Streamers.Features.Vods.EventHandler;
@@ -42,6 +44,7 @@ public static class Extensions
         services.AddScoped<IAntmediaWebhook, AntmediaWebhook>();
         services.AddScoped<IVodFinishedHandler, VodFinishedHandler>();
         services.AddSingleton<IStreamKeyGenerator, StreamKeyGenerator>();
+        services.AddScoped<IStreamerFabric, StreamerFabric>();
         services.AddScoped<IAntMediaWebhookHandlerFabric, AntMediaWebhookHandlerFabric>();
         services.AddScoped<LiveStreamStartedHandler>();
         services.AddScoped<LiveStreamEndedHandler>();
@@ -54,6 +57,7 @@ public static class Extensions
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, MinioBucketSeeds>();
+        builder.Services.AddScoped<IDataSeeder, AdminSeed>();
         builder.Services.AddMediator(typeof(Features).Assembly);
         builder.Services.AddDomainEvents(typeof(Features).Assembly);
         builder.Services.AddBlobStorage(builder.Configuration);
@@ -66,6 +70,7 @@ public static class Extensions
         builder.AddDefaultAuthentication();
         builder.Services.AddRabbitMq(builder.Configuration);
         builder.Services.AddRedis(builder.Configuration);
+        builder.Services.AddAuth0Apis(builder.Configuration);
         builder.Services.AddHangfire(builder.Configuration);
     }
 }

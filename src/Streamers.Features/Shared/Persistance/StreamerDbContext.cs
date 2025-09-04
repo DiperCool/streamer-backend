@@ -8,6 +8,7 @@ using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.Streams.Models;
+using Streamers.Features.SystemRoles.Models;
 using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
@@ -31,6 +32,7 @@ public class StreamerDbContext(
     public DbSet<PinnedChatMessage> PinnedChatMessages { get; set; }
     public DbSet<Follower> Followers { get; set; }
     public DbSet<Vod> Vods { get; set; }
+    public DbSet<SystemRole> SystemRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

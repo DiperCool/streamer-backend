@@ -4,6 +4,7 @@ using Streamers.Features.Streamers.Models;
 namespace Streamers.Features.Streams.Models;
 
 public record StreamUpdated(Stream Stream) : IDomainEvent;
+
 public record StreamCreated(Stream Stream) : IDomainEvent;
 
 public class Stream : Entity
