@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shared.Abstractions.Domain;
+using Streamers.Features.Categories.Models;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Followers.Models;
 using Streamers.Features.Profiles.Models;
@@ -33,6 +34,7 @@ public class StreamerDbContext(
     public DbSet<Follower> Followers { get; set; }
     public DbSet<Vod> Vods { get; set; }
     public DbSet<SystemRole> SystemRoles { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
