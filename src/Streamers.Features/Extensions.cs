@@ -15,6 +15,7 @@ using Shared.Seeds;
 using streamer.ServiceDefaults;
 using Streamers.Features.AntMedia.EventHandlers;
 using Streamers.Features.AntMedia.Services;
+using Streamers.Features.Categories.Services;
 using Streamers.Features.Files.Seeds;
 using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Roles.Services;
@@ -26,6 +27,7 @@ using Streamers.Features.Streamers.EventHandlers;
 using Streamers.Features.Streamers.Seed;
 using Streamers.Features.Streamers.Services;
 using Streamers.Features.Streams.Features;
+using Streamers.Features.SystemRoles.Services;
 using Streamers.Features.Vods.EventHandler;
 
 namespace Streamers.Features;
@@ -58,6 +60,8 @@ public static class Extensions
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, MinioBucketSeeds>();
         builder.Services.AddScoped<IDataSeeder, AdminSeed>();
+        builder.Services.AddScoped<ISystemRoleService, SystemRoleService>();
+        builder.Services.AddSingleton<ISlugGenerator, SlugGenerator>();
         builder.Services.AddMediator(typeof(Features).Assembly);
         builder.Services.AddDomainEvents(typeof(Features).Assembly);
         builder.Services.AddBlobStorage(builder.Configuration);
