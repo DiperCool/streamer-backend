@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Enums;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Shared.Persistance;
 

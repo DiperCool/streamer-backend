@@ -27,6 +27,8 @@ public class GetVodsHandler(StreamerDbContext streamerDbContext)
                 Views = x.Views,
                 StreamerId = x.StreamerId,
                 Duration = x.Duration,
+                CategoryId = x.CategoryId,
+                Language = x.Language,
             })
             .With(request.QueryContext)
             .ToPageAsync(request.Paging, cancellationToken: cancellationToken);

@@ -31,6 +31,9 @@ public class GetCurrentStreamHandler(StreamerDbContext streamerDbContext)
             Active = stream.Active,
             Title = stream.Title,
             CurrentViewers = stream.CurrentViewers,
+            Language = stream.Language,
+            CategoryId = stream.CategoryId,
+            Started = stream.Started,
         };
     }
 }

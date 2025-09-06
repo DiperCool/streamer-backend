@@ -28,15 +28,18 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
     )
     {
         var opts = configuration.BindOptions<RtmpOptions>();
-        Streamer? streamer = await dbContext.Streamers.FirstOrDefaultAsync(
-            x => x.StreamSettings.StreamName == request.StreamName,
-            cancellationToken: cancellationToken
-        );
+        Streamer? streamer = await dbContext
+            .Streamers.Include(x => x.StreamInfo)
+            .ThenInclude(streamInfo => streamInfo.Tags)
+            .FirstOrDefaultAsync(
+                x => x.StreamSettings.StreamName == request.StreamName,
+                cancellationToken: cancellationToken
+            );
+
         if (streamer == null)
         {
             return new CreateStreamResponse(Guid.NewGuid());
         }
-
         List<StreamSource> sources = new()
         {
             new StreamSource
@@ -50,11 +53,26 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
                 Url = $"{opts.WebRtc}/{request.StreamName}/whep",
             },
         };
-        Stream stream = new Stream(streamer, request.StreamId, "title", DateTime.UtcNow, sources);
+        var info = streamer.StreamInfo;
+        Stream stream = new Stream(
+            streamer,
+            request.StreamId,
+            info.Title ?? string.Empty,
+            DateTime.UtcNow,
+            sources,
+            info.Language,
+            info.Tags
+        );
         streamer.SetLive(true, stream);
         var processVodUrl = $"{opts.VodProcess}/{request.StreamName}/index.m3u8";
 
-        Vod vod = new Vod(Guid.NewGuid(), stream.Streamer, DateTime.UtcNow, processVodUrl);
+        Vod vod = new Vod(
+            Guid.NewGuid(),
+            stream.Streamer,
+            DateTime.UtcNow,
+            processVodUrl,
+            info.Language
+        );
         await dbContext.Streams.AddAsync(stream, cancellationToken);
         dbContext.Streamers.Update(streamer);
         await dbContext.Vods.AddAsync(vod, cancellationToken);

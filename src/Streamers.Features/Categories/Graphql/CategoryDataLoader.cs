@@ -9,7 +9,7 @@ namespace Streamers.Features.Categories.Graphql;
 public static partial class CategoryDataLoader
 {
     [DataLoader]
-    public static async Task<IDictionary<Guid, CategoryDto>> GetCategoriesByIdAsync(
+    public static async Task<IDictionary<Guid, CategoryDto>> GetCategoryByIdAsync(
         IReadOnlyList<Guid> ids,
         [Service] IMediator mediator,
         CancellationToken cancellationToken

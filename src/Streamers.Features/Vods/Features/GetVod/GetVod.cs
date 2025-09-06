@@ -25,6 +25,8 @@ public class GetVodHandler(StreamerDbContext streamerDbContext) : IRequestHandle
                 CreatedAt = x.CreatedAt,
                 StreamerId = x.StreamerId,
                 Duration = x.Duration,
+                CategoryId = x.CategoryId,
+                Language = x.Language,
             })
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (vod == null)

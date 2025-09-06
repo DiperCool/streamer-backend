@@ -3,6 +3,7 @@ using Streamers.Features.Chats.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
+using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
 using Streamers.Features.SystemRoles.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
@@ -29,6 +30,7 @@ public class Streamer : Entity<string>
     public Guid? CurrentStreamId { get; set; }
     public Stream? CurrentStream { get; set; }
     public List<SystemRole> SystemRoles { get; set; }
+    public StreamInfo StreamInfo { get; set; }
 
     private Streamer() { }
 
@@ -42,7 +44,8 @@ public class Streamer : Entity<string>
         Chat chat,
         DateTime createdAt,
         string? avatar,
-        ChatSettings chatSettings
+        ChatSettings chatSettings,
+        StreamInfo streamInfo
     )
     {
         Id = id;
@@ -53,6 +56,7 @@ public class Streamer : Entity<string>
         CreatedAt = createdAt;
         Avatar = avatar;
         ChatSettings = chatSettings;
+        StreamInfo = streamInfo;
         Chat = chat;
         StreamSettings = streamSettings;
     }

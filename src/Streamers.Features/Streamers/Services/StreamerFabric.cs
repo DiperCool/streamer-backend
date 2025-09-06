@@ -6,6 +6,7 @@ using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
+using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
 
 namespace Streamers.Features.Streamers.Services;
@@ -32,6 +33,7 @@ public class StreamerFabric(IStreamKeyGenerator generator, StreamerDbContext str
     {
         var streamSettings = new StreamSettings();
         var chatSettings = new ChatSettings();
+        var streamInfo = new StreamInfo("My First Stream", "English");
         Streamer streamer = new Streamer(
             id,
             username,
@@ -46,7 +48,8 @@ public class StreamerFabric(IStreamKeyGenerator generator, StreamerDbContext str
             new Chat(chatSettings),
             created,
             Images.AvatarObject,
-            chatSettings
+            chatSettings,
+            streamInfo
         );
         var role = new Role(
             streamer,

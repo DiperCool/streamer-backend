@@ -27,7 +27,36 @@ public class FinishProcessHandler(StreamerDbContext streamerDbContext)
             return new VodFinishProcessResponse(Guid.Empty);
         }
 
-        vod.Finish(request.Path, request.Preview, request.Duration, "title", "description");
+        var info = await streamerDbContext
+            .StreamInfos.Include(x => x.Tags)
+            .Include(x => x.Category)
+            .FirstOrDefaultAsync(
+                x => x.StreamerId == vod.StreamerId,
+                cancellationToken: cancellationToken
+            );
+        if (info == null)
+        {
+            return new VodFinishProcessResponse(Guid.Empty);
+        }
+
+        var profile = await streamerDbContext.Profiles.FirstOrDefaultAsync(
+            x => x.StreamerId == vod.StreamerId,
+            cancellationToken: cancellationToken
+        );
+        if (profile == null)
+        {
+            return new VodFinishProcessResponse(Guid.Empty);
+        }
+        vod.Finish(
+            request.Path,
+            request.Preview,
+            request.Duration,
+            info.Title ?? string.Empty,
+            profile.Bio ?? string.Empty,
+            info.Category,
+            info.Tags,
+            info.Language
+        );
         streamerDbContext.Vods.Update(vod);
         await streamerDbContext.SaveChangesAsync(cancellationToken);
         return new VodFinishProcessResponse(vod.Id);

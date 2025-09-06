@@ -28,6 +28,7 @@ using Streamers.Features.Streamers.Seed;
 using Streamers.Features.Streamers.Services;
 using Streamers.Features.Streams.Features;
 using Streamers.Features.SystemRoles.Services;
+using Streamers.Features.Tags.Services;
 using Streamers.Features.Vods.EventHandler;
 
 namespace Streamers.Features;
@@ -62,6 +63,7 @@ public static class Extensions
         builder.Services.AddScoped<IDataSeeder, AdminSeed>();
         builder.Services.AddScoped<ISystemRoleService, SystemRoleService>();
         builder.Services.AddSingleton<ISlugGenerator, SlugGenerator>();
+        builder.Services.AddScoped<ITagsService, TagsService>();
         builder.Services.AddMediator(typeof(Features).Assembly);
         builder.Services.AddDomainEvents(typeof(Features).Assembly);
         builder.Services.AddBlobStorage(builder.Configuration);

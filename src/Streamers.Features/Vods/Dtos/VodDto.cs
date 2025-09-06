@@ -11,4 +11,6 @@ public class VodDto
     public required DateTime CreatedAt { get; set; }
     public required long Duration { get; set; }
     public required string StreamerId { get; set; }
+    public required Guid? CategoryId { get; set; }
+    public required string Language { get; set; }
 }

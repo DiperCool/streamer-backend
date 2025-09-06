@@ -14,11 +14,13 @@ public class StreamerUpdatedEventHandler(ITopicEventSender sender)
         var streamDto = new StreamDto
         {
             Id = stream.Id,
-
             StreamerId = stream.StreamerId,
             Active = stream.Active,
             Title = stream.Title,
             CurrentViewers = stream.CurrentViewers,
+            Language = stream.Language,
+            CategoryId = stream.CategoryId,
+            Started = stream.Started,
         };
         await sender.SendAsync(
             $"{nameof(StreamUpdated)}-{streamDto.Id}",
