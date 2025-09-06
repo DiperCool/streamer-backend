@@ -1,4 +1,5 @@
-﻿using Streamers.Features.Chats.Models;
+﻿using Streamers.Features.Chats.Enums;
+using Streamers.Features.Chats.Models;
 using Streamers.Features.Streamers.Dtos;
 
 namespace Streamers.Features.Chats.Dtos;

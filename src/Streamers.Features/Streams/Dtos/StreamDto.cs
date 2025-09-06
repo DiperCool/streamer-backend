@@ -7,4 +7,7 @@ public class StreamDto
     public required bool Active { get; set; }
     public required string Title { get; set; }
     public required long CurrentViewers { get; set; }
+    public required Guid? CategoryId { get; set; }
+    public required string Language { get; set; }
+    public required DateTime Started { get; set; }
 }

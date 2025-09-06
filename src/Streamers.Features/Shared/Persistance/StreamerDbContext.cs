@@ -8,8 +8,10 @@ using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
+using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
 using Streamers.Features.SystemRoles.Models;
+using Streamers.Features.Tags.Models;
 using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
@@ -35,6 +37,8 @@ public class StreamerDbContext(
     public DbSet<Vod> Vods { get; set; }
     public DbSet<SystemRole> SystemRoles { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<StreamInfo> StreamInfos { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using Streamers.Features.Shared.Persistance;
 
+namespace Streamers.Features.Streams.BackgroundServices;
+
 public class ViewerSyncJob
 {
     private readonly StreamerDbContext _context;
@@ -34,7 +36,9 @@ public class ViewerSyncJob
                 continue;
 
             if (activeStreams[i].CurrentViewers != viewers)
+            {
                 activeStreams[i].SetCurrentViewers(viewers);
+            }
         }
 
         await _context.SaveChangesAsync(cancellationToken);

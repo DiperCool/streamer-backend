@@ -1,4 +1,5 @@
 ﻿using Shared.Abstractions.Domain;
+using Streamers.Features.Chats.Enums;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Chats.Models;

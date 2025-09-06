@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.Extensions.Hosting;
+using Streamers.Features.Streams.BackgroundServices;
 
 namespace Streamers.Features.Shared.Hangfire;
 

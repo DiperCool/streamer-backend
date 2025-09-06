@@ -1,4 +1,4 @@
-﻿namespace Streamers.Features.Chats.Models;
+﻿namespace Streamers.Features.Chats.Enums;
 
 public enum ChatMessageType
 {
