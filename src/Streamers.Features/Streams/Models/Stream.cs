@@ -20,7 +20,9 @@ public class Stream : Entity
         DateTime started,
         List<StreamSource> streamSources,
         string language,
-        List<Tag> tags
+        List<Tag> tags,
+        string? preview,
+        Category? category
     )
     {
         Streamer = streamer;
@@ -31,7 +33,9 @@ public class Stream : Entity
         StreamSources = streamSources;
         Language = language;
         Tags = tags;
+        Preview = preview;
         Active = true;
+        Category = category;
         Raise(new StreamCreated(this));
         SetActive(Active);
     }
@@ -49,6 +53,7 @@ public class Stream : Entity
     public Guid? CategoryId { get; set; }
     public Category? Category { get; set; }
     public double? Duration { get; set; }
+    public string? Preview { get; set; }
 
     public void SetActive(bool active)
     {

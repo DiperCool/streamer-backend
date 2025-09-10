@@ -10,4 +10,5 @@ public class StreamDto
     public required Guid? CategoryId { get; set; }
     public required string Language { get; set; }
     public required DateTime Started { get; set; }
+    public required string? Preview { get; set; }
 }

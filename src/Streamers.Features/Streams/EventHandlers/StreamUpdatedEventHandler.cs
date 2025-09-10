@@ -21,6 +21,7 @@ public class StreamerUpdatedEventHandler(ITopicEventSender sender)
             Language = stream.Language,
             CategoryId = stream.CategoryId,
             Started = stream.Started,
+            Preview = stream.Preview,
         };
         await sender.SendAsync(
             $"{nameof(StreamUpdated)}-{streamDto.Id}",

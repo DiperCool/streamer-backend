@@ -34,6 +34,7 @@ public class GetCurrentStreamHandler(StreamerDbContext streamerDbContext)
             Language = stream.Language,
             CategoryId = stream.CategoryId,
             Started = stream.Started,
+            Preview = stream.Preview,
         };
     }
 }

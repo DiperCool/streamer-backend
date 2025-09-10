@@ -8,6 +8,7 @@ namespace Streamers.Features.Categories.Features.GetCategories;
 
 public record GetCategories(
     string? Search,
+    Guid? Tag,
     PagingArguments Paging,
     QueryContext<CategoryDto> QueryContext
 ) : IRequest<Page<CategoryDto>>;

@@ -29,6 +29,7 @@ public class GetStreamersByIdsHandler(StreamerDbContext context)
                 Language = s.Language,
                 CategoryId = s.CategoryId,
                 Started = s.Started,
+                Preview = s.Preview,
             })
             .ToListAsync(cancellationToken);
 
