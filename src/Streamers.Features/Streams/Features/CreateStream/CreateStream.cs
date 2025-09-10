@@ -31,6 +31,9 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
         Streamer? streamer = await dbContext
             .Streamers.Include(x => x.StreamInfo)
             .ThenInclude(streamInfo => streamInfo.Tags)
+            .Include(streamer => streamer.Profile)
+            .Include(streamer => streamer.StreamInfo)
+            .ThenInclude(streamInfo => streamInfo.Category)
             .FirstOrDefaultAsync(
                 x => x.StreamSettings.StreamName == request.StreamName,
                 cancellationToken: cancellationToken
@@ -61,7 +64,9 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
             DateTime.UtcNow,
             sources,
             info.Language,
-            info.Tags
+            info.Tags,
+            streamer.Profile.ChannelBanner,
+            info.Category
         );
         streamer.SetLive(true, stream);
         var processVodUrl = $"{opts.VodProcess}/{request.StreamName}/index.m3u8";
