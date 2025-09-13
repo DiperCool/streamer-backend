@@ -16,6 +16,7 @@ using streamer.ServiceDefaults;
 using Streamers.Features.AntMedia.EventHandlers;
 using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Categories.Services;
+using Streamers.Features.Chats.Services;
 using Streamers.Features.Files.Seeds;
 using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Roles.Services;
@@ -55,6 +56,11 @@ public static class Extensions
         services.AddScoped<RemoveReaderHandler>();
         services.AddScoped<ICanAssignRole, CanAssignRole>();
         services.AddScoped<IRolesHierarchy, RolesHierarchy>();
+        services.AddScoped<IChatPermissionService, ChatPermissionService>();
+
+        services.AddScoped<IChatRule, BanChatRule>();
+        services.AddScoped<IChatRule, OnlyFollowerModeChatRule>();
+        services.AddScoped<IChatRule, SlowModeChatRule>();
 
         services.AddHostedService<RecurringJobsHostedService>();
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();

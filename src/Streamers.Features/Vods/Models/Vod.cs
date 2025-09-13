@@ -11,11 +11,7 @@ public record VodCreated(Vod Vod) : IDomainEvent;
 
 public class Vod : Entity
 {
-    protected Vod(string streamHls, string language)
-    {
-        StreamHls = streamHls;
-        Language = language;
-    }
+    protected Vod() { }
 
     public Vod(Guid id, Streamer streamer, DateTime createdAt, string streamHls, string language)
     {
@@ -25,9 +21,11 @@ public class Vod : Entity
         CreatedAt = createdAt;
         StreamHls = streamHls;
         Language = language;
+        Type = VodType.Public;
         Raise(new VodCreated(this));
     }
 
+    public VodType Type { get; set; }
     public VodStatus Status { get; private set; }
     public string StreamHls { get; set; }
     public string? Source { get; private set; }
@@ -65,6 +63,25 @@ public class Vod : Entity
         Duration = duration;
         CategoryId = category?.Id;
         Category = category;
+        Tags.AddRange(tags);
+        Language = language;
+    }
+
+    public void Update(
+        VodType type,
+        string title,
+        string description,
+        Category? category,
+        List<Tag> tags,
+        string language
+    )
+    {
+        Type = type;
+        Title = title;
+        Description = description;
+        CategoryId = category?.Id;
+        Category = category;
+        Tags.Clear();
         Tags.AddRange(tags);
         Language = language;
     }

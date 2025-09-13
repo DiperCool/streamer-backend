@@ -1,4 +1,6 @@
-﻿namespace Streamers.Features.Vods.Dtos;
+﻿using Streamers.Features.Vods.Enums;
+
+namespace Streamers.Features.Vods.Dtos;
 
 public class VodDto
 {
@@ -13,4 +15,5 @@ public class VodDto
     public required string StreamerId { get; set; }
     public required Guid? CategoryId { get; set; }
     public required string Language { get; set; }
+    public required VodType Type { get; set; }
 }

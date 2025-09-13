@@ -4,6 +4,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Enums;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.Chats.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.CreateMessage;
@@ -21,8 +22,11 @@ public class CreateMessageValidator : AbstractValidator<CreateMessage>
     }
 }
 
-public class CreateMessageHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<CreateMessage, CreateMessageResponse>
+public class CreateMessageHandler(
+    StreamerDbContext streamerDbContext,
+    IChatPermissionService permissionService,
+    ICurrentUser currentUser
+) : IRequestHandler<CreateMessage, CreateMessageResponse>
 {
     public async Task<CreateMessageResponse> Handle(
         CreateMessage request,
@@ -39,15 +43,18 @@ public class CreateMessageHandler(StreamerDbContext streamerDbContext, ICurrentU
                 $"Could not find streamer with ID {currentUser.UserId}"
             );
         }
-        var chat = await streamerDbContext.Chats.FirstOrDefaultAsync(
-            x => x.Id == request.ChatId,
-            cancellationToken: cancellationToken
-        );
+        var chat = await streamerDbContext
+            .Chats.Include(x => x.Settings)
+            .FirstOrDefaultAsync(x => x.Id == request.ChatId, cancellationToken: cancellationToken);
         if (chat == null)
         {
             throw new InvalidOperationException($"Could not find chat with ID {request.ChatId}");
         }
-
+        var chatPermissions = await permissionService.Check(chat.Settings, currentUser.UserId);
+        if (chatPermissions != null)
+        {
+            throw new InvalidOperationException(chatPermissions.Message);
+        }
         var reply =
             request.ReplyMessageId == null
                 ? null
