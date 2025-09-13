@@ -39,6 +39,7 @@ public class StreamerDbContext(
     public DbSet<Category> Categories { get; set; }
     public DbSet<StreamInfo> StreamInfos { get; set; }
     public DbSet<Tag> Tags { get; set; }
+    public DbSet<BannedUser> BannedUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -64,14 +65,6 @@ public class StreamerDbContext(
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        int result = await base.SaveChangesAsync(cancellationToken);
-        await PublishDomainEventsAsync();
-
-        return result;
-    }
-
-    private async Task PublishDomainEventsAsync()
-    {
         var domainEvents = ChangeTracker
             .Entries<IHasDomainEvents>()
             .SelectMany(entity =>
@@ -81,7 +74,9 @@ public class StreamerDbContext(
                 return events;
             })
             .ToList();
+        int result = await base.SaveChangesAsync(cancellationToken);
+        await domainEventsDispatcher.DispatchAsync(domainEvents, cancellationToken);
 
-        await domainEventsDispatcher.DispatchAsync(domainEvents);
+        return result;
     }
 }

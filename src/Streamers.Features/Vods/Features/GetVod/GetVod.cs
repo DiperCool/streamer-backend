@@ -1,18 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Roles.Enums;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Vods.Dtos;
+using Streamers.Features.Vods.Enums;
 
 namespace Streamers.Features.Vods.Features.GetVod;
 
 public record GetVod(Guid VodId) : IRequest<VodDto>;
 
-public class GetVodHandler(StreamerDbContext streamerDbContext) : IRequestHandler<GetVod, VodDto>
+public class GetVodHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
+    : IRequestHandler<GetVod, VodDto>
 {
     public async Task<VodDto> Handle(GetVod request, CancellationToken cancellationToken)
     {
-        VodDto? vod = await streamerDbContext
-            .Vods.AsNoTracking()
+        var role = currentUser.IsAuthenticated
+            ? await streamerDbContext.Roles.FirstOrDefaultAsync(
+                x => x.StreamerId == currentUser.UserId,
+                cancellationToken: cancellationToken
+            )
+            : null;
+        var query = streamerDbContext.Vods.AsNoTracking();
+        if (role == null || !role.Permissions.HasPermission(Permissions.Roles))
+        {
+            query = query.Where(x => x.Type == VodType.Public);
+        }
+        VodDto? vod = await query
             .Where(x => x.Id == request.VodId)
             .Select(x => new VodDto
             {
@@ -27,6 +41,7 @@ public class GetVodHandler(StreamerDbContext streamerDbContext) : IRequestHandle
                 Duration = x.Duration,
                 CategoryId = x.CategoryId,
                 Language = x.Language,
+                Type = x.Type,
             })
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (vod == null)

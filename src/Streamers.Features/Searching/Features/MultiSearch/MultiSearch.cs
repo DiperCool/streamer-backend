@@ -17,28 +17,38 @@ public class MultiSearchHandler(StreamerDbContext streamerDbContext)
         CancellationToken cancellationToken
     )
     {
+        const int only = 10;
         var search = request.Search;
-
         var categories = streamerDbContext
             .Categories.AsNoTracking()
             .Where(x => EF.Functions.ILike(x.Title, $"%{search}%"))
-            .Select(x => new SearchResult(x.Title, x.Slug, x.Image, SearchResultType.Category));
+            .Select(x => new
+            {
+                Title = x.Title,
+                Slug = x.Slug,
+                Image = (string?)x.Image,
+                ResultType = SearchResultType.Category,
+            });
 
         var streamers = streamerDbContext
             .Streamers.AsNoTracking()
             .Where(x => x.FinishedAuth && EF.Functions.ILike(x.UserName!, $"%{search}%"))
-            .Select(x => new SearchResult(
-                x.UserName!,
-                x.UserName!,
-                x.Avatar,
-                SearchResultType.Streamer
-            ));
+            .Select(x => new
+            {
+                Title = x.UserName!,
+                Slug = x.UserName!,
+                Image = (string?)x.Avatar,
+                ResultType = SearchResultType.Streamer,
+            });
 
-        var results = await categories
-            .Union(streamers)
+        var union = categories.Union(streamers);
+
+        var results = await union
             .OrderBy(x => x.Title)
-            .Take(10)
+            .Take(only)
+            .Select(x => new SearchResult(x.Title, x.Slug, x.Image, x.ResultType))
             .ToListAsync(cancellationToken);
+
         return results;
     }
 }

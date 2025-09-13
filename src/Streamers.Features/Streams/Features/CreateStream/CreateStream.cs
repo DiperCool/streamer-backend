@@ -69,7 +69,7 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
             info.Category
         );
         streamer.SetLive(true, stream);
-        var processVodUrl = $"{opts.VodProcess}/{request.StreamName}/index.m3u8";
+        var processVodUrl = $"{opts.VodProcess}/{request.StreamName}";
 
         Vod vod = new Vod(
             Guid.NewGuid(),
