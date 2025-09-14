@@ -8,7 +8,8 @@ public enum Permissions
     Stream = 1 << 1,
     Roles = 1 << 2,
     Vod = 1 << 3,
-    All = Chat | Stream | Roles | Vod,
+    Banners = 1 << 4,
+    All = Chat | Stream | Roles | Vod | Banners,
 }
 
 public static class PermissionExtensions
