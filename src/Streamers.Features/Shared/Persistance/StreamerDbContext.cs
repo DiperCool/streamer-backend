@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shared.Abstractions.Domain;
+using Streamers.Features.Banners.Model;
 using Streamers.Features.Categories.Models;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Followers.Models;
@@ -40,6 +41,7 @@ public class StreamerDbContext(
     public DbSet<StreamInfo> StreamInfos { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<BannedUser> BannedUsers { get; set; }
+    public DbSet<Banner> Banners { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
