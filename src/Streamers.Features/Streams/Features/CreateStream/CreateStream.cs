@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults;
+using Streamers.Features.Notifications.Services;
 using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
@@ -34,6 +35,7 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
             .Include(streamer => streamer.Profile)
             .Include(streamer => streamer.StreamInfo)
             .ThenInclude(streamInfo => streamInfo.Category)
+            .Include(x => x.VodSettings)
             .FirstOrDefaultAsync(
                 x => x.StreamSettings.StreamName == request.StreamName,
                 cancellationToken: cancellationToken
@@ -69,18 +71,22 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
             info.Category
         );
         streamer.SetLive(true, stream);
-        var processVodUrl = $"{opts.VodProcess}/{request.StreamName}";
+        if (streamer.VodSettings.VodEnabled)
+        {
+            var processVodUrl = $"{opts.VodProcess}/{request.StreamName}";
 
-        Vod vod = new Vod(
-            Guid.NewGuid(),
-            stream.Streamer,
-            DateTime.UtcNow,
-            processVodUrl,
-            info.Language
-        );
+            Vod vod = new Vod(
+                Guid.NewGuid(),
+                stream.Streamer,
+                DateTime.UtcNow,
+                processVodUrl,
+                info.Language
+            );
+            await dbContext.Vods.AddAsync(vod, cancellationToken);
+        }
+
         await dbContext.Streams.AddAsync(stream, cancellationToken);
         dbContext.Streamers.Update(streamer);
-        await dbContext.Vods.AddAsync(vod, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
         return new CreateStreamResponse(stream.Id);

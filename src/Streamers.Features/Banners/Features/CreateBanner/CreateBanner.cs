@@ -4,6 +4,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Banners.Model;
 using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Banners.Features.CreateBanner;
@@ -45,37 +46,35 @@ public class CreateBannerValidator : AbstractValidator<CreateBanner>
     }
 }
 
-public class CreateBannerHandle(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<CreateBanner, CreateBannerResponse>
+public class CreateBannerHandle(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<CreateBanner, CreateBannerResponse>
 {
     public async Task<CreateBannerResponse> Handle(
         CreateBanner request,
         CancellationToken cancellationToken
     )
     {
-        var role = await streamerDbContext
-            .Roles.Include(x => x.Broadcaster)
-            .FirstOrDefaultAsync(
-                x => x.StreamerId == currentUser.UserId,
-                cancellationToken: cancellationToken
-            );
-        if (role == null)
-        {
-            throw new InvalidOperationException(
-                $"Could not find streamer with id: {request.StreamerId}"
-            );
-        }
-
-        if (!role.Permissions.HasPermission(Permissions.Banners))
+        if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Banners))
         {
             throw new UnauthorizedAccessException();
+        }
+        var broadcaster = await streamerDbContext.Streamers.FirstOrDefaultAsync(
+            x => x.Id == request.StreamerId,
+            cancellationToken: cancellationToken
+        );
+        if (broadcaster == null)
+        {
+            throw new InvalidOperationException("Streamer not found");
         }
         var banner = new Banner(
             request.Title,
             request.Description,
             request.Image,
             request.Url,
-            role.Broadcaster
+            broadcaster
         );
         await streamerDbContext.Banners.AddAsync(banner, cancellationToken);
         await streamerDbContext.SaveChangesAsync(cancellationToken);

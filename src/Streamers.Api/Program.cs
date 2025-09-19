@@ -28,6 +28,7 @@ app.MapDefaultEndpoints();
 
 app.NewVersionedApi("Streamers").MapOrdersApiV1().RequireAuthorization();
 app.UseDefaultOpenApi();
+
 app.MapPost(
     "/rtmp/checkToken",
     async (HttpRequest request, [FromBody] StreamToken body, IMediator mediator) =>

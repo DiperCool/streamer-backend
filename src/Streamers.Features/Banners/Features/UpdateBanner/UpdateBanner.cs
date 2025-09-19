@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Banners.Features.UpdateBanner;
@@ -45,28 +46,18 @@ public class CreateBannerValidator : AbstractValidator<UpdateBanner>
     }
 }
 
-public class UpdateBannerHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<UpdateBanner, UpdateBannerResponse>
+public class UpdateBannerHandler(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<UpdateBanner, UpdateBannerResponse>
 {
     public async Task<UpdateBannerResponse> Handle(
         UpdateBanner request,
         CancellationToken cancellationToken
     )
     {
-        var role = await streamerDbContext
-            .Roles.Include(x => x.Broadcaster)
-            .FirstOrDefaultAsync(
-                x => x.StreamerId == currentUser.UserId,
-                cancellationToken: cancellationToken
-            );
-        if (role == null)
-        {
-            throw new InvalidOperationException(
-                $"Could not find streamer with id: {request.StreamerId}"
-            );
-        }
-
-        if (!role.Permissions.HasPermission(Permissions.Banners))
+        if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Banners))
         {
             throw new UnauthorizedAccessException();
         }

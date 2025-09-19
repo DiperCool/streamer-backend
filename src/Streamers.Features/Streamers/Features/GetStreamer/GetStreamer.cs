@@ -26,7 +26,7 @@ public class GetStreamerHandler(StreamerDbContext context, ICurrentUser currentU
             );
         if (streamer == null)
         {
-            throw new NullReferenceException(
+            throw new InvalidOperationException(
                 $"Streamer with id {currentUser.UserId} does not exist"
             );
         }
@@ -39,6 +39,7 @@ public class GetStreamerHandler(StreamerDbContext context, ICurrentUser currentU
             Followers = streamer.Followers,
             IsLive = streamer.IsLive,
             FinishedAuth = streamer.FinishedAuth,
+            HasUnreadNotifications = streamer.HasUnreadNotifications,
         };
     }
 }

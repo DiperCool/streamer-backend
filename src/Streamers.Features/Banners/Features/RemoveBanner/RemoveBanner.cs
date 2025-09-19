@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Banners.Features.RemoveBanner;
@@ -10,28 +11,18 @@ public record RemoveBannerResponse(Guid Id);
 
 public record RemoveBanner(string StreamerId, Guid BannerId) : IRequest<RemoveBannerResponse>;
 
-public class RemoveBannerHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<RemoveBanner, RemoveBannerResponse>
+public class RemoveBannerHandler(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<RemoveBanner, RemoveBannerResponse>
 {
     public async Task<RemoveBannerResponse> Handle(
         RemoveBanner request,
         CancellationToken cancellationToken
     )
     {
-        var role = await streamerDbContext
-            .Roles.Include(x => x.Broadcaster)
-            .FirstOrDefaultAsync(
-                x => x.StreamerId == currentUser.UserId,
-                cancellationToken: cancellationToken
-            );
-        if (role == null)
-        {
-            throw new InvalidOperationException(
-                $"Could not find streamer with id: {request.StreamerId}"
-            );
-        }
-
-        if (!role.Permissions.HasPermission(Permissions.Banners))
+        if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Banners))
         {
             throw new UnauthorizedAccessException();
         }

@@ -1,5 +1,6 @@
 ﻿using Streamers.Features.Chats.Models;
 using Streamers.Features.Files;
+using Streamers.Features.Notifications.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Models;
@@ -8,6 +9,7 @@ using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
+using Streamers.Features.Vods.Models;
 
 namespace Streamers.Features.Streamers.Services;
 
@@ -49,7 +51,9 @@ public class StreamerFabric(IStreamKeyGenerator generator, StreamerDbContext str
             created,
             Images.AvatarObject,
             chatSettings,
-            streamInfo
+            streamInfo,
+            new NotificationSettings() { StreamerLive = true, UserFollowed = true },
+            new VodSettings() { VodEnabled = true }
         );
         var role = new Role(
             streamer,

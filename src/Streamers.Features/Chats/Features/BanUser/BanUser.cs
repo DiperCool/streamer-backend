@@ -5,6 +5,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.BanUser;
@@ -38,21 +39,33 @@ public class BanUserValidator : AbstractValidator<BanUser>
     }
 }
 
-public class BanUserHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<BanUser, BanUserResponse>
+public class BanUserHandler(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<BanUser, BanUserResponse>
 {
     public async Task<BanUserResponse> Handle(BanUser request, CancellationToken cancellationToken)
     {
-        var role = await streamerDbContext
-            .Roles.Include(x => x.Streamer)
-            .FirstOrDefaultAsync(
-                x => x.StreamerId == currentUser.UserId,
-                cancellationToken: cancellationToken
-            );
-
-        if (role == null || !role.Permissions.HasPermission(Permissions.Chat))
+        var me = await streamerDbContext.Streamers.FirstOrDefaultAsync(
+            x => x.Id == currentUser.UserId,
+            cancellationToken: cancellationToken
+        );
+        if (me == null)
         {
-            throw new InvalidOperationException("You do not have permission to use this command");
+            throw new InvalidOperationException("Streamer not found.");
+        }
+        var broadcaster = await streamerDbContext.Streamers.FirstOrDefaultAsync(
+            x => x.Id == request.BroadcasterId,
+            cancellationToken
+        );
+        if (broadcaster == null)
+        {
+            throw new InvalidOperationException("Broadcaster not found");
+        }
+        if (!await roleService.HasRole(broadcaster.Id, currentUser.UserId, Permissions.Chat))
+        {
+            throw new UnauthorizedAccessException();
         }
         if (
             await streamerDbContext.BannedUsers.AnyAsync(
@@ -64,14 +77,6 @@ public class BanUserHandler(StreamerDbContext streamerDbContext, ICurrentUser cu
             throw new InvalidOperationException("Already banned user");
         }
 
-        var broadcaster = await streamerDbContext.Streamers.FirstOrDefaultAsync(
-            x => x.Id == request.BroadcasterId,
-            cancellationToken
-        );
-        if (broadcaster == null)
-        {
-            throw new InvalidOperationException("Broadcaster not found");
-        }
         var user = await streamerDbContext.Streamers.FirstOrDefaultAsync(
             x => x.Id == request.UserId,
             cancellationToken
@@ -83,7 +88,7 @@ public class BanUserHandler(StreamerDbContext streamerDbContext, ICurrentUser cu
         BannedUser bannedUser = new BannedUser(
             user,
             broadcaster,
-            role.Streamer,
+            me,
             DateTime.UtcNow,
             request.BanUntil,
             request.Reason

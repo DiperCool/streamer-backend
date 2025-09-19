@@ -5,6 +5,7 @@ using Streamers.Features.Banners.Model;
 using Streamers.Features.Categories.Models;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Followers.Models;
+using Streamers.Features.Notifications.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
@@ -42,6 +43,11 @@ public class StreamerDbContext(
     public DbSet<Tag> Tags { get; set; }
     public DbSet<BannedUser> BannedUsers { get; set; }
     public DbSet<Banner> Banners { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<LiveStartedNotification> LiveStartedNotifications { get; set; }
+    public DbSet<VodSettings> VodSettings { get; set; }
+    public DbSet<NotificationSettings> NotificationSettings { get; set; }
+    public DbSet<UserFollowedNotification> UserFollowedNotifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,6 +3,8 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Features.PinMessage;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.UnpinMessage;
@@ -11,8 +13,11 @@ public record UnpinMessageResponse(Guid MessageId);
 
 public record UnpinMessage(Guid ChatId) : IRequest<UnpinMessageResponse>;
 
-public class UnpinMessageHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<UnpinMessage, UnpinMessageResponse>
+public class UnpinMessageHandler(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<UnpinMessage, UnpinMessageResponse>
 {
     public async Task<UnpinMessageResponse> Handle(
         UnpinMessage request,
@@ -39,6 +44,16 @@ public class UnpinMessageHandler(StreamerDbContext streamerDbContext, ICurrentUs
         if (message == null)
         {
             throw new InvalidOperationException("Message not found");
+        }
+        if (
+            !await roleService.HasRole(
+                message.Message.Chat.StreamerId,
+                currentUser.UserId,
+                Permissions.Chat
+            )
+        )
+        {
+            throw new UnauthorizedAccessException();
         }
         message.Message.Chat.UnpinMessage();
         streamerDbContext.PinnedChatMessages.Remove(message);

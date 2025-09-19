@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using streamer.ServiceDefaults.Identity;
@@ -14,8 +12,8 @@ public static class AuthenticationExtensions
         var services = builder.Services;
         var configuration = builder.Configuration;
 
-        builder.Services
-            .AddAuthentication(options =>
+        builder
+            .Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
