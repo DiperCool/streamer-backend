@@ -1,11 +1,13 @@
 ﻿using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.Notifications.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
 using Streamers.Features.SystemRoles.Models;
+using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
 namespace Streamers.Features.Streamers.Models;
@@ -31,6 +33,8 @@ public class Streamer : Entity<string>
     public Stream? CurrentStream { get; set; }
     public List<SystemRole> SystemRoles { get; set; }
     public StreamInfo StreamInfo { get; set; }
+    public bool HasUnreadNotifications { get; set; }
+    public NotificationSettings NotificationSettings { get; set; }
 
     private Streamer() { }
 
@@ -45,7 +49,9 @@ public class Streamer : Entity<string>
         DateTime createdAt,
         string? avatar,
         ChatSettings chatSettings,
-        StreamInfo streamInfo
+        StreamInfo streamInfo,
+        NotificationSettings notificationSettings,
+        VodSettings vodSettings
     )
     {
         Id = id;
@@ -59,7 +65,11 @@ public class Streamer : Entity<string>
         StreamInfo = streamInfo;
         Chat = chat;
         StreamSettings = streamSettings;
+        NotificationSettings = notificationSettings;
+        VodSettings = vodSettings;
     }
+
+    public VodSettings VodSettings { get; set; }
 
     public void SetLive(bool live, Stream? currentStream)
     {

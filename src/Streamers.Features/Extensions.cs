@@ -18,6 +18,7 @@ using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Categories.Services;
 using Streamers.Features.Chats.Services;
 using Streamers.Features.Files.Seeds;
+using Streamers.Features.Notifications.Services;
 using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Cqrs.Behaviours;
@@ -56,8 +57,9 @@ public static class Extensions
         services.AddScoped<RemoveReaderHandler>();
         services.AddScoped<ICanAssignRole, CanAssignRole>();
         services.AddScoped<IRolesHierarchy, RolesHierarchy>();
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IChatPermissionService, ChatPermissionService>();
-
+        services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IChatRule, BanChatRule>();
         services.AddScoped<IChatRule, OnlyFollowerModeChatRule>();
         services.AddScoped<IChatRule, SlowModeChatRule>();

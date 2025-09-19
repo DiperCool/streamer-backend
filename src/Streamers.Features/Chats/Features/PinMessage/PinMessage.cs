@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.PinMessage;
@@ -10,8 +12,11 @@ public record PinMessageResponse(Guid Id);
 
 public record PinMessage(Guid MessageId) : IRequest<PinMessageResponse>;
 
-public class PinMessageHandle(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
-    : IRequestHandler<PinMessage, PinMessageResponse>
+public class PinMessageHandle(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<PinMessage, PinMessageResponse>
 {
     public async Task<PinMessageResponse> Handle(
         PinMessage request,
@@ -35,11 +40,17 @@ public class PinMessageHandle(StreamerDbContext streamerDbContext, ICurrentUser 
                 x => x.Id == request.MessageId,
                 cancellationToken: cancellationToken
             );
+
         if (message == null)
         {
             throw new InvalidOperationException("Message not found");
         }
+
         Chat chat = message.Chat;
+        if (!await roleService.HasRole(chat.StreamerId, currentUser.UserId, Permissions.Chat))
+        {
+            throw new UnauthorizedAccessException();
+        }
         if (chat.PinnedMessage != null)
         {
             streamerDbContext.PinnedChatMessages.Remove(chat.PinnedMessage);

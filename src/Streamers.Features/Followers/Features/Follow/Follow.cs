@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Followers.Models;
+using Streamers.Features.Notifications.Job;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Followers.Features.Follow;
@@ -54,8 +56,12 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
                 setters => setters.SetProperty(s => s.Followers, s => s.Followers + 1),
                 cancellationToken
             );
+
         await streamerDbContext.Followers.AddAsync(follower, cancellationToken);
         await streamerDbContext.SaveChangesAsync(cancellationToken);
+        BackgroundJob.Enqueue<NotifyUserFollowedJob>(x =>
+            x.NotifyUserFollowed(streamer.Id, whoFollows.Id)
+        );
         return new FollowResponse(follower.Id);
     }
 }

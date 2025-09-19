@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.UpdateChatSettings;
@@ -15,8 +18,11 @@ public record UpdateChatSettings(
     List<string> BannedWords
 ) : IRequest<UpdateChatSettingsResponse>;
 
-public class UpdateChatSettingsHandler(StreamerDbContext streamerDbContext)
-    : IRequestHandler<UpdateChatSettings, UpdateChatSettingsResponse>
+public class UpdateChatSettingsHandler(
+    StreamerDbContext streamerDbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<UpdateChatSettings, UpdateChatSettingsResponse>
 {
     public async Task<UpdateChatSettingsResponse> Handle(
         UpdateChatSettings request,
@@ -29,6 +35,16 @@ public class UpdateChatSettingsHandler(StreamerDbContext streamerDbContext)
         if (chatSettings == null)
         {
             throw new InvalidOperationException("Chat settings not found");
+        }
+        if (
+            !await roleService.HasRole(
+                chatSettings.StreamerId,
+                currentUser.UserId,
+                Permissions.Chat
+            )
+        )
+        {
+            throw new UnauthorizedAccessException();
         }
         chatSettings.Update(
             request.SlowMode,

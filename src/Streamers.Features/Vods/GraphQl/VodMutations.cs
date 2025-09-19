@@ -1,6 +1,7 @@
 ﻿using HotChocolate.Authorization;
 using HotChocolate.Types;
 using Shared.Abstractions.Cqrs;
+using Streamers.Features.Vods.Features.EditVodSettings;
 using Streamers.Features.Vods.Features.RemoveVod;
 using Streamers.Features.Vods.Features.UpdateVod;
 
@@ -16,6 +17,14 @@ public static partial class VodMutations
     }
 
     public static async Task<RemoveVodResponse> RemoveVod(RemoveVod request, IMediator mediator)
+    {
+        return await mediator.Send(request);
+    }
+
+    public static async Task<EditVodSettingsResponse> EditVodSettings(
+        EditVodSettings request,
+        IMediator mediator
+    )
     {
         return await mediator.Send(request);
     }
