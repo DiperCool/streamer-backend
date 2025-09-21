@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
@@ -7,6 +8,7 @@ namespace Streamers.Features.Streams.Features.EndStream;
 
 public record EndStreamResponse(Guid Id);
 
+[Transactional]
 public record EndStream(string StreamId) : IRequest<EndStreamResponse>;
 
 public class EndStreamHandler(StreamerDbContext dbContext)

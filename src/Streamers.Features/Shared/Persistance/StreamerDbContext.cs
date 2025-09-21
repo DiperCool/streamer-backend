@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shared.Abstractions.Domain;
+using Streamers.Features.Analytics.Models;
 using Streamers.Features.Banners.Model;
 using Streamers.Features.Categories.Models;
 using Streamers.Features.Chats.Models;
@@ -48,6 +49,7 @@ public class StreamerDbContext(
     public DbSet<VodSettings> VodSettings { get; set; }
     public DbSet<NotificationSettings> NotificationSettings { get; set; }
     public DbSet<UserFollowedNotification> UserFollowedNotifications { get; set; }
+    public DbSet<AnalyticsItem> AnalyticsItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
