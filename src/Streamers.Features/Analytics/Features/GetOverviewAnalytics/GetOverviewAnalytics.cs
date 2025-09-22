@@ -10,29 +10,25 @@ public record OverviewAnalyticsItem(AnalyticsItemType Type, double Value);
 
 public record GetOverviewAnalyticsResponse(int Days, List<OverviewAnalyticsItem> Items);
 
-public record GetOverviewAnalytics(DateTime From, DateTime To)
+public record GetOverviewAnalytics(string BroadcasterId, DateTime From, DateTime To)
     : IRequest<GetOverviewAnalyticsResponse>;
 
-public class GetOverviewAnalyticsHandler(
-    StreamerDbContext streamerDbContext,
-    ICurrentUser currentUser
-) : IRequestHandler<GetOverviewAnalytics, GetOverviewAnalyticsResponse>
+public class GetOverviewAnalyticsHandler(StreamerDbContext streamerDbContext)
+    : IRequestHandler<GetOverviewAnalytics, GetOverviewAnalyticsResponse>
 {
     public async Task<GetOverviewAnalyticsResponse> Handle(
         GetOverviewAnalytics request,
         CancellationToken cancellationToken
     )
     {
-        var streamerId = currentUser.UserId;
-
         var dbItems = await streamerDbContext
             .AnalyticsItems.Where(a =>
-                a.StreamerId == streamerId
+                a.StreamerId == request.BroadcasterId
                 && a.CreatedAt >= request.From
                 && a.CreatedAt <= request.To
             )
             .GroupBy(a => a.Type)
-            .Select(g => new { Type = g.Key, Value = g.Sum(a => a.Value) })
+            .Select(g => new { Type = g.Key, Value = g.Average(a => a.Value) })
             .ToListAsync(cancellationToken);
 
         var allTypes = Enum.GetValues(typeof(AnalyticsItemType)).Cast<AnalyticsItemType>();
