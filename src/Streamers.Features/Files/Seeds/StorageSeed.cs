@@ -6,7 +6,7 @@ using streamer.ServiceDefaults;
 
 namespace Streamers.Features.Files.Seeds;
 
-public class MinioBucketSeeds(IStorage service, IConfiguration configuration) : IDataSeeder
+public class StorageSeed(IStorage service, IConfiguration configuration) : IDataSeeder
 {
     public async Task SeedAllAsync()
     {

@@ -2,7 +2,7 @@ api: yes
 rtmp: yes
 rtmpAddress: :1935
 authMethod: http
-authHTTPAddress: http://streamer-api:5000/rtmp/checkToken
+authHTTPAddress: http://streamer-api/rtmp/checkToken
 runOnConnectRestart: no
 hlsPartDuration: 500ms
 authInternalUsers:

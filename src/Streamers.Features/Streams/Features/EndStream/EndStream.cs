@@ -26,7 +26,7 @@ public class EndStreamHandler(StreamerDbContext dbContext)
             );
         if (stream == null)
         {
-            throw new InvalidOperationException("Stream not found");
+            return new EndStreamResponse(Guid.Empty);
         }
 
         stream.Streamer.SetLive(false, null);
