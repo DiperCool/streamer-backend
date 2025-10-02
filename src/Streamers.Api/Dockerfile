@@ -1,5 +1,4 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -14,11 +13,10 @@ COPY ["src/Streamers.Features/Streamers.Features.csproj", "src/Streamers.Feature
 RUN dotnet restore "src/Streamers.Api/Streamers.Api.csproj"
 COPY . .
 WORKDIR "/src/src/Streamers.Api"
-RUN dotnet build "./Streamers.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "Streamers.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Streamers.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Streamers.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
