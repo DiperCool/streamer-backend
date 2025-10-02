@@ -20,7 +20,7 @@ jobs:
 
       - name: Restore and Build
         run: |
-          dotnet restore Streamers.sln
+          dotnet restore streamer.sln
           dotnet publish src/Streamers.Api/Streamers.Api.csproj -c Release -o src/Streamers.Api/out
 
       - name: Log in to Docker Hub
