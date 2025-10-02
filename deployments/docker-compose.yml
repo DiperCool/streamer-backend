@@ -7,7 +7,7 @@ services:
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"
-      - "--api.insecure=true"
+      - "--api.insecure=true" # Оставляем insecue=true для доступа по порту 8080 (если нужен), но без домена
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -21,7 +21,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
+      # Порт 8080 убран, так как внешний доступ к дашборду не нужен
       - "1935:1935"
       - "8554:8554"
     volumes:
@@ -29,12 +29,12 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - streamer_net
+    # Лейблы для дашборда удалены
 
   streamer-api:
     image: ${API_IMAGE}
     container_name: streamer-api
     restart: always
-    # Добавлена зависимость от postgres
     depends_on:
       - redis
       - mediamtx
@@ -83,7 +83,6 @@ services:
     image: ${VOD_PROCESSOR_IMAGE}
     container_name: vod-processor
     restart: always
-    # Изменена зависимость: vod-processor не должен ждать streamer-api
     depends_on:
       - redis
       - mediamtx
@@ -100,7 +99,6 @@ services:
     image: ${MEDIANTX_IMAGE}
     container_name: mediamtx
     restart: always
-    # Удалена зависимость от streamer-api
     volumes:
       - "./rtsp-server/mediamtx.yml:/mediamtx.yml"
     environment:
@@ -125,7 +123,6 @@ services:
     image: postgres:15-alpine
     container_name: postgres
     restart: always
-    # Переменные для инициализации базы данных, используемые в ConnectionStrings__streamerdb
     environment:
       - POSTGRES_DB=streamerdb
       - POSTGRES_USER=postgres
@@ -143,10 +140,29 @@ services:
       - streamer_net
     volumes:
       - redis_data:/data
+  
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    # Прямой порт 9000 удален, доступ будет через Traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "portainer_data:/data"
+    networks:
+      - streamer_net
+    labels:
+      - "traefik.enable=true"
+      # Роутер для Portainer Dashboard
+      - "traefik.http.routers.portainer.rule=Host(`${PORTAINER_DOMAIN}`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
 volumes:
   redis_data:
-  postgres_data: # Добавлен том для postgres
+  postgres_data:
+  portainer_data:
 networks:
   streamer_net:
     driver: bridge
