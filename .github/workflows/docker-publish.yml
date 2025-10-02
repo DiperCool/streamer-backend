@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-and-push:
@@ -18,11 +18,10 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore and Build .NET project
+      - name: Restore and Build
         run: |
-          cd src/Streamers.Api
-          dotnet restore
-          dotnet publish -c Release -o out
+          dotnet restore Streamers.sln
+          dotnet publish src/Streamers.Api/Streamers.Api.csproj -c Release -o src/Streamers.Api/out
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -32,8 +31,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f src/Streamers.Api/Dockerfile -t ${{ secrets.DOCKERHUB_REPO }}:${{ secrets.DOCKER_IMAGE_TAG }} src/Streamers.Api
-          docker tag ${{ secrets.DOCKERHUB_REPO }}:${{ secrets.DOCKER_IMAGE_TAG }} ${{ secrets.DOCKERHUB_REPO }}:latest
+          docker build -f src/Streamers.Api/Dockerfile \
+            -t ${{ secrets.DOCKERHUB_REPO }}:${{ secrets.DOCKER_IMAGE_TAG }} \
+            src/Streamers.Api
+          docker tag ${{ secrets.DOCKERHUB_REPO }}:${{ secrets.DOCKER_IMAGE_TAG }} \
+            ${{ secrets.DOCKERHUB_REPO }}:latest
 
       - name: Push Docker image
         run: |
