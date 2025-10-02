@@ -29,6 +29,10 @@ public class AntmediaWebhook(ILogger<AntmediaWebhook> logger, IAntMediaWebhookHa
             $"Received webhook for stream: {payload.StreamName} (ID: {payload.Id})"
         );
         var handler = fabric.Create(payload.Action);
+        if (handler == null)
+        {
+            return;
+        }
         await handler.HandleAsync(payload);
     }
 }
