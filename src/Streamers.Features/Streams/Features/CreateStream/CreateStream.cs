@@ -17,7 +17,7 @@ namespace Streamers.Features.Streams.Features.CreateStream;
 
 public record CreateStreamResponse(Guid Id);
 
-[Transactional]
+// todo: fix transaction
 public record CreateStream(string StreamName, string StreamId) : IRequest<CreateStreamResponse>;
 
 public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration configuration)
