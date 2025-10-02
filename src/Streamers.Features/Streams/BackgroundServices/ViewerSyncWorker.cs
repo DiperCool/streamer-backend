@@ -4,22 +4,13 @@ using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Streams.BackgroundServices;
 
-public class ViewerSyncJob
+public class ViewerSyncJob(StreamerDbContext context, IConnectionMultiplexer redis)
 {
-    private readonly StreamerDbContext _context;
-    private readonly IConnectionMultiplexer _redis;
-
-    public ViewerSyncJob(StreamerDbContext context, IConnectionMultiplexer redis)
-    {
-        _context = context;
-        _redis = redis;
-    }
-
     public async Task Run(CancellationToken cancellationToken = default)
     {
-        var db = _redis.GetDatabase();
+        var db = redis.GetDatabase();
 
-        var activeStreams = await _context
+        var activeStreams = await context
             .Streams.Where(s => s.Active)
             .ToListAsync(cancellationToken);
 
@@ -41,6 +32,6 @@ public class ViewerSyncJob
             }
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
