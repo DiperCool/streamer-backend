@@ -69,7 +69,6 @@ public static class Extensions
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, MinioBucketSeeds>();
-        builder.Services.AddScoped<IDataSeeder, AdminSeed>();
         builder.Services.AddScoped<ISystemRoleService, SystemRoleService>();
         builder.Services.AddSingleton<ISlugGenerator, SlugGenerator>();
         builder.Services.AddScoped<ITagsService, TagsService>();
