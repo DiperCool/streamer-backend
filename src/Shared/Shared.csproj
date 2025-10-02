@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Auth0.AuthenticationApi" />
+    <PackageReference Include="Auth0.ManagementApi" />
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="DotNetCore.CAP" />
+    <PackageReference Include="DotNetCore.CAP.RabbitMQ" />
+    <PackageReference Include="DotNetCore.CAP.PostgreSql" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Minio" />
+    <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="Hangfire" />
+    <PackageReference Include="Hangfire.PostgreSql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\streamer.ServiceDefaults\streamer.ServiceDefaults.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <NoWarn>CS8618</NoWarn>
+  </PropertyGroup>
+</Project>
