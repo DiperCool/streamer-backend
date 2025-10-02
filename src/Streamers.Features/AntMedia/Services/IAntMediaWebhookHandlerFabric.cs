@@ -2,5 +2,5 @@
 
 public interface IAntMediaWebhookHandlerFabric
 {
-    IAntMediaWebhookHandler Create(string eventType);
+    IAntMediaWebhookHandler? Create(string eventType);
 }
