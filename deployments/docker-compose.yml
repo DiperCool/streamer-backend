@@ -6,8 +6,8 @@ services:
     restart: always
     container_name: "traefik"
     command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true" # Оставляем insecue=true для доступа по порту 8080 (если нужен), но без домена
+      - "--log.level=INFO"
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -16,12 +16,13 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      # ВРЕМЕННО: Используем Staging CA для обхода Rate Limit (429 ошибка)
+      - "--certificatesresolvers.myresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--entryPoints.web.forwardedHeaders.insecure"
       - "--entryPoints.websecure.forwardedHeaders.insecure"
     ports:
       - "80:80"
       - "443:443"
-      # Порт 8080 убран, так как внешний доступ к дашборду не нужен
       - "1935:1935"
       - "8554:8554"
     volumes:
@@ -29,7 +30,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - streamer_net
-    # Лейблы для дашборда удалены
 
   streamer-api:
     image: ${API_IMAGE}
@@ -40,6 +40,7 @@ services:
       - mediamtx
       - postgres
     environment:
+      - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__streamerdb=${ConnectionStrings__streamerdb}
       - ConnectionStrings__redis=${ConnectionStrings__redis}
       - RabbitMQ__HostName=${RabbitMQ__HostName}
@@ -105,19 +106,18 @@ services:
       - RABBITMQ_URI=${RabbitMQ__Uri}
     networks:
       - streamer_net
-    labels:
-      - "traefik.enable=true"
-      
-      # HLS (Порт 8888): https://hls.streamer-media-server.mooo.com (HTTP-роутер)
-      - "traefik.http.routers.mediamtx-hls.rule=Host(`${MEDIANTX_HLS_DOMAIN}`)"
-      - "traefik.http.routers.mediamtx-hls.entrypoints=websecure"
-      - "traefik.http.routers.mediamtx-hls.tls.certresolver=myresolver"
-      - "traefik.http.services.mediamtx-hls.loadbalancer.server.port=8888"
-      
-      # RTMP (Порт 1935): streamer-media-server.mooo.com (TCP-роутер)
-      - "traefik.tcp.routers.mediamtx-rtmp.rule=HostSNI(`${MEDIANTX_BASE_DOMAIN}`)"
-      - "traefik.tcp.routers.mediamtx-rtmp.entrypoints=rtmp"
-      - "traefik.tcp.services.mediamtx-rtmp.loadbalancer.server.port=1935"
+#    labels:
+#      - "traefik.enable=true"
+#      
+#      - "traefik.http.routers.mediamtx-hls.rule=Host(`${MEDIANTX_HLS_DOMAIN}`)"
+#      - "traefik.http.routers.mediamtx-hls.entrypoints=websecure"
+#      - "traefik.http.routers.mediamtx-hls.tls.certresolver=myresolver"
+#      - "traefik.http.services.mediamtx-hls.loadbalancer.server.port=8888"
+#      
+#      - "traefik.tcp.routers.mediamtx-rtmp.rule=HostSNI(`${MEDIANTX_BASE_DOMAIN}`)"
+#      - "traefik.tcp.routers.mediamtx-rtmp.entrypoints=rtmp"
+#      - "traefik.tcp.routers.mediamtx-rtmp.tls=true"
+#      - "traefik.tcp.services.mediamtx-rtmp.loadbalancer.server.port=1935"
 
   postgres:
     image: postgres:15-alpine
@@ -145,7 +145,6 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     restart: always
-    # Прямой порт 9000 удален, доступ будет через Traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "portainer_data:/data"
@@ -153,10 +152,13 @@ services:
       - streamer_net
     labels:
       - "traefik.enable=true"
-      # Роутер для Portainer Dashboard
+      
+      - "traefik.http.middlewares.portainer-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+
       - "traefik.http.routers.portainer.rule=Host(`${PORTAINER_DOMAIN}`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+      - "traefik.http.routers.portainer.middlewares=portainer-headers@docker"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
 volumes:
