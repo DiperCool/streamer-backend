@@ -23,7 +23,7 @@ public class ViewerSyncJob(StreamerDbContext context, IConnectionMultiplexer red
 
         for (int i = 0; i < activeStreams.Count; i++)
         {
-            if (!values[i].HasValue || !long.TryParse(values[i], out var viewers))
+            if (!values[i].HasValue || !long.TryParse(values[i].ToString(), out var viewers))
                 continue;
 
             if (activeStreams[i].CurrentViewers != viewers)
