@@ -6,11 +6,18 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+COPY ["Directory.Packages.props", "."]
+COPY ["Directory.Build.props", "."]
+COPY ["Directory.Build.targets", "."]
+
 COPY ["src/Streamers.Api/Streamers.Api.csproj", "src/Streamers.Api/"]
 COPY ["src/Shared/Shared.csproj", "src/Shared/"]
 COPY ["src/streamer.ServiceDefaults/streamer.ServiceDefaults.csproj", "src/streamer.ServiceDefaults/"]
 COPY ["src/Streamers.Features/Streamers.Features.csproj", "src/Streamers.Features/"]
+
 RUN dotnet restore "src/Streamers.Api/Streamers.Api.csproj"
+
 COPY . .
 WORKDIR "/src/src/Streamers.Api"
 RUN dotnet build "Streamers.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
