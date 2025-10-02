@@ -33,7 +33,7 @@ jobs:
         run: |
           docker build -f src/Streamers.Api/Dockerfile \
             -t ${{ secrets.DOCKERHUB_REPO }}:${{ secrets.DOCKER_IMAGE_TAG }} \
-            src/Streamers.Api
+            .
           docker tag ${{ secrets.DOCKERHUB_REPO }}:${{ secrets.DOCKER_IMAGE_TAG }} \
             ${{ secrets.DOCKERHUB_REPO }}:latest
 
