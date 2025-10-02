@@ -1,0 +1,38 @@
+api: yes
+rtmp: yes
+rtmpAddress: :1935
+authMethod: http
+authHTTPAddress: http://streamer-api:5000/rtmp/checkToken
+runOnConnectRestart: no
+hlsPartDuration: 500ms
+authInternalUsers:
+  - user: admin
+    pass: admin123
+    permissions:
+      - action: publish
+      - action: read
+      - action: api
+  - user: any
+    pass:
+    ips: [ ]
+    permissions:
+      - action: read
+        path:
+authHTTPExclude:
+  - action: api
+  - action: read
+
+pathDefaults:
+  runOnReady: python3 /usr/local/bin/send_webhook.py "$MTX_SOURCE_ID" "liveStreamStarted" "$MTX_PATH" "vod" "cap.default.router" "mediamtx"
+  runOnReadyRestart: no
+  
+  runOnNotReady: python3 /usr/local/bin/send_webhook.py "$MTX_SOURCE_ID" "liveStreamEnded" "$MTX_PATH" "vod" "cap.default.router" "mediamtx"
+  
+  
+  runOnRead: python3 /usr/local/bin/send_webhook.py "$MTX_SOURCE_ID" "streamRead" "$MTX_PATH" "vod" "cap.default.router" "mediamtx"
+  runOnReadRestart: no
+  
+  runOnUnread: python3 /usr/local/bin/send_webhook.py "$MTX_SOURCE_ID" "streamUnread" "$MTX_PATH" "vod" "cap.default.router" "mediamtx"
+
+paths:
+  all_others:
