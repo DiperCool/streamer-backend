@@ -1,6 +1,9 @@
 using HotChocolate.Types;
+using Microsoft.Extensions.Configuration;
 using Shared.Abstractions.Cqrs;
-using Shared.Minio;
+using Shared.S3;
+using Shared.Storage;
+using streamer.ServiceDefaults;
 
 namespace Streamers.Features.Files.Features;
 
@@ -8,7 +11,7 @@ public record UploadFileResponse(string FileName);
 
 public record UploadFile(IFile File) : IRequest<UploadFileResponse>;
 
-public class UploadFileHandler(IMinioService minioServices)
+public class UploadFileHandler(IStorage minioServices, IConfiguration configuration)
     : IRequestHandler<UploadFile, UploadFileResponse>
 {
     public async Task<UploadFileResponse> Handle(
@@ -16,15 +19,21 @@ public class UploadFileHandler(IMinioService minioServices)
         CancellationToken cancellationToken
     )
     {
-        var fileName = await minioServices.AddItemAsync(
-            Images.Bucket,
-            request.File,
+        var opts = configuration.BindOptions<S3Options>();
+
+        await using var stream = request.File.OpenReadStream();
+
+        var url = await minioServices.AddItemAsync(
+            opts.Bucket,
+            $"files/{Guid.NewGuid()}",
+            stream,
+            null,
             cancellationToken
         );
-        if (string.IsNullOrEmpty(fileName))
+        if (url == null)
         {
-            throw new NullReferenceException("The file could not be added");
+            throw new InvalidOperationException("Couldn't upload file");
         }
-        return new UploadFileResponse(fileName);
+        return new UploadFileResponse(url);
     }
 }

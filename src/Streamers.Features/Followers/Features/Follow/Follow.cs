@@ -49,7 +49,7 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
                 $"Already following streamer with ID {request.StreamerId}"
             );
         }
-        Follower follower = new Follower(whoFollows, streamer);
+        Follower follower = new Follower(whoFollows, streamer, DateTime.UtcNow);
         await streamerDbContext
             .Streamers.Where(s => s.Id == request.StreamerId)
             .ExecuteUpdateAsync(

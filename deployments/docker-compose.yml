@@ -1,0 +1,152 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: "traefik:latest"
+    restart: always
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.rtmp.address=:1935"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--entryPoints.web.forwardedHeaders.insecure"
+      - "--entryPoints.websecure.forwardedHeaders.insecure"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+      - "1935:1935"
+      - "8554:8554"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - streamer_net
+
+  streamer-api:
+    image: ${API_IMAGE}
+    container_name: streamer-api
+    restart: always
+    # Добавлена зависимость от postgres
+    depends_on:
+      - redis
+      - mediamtx
+      - postgres
+    environment:
+      - ConnectionStrings__streamerdb=${ConnectionStrings__streamerdb}
+      - ConnectionStrings__redis=${ConnectionStrings__redis}
+      - RabbitMQ__HostName=${RabbitMQ__HostName}
+      - RabbitMQ__Port=${RabbitMQ__Port}
+      - RabbitMQ__UserName=${RabbitMQ__UserName}
+      - RabbitMQ__Password=${RabbitMQ__Password}
+      - RabbitMQ__Uri=${RabbitMQ__Uri}
+      - Jwt__Secret=${Jwt__Secret}
+      - Jwt__Authority=${Jwt__Authority}
+      - Jwt__Audience=${Jwt__Audience}
+      - MinioOptions__Uri=${MinioOptions__Uri}
+      - MinioOptions__Username=${MinioOptions__Username}
+      - MinioOptions__Password=${MinioOptions__Password}
+      - RtmpOptions__Host=${RtmpOptions__Host}
+      - RtmpOptions__Hls=${RtmpOptions__Hls}
+      - RtmpOptions__WebRtc=${RtmpOptions__WebRtc}
+      - RtmpOptions__VodProcess=${RtmpOptions__VodProcess}
+      - Auth0Options__ApiUrl=${Auth0Options__ApiUrl}
+      - Auth0Options__AuthUrl=${Auth0Options__AuthUrl}
+      - Auth0Options__ClientId=${Auth0Options__ClientId}
+      - Auth0Options__ClientSecret=${Auth0Options__ClientSecret}
+      - Auth0Options__Audience=${Auth0Options__Audience}
+      - DefaultAdminOptions__UserName=${DefaultAdminOptions__UserName}
+      - DefaultAdminOptions__Password=${DefaultAdminOptions__Password}
+      - DefaultAdminOptions__Email=${DefaultAdminOptions__Email}
+      - S3Options__AccessKeyId=${S3Options__AccessKeyId}
+      - S3Options__SecretAccessKey=${S3Options__SecretAccessKey}
+      - S3Options__Bucket=${S3Options__Bucket}
+      - S3Options__Region=${S3Options__Region}
+    networks:
+      - streamer_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.streamer-api.rule=Host(`${STREAMER_DOMAIN}`)"
+      - "traefik.http.routers.streamer-api.entrypoints=websecure"
+      - "traefik.http.routers.streamer-api.tls.certresolver=myresolver"
+      - "traefik.http.services.streamer-api.loadbalancer.server.port=80"
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  vod-processor:
+    image: ${VOD_PROCESSOR_IMAGE}
+    container_name: vod-processor
+    restart: always
+    # Изменена зависимость: vod-processor не должен ждать streamer-api
+    depends_on:
+      - redis
+      - mediamtx
+    environment:
+      - RABBIT_URL=${RabbitMQ__Uri}
+      - AWS_SECRET_ACCESS_KEY=${S3Options__SecretAccessKey}
+      - AWS_ACCESS_KEY_ID=${S3Options__AccessKeyId}
+      - AWS_REGION=${S3Options__Region}
+      - AWS_BUCKET=${S3Options__Bucket}
+    networks:
+      - streamer_net
+
+  mediamtx:
+    image: ${MEDIANTX_IMAGE}
+    container_name: mediamtx
+    restart: always
+    # Удалена зависимость от streamer-api
+    volumes:
+      - "./rtsp-server/mediamtx.yml:/mediamtx.yml"
+    environment:
+      - RABBITMQ_URI=${RabbitMQ__Uri}
+    networks:
+      - streamer_net
+    labels:
+      - "traefik.enable=true"
+      
+      # HLS (Порт 8888): https://hls.streamer-media-server.mooo.com (HTTP-роутер)
+      - "traefik.http.routers.mediamtx-hls.rule=Host(`${MEDIANTX_HLS_DOMAIN}`)"
+      - "traefik.http.routers.mediamtx-hls.entrypoints=websecure"
+      - "traefik.http.routers.mediamtx-hls.tls.certresolver=myresolver"
+      - "traefik.http.services.mediamtx-hls.loadbalancer.server.port=8888"
+      
+      # RTMP (Порт 1935): streamer-media-server.mooo.com (TCP-роутер)
+      - "traefik.tcp.routers.mediamtx-rtmp.rule=HostSNI(`${MEDIANTX_BASE_DOMAIN}`)"
+      - "traefik.tcp.routers.mediamtx-rtmp.entrypoints=rtmp"
+      - "traefik.tcp.services.mediamtx-rtmp.loadbalancer.server.port=1935"
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    # Переменные для инициализации базы данных, используемые в ConnectionStrings__streamerdb
+    environment:
+      - POSTGRES_DB=streamerdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - streamer_net
+  
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    networks:
+      - streamer_net
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+  postgres_data: # Добавлен том для postgres
+networks:
+  streamer_net:
+    driver: bridge

@@ -1,10 +1,8 @@
-using HotChocolate.Types;
-using Microsoft.AspNetCore.Http;
-using Shared.Minio.Policies;
+﻿using HotChocolate.Types;
 
-namespace Shared.Minio;
+namespace Shared.Storage;
 
-public interface IMinioService
+public interface IStorage
 {
     Task<string?> AddItemAsync(
         string bucket,
@@ -26,7 +24,6 @@ public interface IMinioService
 
     Task<string?> CreateBucketIfNotExistsAsync(
         string bucket,
-        IBucketPolicy? policy,
         CancellationToken cancellationToken = default
     );
 

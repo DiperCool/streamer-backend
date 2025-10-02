@@ -7,10 +7,11 @@ public class Follower : Entity
 {
     protected Follower() { }
 
-    public Follower(Streamer follower, Streamer streamer)
+    public Follower(Streamer follower, Streamer streamer, DateTime followedAt)
     {
         FollowerStreamer = follower;
         Streamer = streamer;
+        FollowedAt = followedAt;
     }
 
     public string FollowerStreamerId { get; set; }

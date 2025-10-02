@@ -1,14 +1,17 @@
-using Shared.Minio;
+using Microsoft.Extensions.Configuration;
+using Shared.S3;
 using Shared.Seeds;
+using Shared.Storage;
+using streamer.ServiceDefaults;
 
 namespace Streamers.Features.Files.Seeds;
 
-public class MinioBucketSeeds(IMinioService service) : IDataSeeder
+public class MinioBucketSeeds(IStorage service, IConfiguration configuration) : IDataSeeder
 {
     public async Task SeedAllAsync()
     {
-        await service.CreateBucketIfNotExistsAsync(Images.Bucket, new ReadonlyBucketPolicy());
-        await service.CreateBucketIfNotExistsAsync(Videos.Bucket, new ReadonlyBucketPolicy());
+        var opts = configuration.BindOptions<S3Options>();
+        await service.CreateBucketIfNotExistsAsync(opts.Bucket);
 
         var defaultFilesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "default");
 
@@ -19,14 +22,13 @@ public class MinioBucketSeeds(IMinioService service) : IDataSeeder
 
         foreach (var filePath in files)
         {
-            var objectName = "default/" + Path.GetFileName(filePath);
+            var objectName = "files/default/" + Path.GetFileName(filePath);
             var contentType = GetContentType(filePath);
 
             await using var stream = File.OpenRead(filePath);
 
-            await service.AddItemAsync(Images.Bucket, objectName, stream, contentType);
+            await service.AddItemAsync(opts.Bucket, objectName, stream, contentType);
         }
-
         string GetContentType(string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLowerInvariant();

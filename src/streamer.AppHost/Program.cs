@@ -12,31 +12,24 @@ var postgres = builder
     .WithLifetime(ContainerLifetime.Persistent);
 
 var streamerDb = postgres.AddDatabase("streamerdb");
+var rabbitMqUri = builder.AddParameter("rabbitmqUri");
 
-var minio = builder
-    .AddContainer("minio", "minio/minio")
-    .WithArgs("server", "/data", "--console-address", ":9001")
-    .WithEnvironment("MINIO_ROOT_USER", "minioadmin")
-    .WithEnvironment("MINIO_ROOT_PASSWORD", "minioadmin")
-    .WithBindMount("./minio-data", "/data")
-    .WithHttpEndpoint(targetPort: 9000, name: "api", isProxied: false) // expose MinIO API port
-    .WithHttpEndpoint(targetPort: 9001, name: "console", isProxied: false); // expose MinIO console port
+var s3AccessKey = builder.AddParameter("s3accesskey");
+var s3SecretKey = builder.AddParameter("s3secretkey");
+var s3Bucket = builder.AddParameter("s3bucket");
+var s3Region = builder.AddParameter("s3region");
 
 var streamerApi = builder
     .AddProject<Projects.Streamers_Api>("streamer-api")
     .WithReference(redis)
     .WaitFor(redis)
     .WithReference(streamerDb)
-    .WaitFor(streamerDb)
-    .WaitFor(minio);
+    .WaitFor(streamerDb);
 var mediamtx = builder
     .AddContainer("mediamtx", "dipercool/mediamtx-curl")
     .WithBindMount("./rtsp-server/mediamtx.yml", "/mediamtx.yml")
     .WaitFor(streamerApi)
-    .WithEnvironment(
-        "RABBITMQ_URI",
-        "amqps://ycxdqxek:dqbA9K8DP4m6IPTboHah9UD8ZTPnM6Qb@kebnekaise.lmq.cloudamqp.com/ycxdqxek"
-    )
+    .WithEnvironment("RABBITMQ_URI", rabbitMqUri)
     .WithEndpoint(targetPort: 1935, scheme: "rtmp", isProxied: false)
     .WithEndpoint(targetPort: 8554, scheme: "rtsp", isProxied: false)
     .WithHttpEndpoint(targetPort: 8888, name: "hls", isProxied: false)
@@ -47,10 +40,10 @@ var vodProcessor = builder
     .AddContainer("vod-processor", "dipercool/vod-processor")
     .WaitFor(streamerApi)
     .WaitFor(mediamtx)
-    .WithEnvironment(
-        "RABBIT_URL",
-        "amqps://ycxdqxek:dqbA9K8DP4m6IPTboHah9UD8ZTPnM6Qb@kebnekaise.lmq.cloudamqp.com/ycxdqxek"
-    )
-    .WithEnvironment("MINIO_HOST", "minio");
+    .WithEnvironment("RABBIT_URL", rabbitMqUri)
+    .WithEnvironment("AWS_SECRET_ACCESS_KEY", s3SecretKey)
+    .WithEnvironment("AWS_ACCESS_KEY_ID", s3AccessKey)
+    .WithEnvironment("AWS_REGION", s3Region)
+    .WithEnvironment("AWS_BUCKET", s3Bucket);
 
 builder.Build().Run();
