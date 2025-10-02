@@ -46,6 +46,13 @@ public static class Extensions
             var connectionString = builder.Configuration.GetConnectionString("streamerdb");
             options.UseNpgsql(connectionString);
         });
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policyBuilder =>
+            {
+                policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            });
+        });
         services.AddScoped<IUserEventHandler, UserEventHandler>();
         services.AddScoped<IAntmediaWebhook, AntmediaWebhook>();
         services.AddScoped<IVodFinishedHandler, VodFinishedHandler>();
