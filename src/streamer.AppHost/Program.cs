@@ -10,6 +10,9 @@ var postgres = builder
     .WithDataVolume()
     .WithPgWeb()
     .WithLifetime(ContainerLifetime.Persistent);
+var mongo = builder.AddMongoDB("mongo").WithDataVolume().WithLifetime(ContainerLifetime.Persistent);
+
+var mongodb = mongo.AddDatabase("streamerBots");
 
 var streamerDb = postgres.AddDatabase("streamerdb");
 var rabbitMqUri = builder.AddParameter("rabbitmqUri");
@@ -45,5 +48,11 @@ var vodProcessor = builder
     .WithEnvironment("AWS_ACCESS_KEY_ID", s3AccessKey)
     .WithEnvironment("AWS_REGION", s3Region)
     .WithEnvironment("AWS_BUCKET", s3Bucket);
-
+var streamerBots = builder
+    .AddContainer("streamer-bots", "dipercool/streamer-bots")
+    .WaitFor(streamerApi)
+    .WaitFor(mediamtx)
+    .WithEnvironment("RABBITMQ_URI", rabbitMqUri)
+    .WithEnvironment("RTMP_BASE_URL", "rtmp://mediamtx:1935/live")
+    .WithEnvironment("MONGODB_URI", mongodb);
 builder.Build().Run();

@@ -20,7 +20,7 @@ public class AdminSeed(
 {
     public async Task SeedAllAsync()
     {
-        if (await streamerDbContext.Streamers.AnyAsync())
+        if (await streamerDbContext.Streamers.IgnoreQueryFilters().AnyAsync())
         {
             return;
         }
