@@ -16,15 +16,13 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      # Убран временный тестовый CA. При необходимости раскомментируйте:
-      # - "--certificatesresolvers.myresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--entryPoints.web.forwardedHeaders.insecure"
       - "--entryPoints.websecure.forwardedHeaders.insecure"
     ports:
       - "80:80"
       - "443:443"
-      - "1935:1935" # RTMP
-      - "8554:8554" # RTSP
+      - "1935:1935"
+      - "8554:8554"
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -39,8 +37,8 @@ services:
       - redis
       - mediamtx
       - postgres
+      - mongo
     environment:
-      # ИСПОЛЬЗУЕМ ПОРТ 80 ВНУТРИ КОНТЕЙНЕРА
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__streamerdb=${ConnectionStrings__streamerdb}
       - ConnectionStrings__redis=${ConnectionStrings__redis}
@@ -59,6 +57,7 @@ services:
       - RtmpOptions__Hls=${RtmpOptions__Hls}
       - RtmpOptions__WebRtc=${RtmpOptions__WebRtc}
       - RtmpOptions__VodProcess=${RtmpOptions__VodProcess}
+      - RtmpOptions__Scheme=${RtmpOptions__Scheme}
       - Auth0Options__ApiUrl=${Auth0Options__ApiUrl}
       - Auth0Options__AuthUrl=${Auth0Options__AuthUrl}
       - Auth0Options__ClientId=${Auth0Options__ClientId}
@@ -78,7 +77,7 @@ services:
       - "traefik.http.routers.streamer-api.rule=Host(`${STREAMER_DOMAIN}`)"
       - "traefik.http.routers.streamer-api.entrypoints=websecure"
       - "traefik.http.routers.streamer-api.tls.certresolver=myresolver"
-      - "traefik.http.services.streamer-api.loadbalancer.server.port=80" # ВОЗВРАЩЕН НА 80
+      - "traefik.http.services.streamer-api.loadbalancer.server.port=80"
       - "com.centurylinklabs.watchtower.enable=true"
 
   vod-processor:
@@ -109,22 +108,15 @@ services:
       - streamer_net
     labels:
       - "traefik.enable=true"
-      
-      # HLS (Порт 8888)
+
       - "traefik.http.routers.mediamtx-hls.rule=Host(`${MEDIANTX_HLS_DOMAIN}`)"
       - "traefik.http.routers.mediamtx-hls.entrypoints=websecure"
       - "traefik.http.routers.mediamtx-hls.tls.certresolver=myresolver"
       - "traefik.http.services.mediamtx-hls.loadbalancer.server.port=8888"
-      
-      # RTMP (Порт 1935) - ИСПРАВЛЕНО: Правило HostSNI(`*`) для обычного RTMP
+
       - "traefik.tcp.routers.mediamtx-rtmp.entrypoints=rtmp"
       - "traefik.tcp.routers.mediamtx-rtmp.rule=HostSNI(`*`)"
       - "traefik.tcp.services.mediamtx-rtmp.loadbalancer.server.port=1935"
-      # Если вы хотите RTMPS (зашифрованный) используйте:
-      # - "traefik.tcp.routers.mediamtx-rtmps.entrypoints=rtmp"
-      # - "traefik.tcp.routers.mediamtx-rtmps.rule=HostSNI(`${MEDIANTX_BASE_DOMAIN}`)"
-      # - "traefik.tcp.routers.mediamtx-rtmps.tls=true"
-      # - "traefik.tcp.services.mediamtx-rtmps.loadbalancer.server.port=1935"
 
   postgres:
     image: postgres:15-alpine
@@ -148,6 +140,30 @@ services:
     volumes:
       - redis_data:/data
   
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - streamer_net
+
+  streamer-bots:
+    image: dipercool/streamer-bots
+    container_name: streamer-bots
+    restart: always
+    depends_on:
+      - streamer-api
+      - mediamtx
+      - mongo
+    environment:
+      - RABBITMQ_URI=${RabbitMQ__Uri}
+      - RTMP_BASE_URL=${RTMP_BASE_URL}
+      - MONGODB_URI=mongodb://mongo:27017/streamerBots
+    networks:
+      - streamer_net
+  
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -159,10 +175,7 @@ services:
       - streamer_net
     labels:
       - "traefik.enable=true"
-      
-      # Мидлвар для Portainer (для исправления WebSockets)
       - "traefik.http.middlewares.portainer-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
-
       - "traefik.http.routers.portainer.rule=Host(`${PORTAINER_DOMAIN}`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls.certresolver=myresolver"
@@ -173,6 +186,7 @@ volumes:
   redis_data:
   postgres_data:
   portainer_data:
+  mongo_data:
 networks:
   streamer_net:
     driver: bridge
