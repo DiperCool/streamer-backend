@@ -25,6 +25,12 @@ public class RecurringJobsHostedService : IHostedService
             job => job.Run(CancellationToken.None),
             "* * * * *"
         );
+        RecurringJob.AddOrUpdate<CreateStreamTimeAnalyticsJob>(
+            nameof(CreateStreamTimeAnalyticsJob),
+            job => job.Run(CancellationToken.None),
+            "* * * * *"
+        );
+
         return Task.CompletedTask;
     }
 
