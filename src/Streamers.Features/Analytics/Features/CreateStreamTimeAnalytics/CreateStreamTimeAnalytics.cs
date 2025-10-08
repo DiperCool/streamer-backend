@@ -24,10 +24,10 @@ public class CreateStreamTimeAnalyticsHandler(StreamerDbContext streamerDbContex
             .Streamers.Where(x => x.IsLive)
             .ToListAsync(cancellationToken: cancellationToken);
         var items = new List<AnalyticsItem>();
-        const long minutes = 1;
+        const long seconds = 60;
         items.AddRange(
             streamers.Select(x => new AnalyticsItem(
-                minutes,
+                seconds,
                 DateTime.UtcNow,
                 AnalyticsItemType.StreamTime,
                 x.Id
