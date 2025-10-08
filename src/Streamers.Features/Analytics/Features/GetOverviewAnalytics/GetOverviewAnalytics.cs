@@ -28,7 +28,13 @@ public class GetOverviewAnalyticsHandler(StreamerDbContext streamerDbContext)
                 && a.CreatedAt <= request.To
             )
             .GroupBy(a => a.Type)
-            .Select(g => new { Type = g.Key, Value = g.Average(a => a.Value) })
+            .Select(g => new
+            {
+                Type = g.Key,
+                Value = g.Key == AnalyticsItemType.StreamTime
+                    ? g.Sum(a => a.Value)
+                    : g.Average(a => a.Value),
+            })
             .ToListAsync(cancellationToken);
 
         var allTypes = Enum.GetValues(typeof(AnalyticsItemType)).Cast<AnalyticsItemType>();

@@ -50,6 +50,8 @@ public class GetAnalyticsDiagramHandler(StreamerDbContext streamerDbContext)
             _ => "1 day",
         };
 
+        var aggregateFunction = request.Type == AnalyticsItemType.StreamTime ? "SUM" : "AVG";
+
         var sql = $"""
                 WITH TimeSeries AS (
                     SELECT generate_series(
@@ -60,7 +62,7 @@ public class GetAnalyticsDiagramHandler(StreamerDbContext streamerDbContext)
                 )
                 SELECT
                     TO_CHAR(t.Title, @dateFormat) AS Title,
-                    COALESCE(AVG(ai."Value"), 0)::bigint AS Value
+                    COALESCE({aggregateFunction}(ai."Value"), 0)::bigint AS Value
                 FROM TimeSeries t
                 LEFT JOIN "AnalyticsItems" ai
                     ON ai."Type" = @type
