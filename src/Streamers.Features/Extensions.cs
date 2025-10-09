@@ -27,6 +27,7 @@ using Streamers.Features.Shared.GraphQl;
 using Streamers.Features.Shared.Hangfire;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.EventHandlers;
+using Streamers.Features.Streamers.Features.UpdateStreamPreview.EventHandler;
 using Streamers.Features.Streamers.Seed;
 using Streamers.Features.Streamers.Services;
 using Streamers.Features.Streams.Features;
@@ -54,6 +55,7 @@ public static class Extensions
             });
         });
         services.AddScoped<IUserEventHandler, UserEventHandler>();
+        services.AddScoped<StreamPreviewUpdated>();
         services.AddScoped<IAntmediaWebhook, AntmediaWebhook>();
         services.AddScoped<IVodFinishedHandler, VodFinishedHandler>();
         services.AddSingleton<IStreamKeyGenerator, StreamKeyGenerator>();
