@@ -48,6 +48,15 @@ var vodProcessor = builder
     .WithEnvironment("AWS_ACCESS_KEY_ID", s3AccessKey)
     .WithEnvironment("AWS_REGION", s3Region)
     .WithEnvironment("AWS_BUCKET", s3Bucket);
+var previewProcessor = builder
+    .AddContainer("preview-processor", "dipercool/streamers-preview-processor")
+    .WaitFor(streamerApi)
+    .WaitFor(mediamtx)
+    .WithEnvironment("RABBITMQ_URI", rabbitMqUri)
+    .WithEnvironment("AWS_SECRET_ACCESS_KEY", s3SecretKey)
+    .WithEnvironment("AWS_ACCESS_KEY_ID", s3AccessKey)
+    .WithEnvironment("AWS_REGION", s3Region)
+    .WithEnvironment("AWS_BUCKET", s3Bucket);
 var streamerBots = builder
     .AddContainer("streamer-bots", "dipercool/streamer-bots")
     .WaitFor(streamerApi)

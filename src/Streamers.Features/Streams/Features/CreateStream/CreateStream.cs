@@ -20,8 +20,13 @@ public record CreateStreamResponse(Guid Id);
 // todo: fix transaction
 public record CreateStream(string StreamName, string StreamId) : IRequest<CreateStreamResponse>;
 
-public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration configuration)
-    : IRequestHandler<CreateStream, CreateStreamResponse>
+public record PreviewProcess(Guid StreamId, string Source);
+
+public class CreateStreamHandler(
+    StreamerDbContext dbContext,
+    ICapPublisher capPublisher,
+    IConfiguration configuration
+) : IRequestHandler<CreateStream, CreateStreamResponse>
 {
     public async Task<CreateStreamResponse> Handle(
         CreateStream request,
@@ -71,15 +76,15 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
             info.Category
         );
         streamer.SetLive(true, stream);
+        var streamSource = $"{opts.VodProcess}/{request.StreamName}";
+
         if (streamer.VodSettings.VodEnabled)
         {
-            var processVodUrl = $"{opts.VodProcess}/{request.StreamName}";
-
             Vod vod = new Vod(
                 Guid.NewGuid(),
                 stream.Streamer,
                 DateTime.UtcNow,
-                processVodUrl,
+                streamSource,
                 info.Language
             );
             await dbContext.Vods.AddAsync(vod, cancellationToken);
@@ -89,6 +94,13 @@ public class CreateStreamHandler(StreamerDbContext dbContext, IConfiguration con
         dbContext.Streamers.Update(streamer);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        await capPublisher.PublishAsync(
+            "preview-process",
+            new PreviewProcess(stream.Id, streamSource),
+            cancellationToken: cancellationToken
+        );
         return new CreateStreamResponse(stream.Id);
     }
 }
+
