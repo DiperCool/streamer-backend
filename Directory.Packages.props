@@ -104,7 +104,7 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="IdentityModel" Version="7.0.0" />
     <PackageVersion Include="Scalar.AspNetCore" Version="1.2.44" />
-    <PackageVersion Include="Aspire.Hosting.Keycloak" Version="9.0.0-preview.4.24511.1" />
+    <PackageVersion Include="Aspire.Hosting.Keycloak" Version="9.0.0-preview.5.24551.3" />
     <PackageVersion Include="Aspire.Keycloak.Authentication" Version="9.0.0-preview.5.24551.3" />
     <PackageVersion Include="HotChocolate" Version="15.1.7" />
     <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.7" />
