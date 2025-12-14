@@ -96,6 +96,20 @@ services:
     networks:
       - streamer_net
 
+  streamers-preview-processor:
+    image: ${STREAMERS_PREVIEW_PROCESSOR_IMAGE}
+    container_name: streamers-preview-processor
+    restart: always
+    depends_on:
+      - mediamtx
+    environment:
+      - RABBITMQ_URI=${RabbitMQ__Uri}
+      - AWS_SECRET_ACCESS_KEY=${S3Options__SecretAccessKey}
+      - AWS_ACCESS_KEY_ID=${S3Options__AccessKeyId}
+      - AWS_REGION=${S3Options__Region}
+      - AWS_BUCKET=${S3Options__Bucket}
+    networks:
+      - streamer_net
   mediamtx:
     image: ${MEDIANTX_IMAGE}
     container_name: mediamtx
@@ -150,7 +164,7 @@ services:
       - streamer_net
 
   streamer-bots:
-    image: dipercool/streamer-bots
+    image: ${STREAMERS_BOTS_IMAGE}
     container_name: streamer-bots
     restart: always
     depends_on:
