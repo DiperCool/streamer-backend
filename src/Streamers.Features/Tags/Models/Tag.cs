@@ -1,7 +1,5 @@
 ﻿using Shared.Abstractions.Domain;
-using Streamers.Features.Categories.Models;
 using Streamers.Features.StreamInfos.Models;
-using Streamers.Features.Streams.Models;
 using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 

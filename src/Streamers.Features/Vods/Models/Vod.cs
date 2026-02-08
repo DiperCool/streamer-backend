@@ -3,7 +3,6 @@ using Streamers.Features.Categories.Models;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.Tags.Models;
 using Streamers.Features.Vods.Enums;
-using Stream = Streamers.Features.Streams.Models.Stream;
 
 namespace Streamers.Features.Vods.Models;
 

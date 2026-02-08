@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
-using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Profiles.Features.UpdateBio;

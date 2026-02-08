@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Streamers.Features.Notifications.Services;
 using Streamers.Features.Shared.Persistance;
-using Streamers.Features.Streamers.Dtos;
 
 namespace Streamers.Features.Notifications.Job;
 

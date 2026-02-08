@@ -1,6 +1,7 @@
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Cqrs;
+using Shared.Stripe;
 using streamer.ServiceDefaults;
 using Streamers.Api.Apis;
 using Streamers.Features;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddApplicationServices();
+builder.Services.AddStripe(builder.Configuration);
 builder.Services.AddProblemDetails();
 
 var withApiVersioning = builder.Services.AddApiVersioning();
@@ -26,7 +28,7 @@ app.UseWebSockets();
 
 app.MapDefaultEndpoints();
 
-app.NewVersionedApi("Streamers").MapOrdersApiV1().RequireAuthorization();
+app.MapPaymentsApiV1();
 app.UseDefaultOpenApi();
 
 app.MapPost(

@@ -1,9 +1,6 @@
 ﻿using Hangfire;
-using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Domain;
 using Streamers.Features.Notifications.Job;
-using Streamers.Features.Notifications.Services;
-using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Notifications.Features.CreateLiveStartedNotification.Events;

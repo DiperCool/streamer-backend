@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Achievments\Models\" />
       <Folder Include="Files\Models\" />
     </ItemGroup>
   <PropertyGroup>

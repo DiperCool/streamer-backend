@@ -5,7 +5,6 @@ using Streamers.Features.Tags.Dto;
 using Streamers.Features.Tags.Features.GetTagsByStreamIds;
 using Streamers.Features.Tags.Features.GetTagsByStreamInfoIds;
 using Streamers.Features.Tags.Features.GetTagsByVodIds;
-using Streamers.Features.Vods.Dtos;
 
 namespace Streamers.Features.Tags.Graphql;
 

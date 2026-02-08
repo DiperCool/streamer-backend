@@ -1,11 +1,12 @@
 ﻿using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Notifications.Models;
+using Streamers.Features.Payments.Models;
 using Streamers.Features.Profiles.Models;
-using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
+using Streamers.Features.SubscriptionPlans.Models;
 using Streamers.Features.SystemRoles.Models;
 using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
@@ -13,6 +14,8 @@ using Stream = Streamers.Features.Streams.Models.Stream;
 namespace Streamers.Features.Streamers.Models;
 
 public record StreamerUpdated(Streamer Streamer) : IDomainEvent;
+
+public record StreamerCreated(Streamer Streamer) : IDomainEvent;
 
 public class Streamer : Entity<string>
 {
@@ -35,6 +38,11 @@ public class Streamer : Entity<string>
     public StreamInfo StreamInfo { get; set; }
     public bool HasUnreadNotifications { get; set; }
     public NotificationSettings NotificationSettings { get; set; }
+    public bool SubscriptionEnabled { get; private set; }
+    public List<SubscriptionPlan> SubscriptionPlans { get; set; } = new();
+    public Customer Customer { get; set; }
+    public Partner Partner { get; set; }
+    public List<PaymentMethod> PaymentMethods { get; set; } = new();
 
     private Streamer() { }
 
@@ -51,7 +59,9 @@ public class Streamer : Entity<string>
         ChatSettings chatSettings,
         StreamInfo streamInfo,
         NotificationSettings notificationSettings,
-        VodSettings vodSettings
+        VodSettings vodSettings,
+        Partner partner,
+        Customer customer
     )
     {
         Id = id;
@@ -67,6 +77,9 @@ public class Streamer : Entity<string>
         StreamSettings = streamSettings;
         NotificationSettings = notificationSettings;
         VodSettings = vodSettings;
+        Partner = partner;
+        Customer = customer;
+        Raise(new StreamerCreated(this));
     }
 
     public VodSettings VodSettings { get; set; }
@@ -83,5 +96,10 @@ public class Streamer : Entity<string>
     {
         UserName = userName;
         FinishedAuth = true;
+    }
+
+    public void EnableSubscriptions()
+    {
+        SubscriptionEnabled = true;
     }
 }

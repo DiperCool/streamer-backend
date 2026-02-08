@@ -1,9 +1,7 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
-using Shared.Abstractions.Cqrs;
 using Streamers.Features.Profiles.Dtos;
 using Streamers.Features.Streamers.Dtos;
-using Streamers.Features.Streamers.Features.GetStreamer;
 using Streamers.Features.Streamers.GraphqQl;
 
 namespace Streamers.Features.Profiles.GraphQl;

@@ -1,6 +1,4 @@
-using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;

@@ -8,12 +8,14 @@ using Streamers.Features.Categories.Models;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Followers.Models;
 using Streamers.Features.Notifications.Models;
+using Streamers.Features.Payments.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.StreamInfos.Models;
 using Streamers.Features.Streams.Models;
+using Streamers.Features.SubscriptionPlans.Models;
 using Streamers.Features.SystemRoles.Models;
 using Streamers.Features.Tags.Models;
 using Streamers.Features.Vods.Models;
@@ -52,6 +54,10 @@ public class StreamerDbContext(
     public DbSet<UserFollowedNotification> UserFollowedNotifications { get; set; }
     public DbSet<AnalyticsItem> AnalyticsItems { get; set; }
     public DbSet<Bot> Bots { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Partner> Partners { get; set; }
+    public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

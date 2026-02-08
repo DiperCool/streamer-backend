@@ -1,7 +1,6 @@
 using HotChocolate;
 using HotChocolate.Types;
 using Streamers.Features.Chats.Dtos;
-using Streamers.Features.Chats.Models;
 
 namespace Streamers.Features.Chats.GraphQl;
 

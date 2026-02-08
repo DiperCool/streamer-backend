@@ -1,7 +1,5 @@
 using HotChocolate.Types;
 using Microsoft.Extensions.DependencyInjection;
-using Streamers.Features.Notifications.Dtos;
-using Streamers.Features.Streamers.GraphqQl;
 
 namespace Streamers.Features.Shared.GraphQl;
 

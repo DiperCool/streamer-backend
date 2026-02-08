@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using Microsoft.Extensions.Hosting;
-using Streamers.Features.Analytics.Features.CreateStreamViewerAnalytics;
 using Streamers.Features.Analytics.Job;
 using Streamers.Features.Streams.BackgroundServices;
 

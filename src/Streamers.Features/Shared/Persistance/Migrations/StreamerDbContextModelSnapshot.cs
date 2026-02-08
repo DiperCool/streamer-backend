@@ -458,6 +458,104 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.ToTable("NotificationSettings", "public");
                 });
 
+            modelBuilder.Entity("Streamers.Features.Payments.Models.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("OriginalVersion")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StreamerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("StripeCustomerCreationStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamerId")
+                        .IsUnique();
+
+                    b.ToTable("Customers", "public");
+                });
+
+            modelBuilder.Entity("Streamers.Features.Payments.Models.Partner", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("OriginalVersion")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StreamerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripeAccountId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StripeOnboardingStatus")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamerId")
+                        .IsUnique();
+
+                    b.ToTable("Partners", "public");
+                });
+
+            modelBuilder.Entity("Streamers.Features.Payments.Models.PaymentMethod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CardBrand")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("CardExpMonth")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CardExpYear")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CardLast4")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("OriginalVersion")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StreamerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripePaymentMethodId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamerId");
+
+                    b.ToTable("PaymentMethods", "public");
+                });
+
             modelBuilder.Entity("Streamers.Features.Profiles.Models.Profile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -623,6 +721,9 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.Property<Guid>("SettingId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("SubscriptionEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
@@ -761,6 +862,50 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.HasIndex("StreamId");
 
                     b.ToTable("StreamSources", "public");
+                });
+
+            modelBuilder.Entity("Streamers.Features.SubscriptionPlans.Models.SubscriptionPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("OriginalVersion")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("StreamerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StreamerId1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripePriceId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripeProductId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreamerId");
+
+                    b.HasIndex("StreamerId1");
+
+                    b.ToTable("SubscriptionPlans", "public");
                 });
 
             modelBuilder.Entity("Streamers.Features.SystemRoles.Models.SystemRole", b =>
@@ -1150,6 +1295,39 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.Navigation("Streamer");
                 });
 
+            modelBuilder.Entity("Streamers.Features.Payments.Models.Customer", b =>
+                {
+                    b.HasOne("Streamers.Features.Streamers.Models.Streamer", "Streamer")
+                        .WithOne("Customer")
+                        .HasForeignKey("Streamers.Features.Payments.Models.Customer", "StreamerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Streamer");
+                });
+
+            modelBuilder.Entity("Streamers.Features.Payments.Models.Partner", b =>
+                {
+                    b.HasOne("Streamers.Features.Streamers.Models.Streamer", "Streamer")
+                        .WithOne("Partner")
+                        .HasForeignKey("Streamers.Features.Payments.Models.Partner", "StreamerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Streamer");
+                });
+
+            modelBuilder.Entity("Streamers.Features.Payments.Models.PaymentMethod", b =>
+                {
+                    b.HasOne("Streamers.Features.Streamers.Models.Streamer", "Streamer")
+                        .WithMany("PaymentMethods")
+                        .HasForeignKey("StreamerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Streamer");
+                });
+
             modelBuilder.Entity("Streamers.Features.Profiles.Models.Profile", b =>
                 {
                     b.HasOne("Streamers.Features.Streamers.Models.Streamer", "Streamer")
@@ -1254,6 +1432,21 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.Navigation("Stream");
                 });
 
+            modelBuilder.Entity("Streamers.Features.SubscriptionPlans.Models.SubscriptionPlan", b =>
+                {
+                    b.HasOne("Streamers.Features.Streamers.Models.Streamer", "Streamer")
+                        .WithMany()
+                        .HasForeignKey("StreamerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Streamers.Features.Streamers.Models.Streamer", null)
+                        .WithMany("SubscriptionPlans")
+                        .HasForeignKey("StreamerId1");
+
+                    b.Navigation("Streamer");
+                });
+
             modelBuilder.Entity("Streamers.Features.SystemRoles.Models.SystemRole", b =>
                 {
                     b.HasOne("Streamers.Features.Streamers.Models.Streamer", "Streamer")
@@ -1354,8 +1547,16 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.Navigation("ChatSettings")
                         .IsRequired();
 
+                    b.Navigation("Customer")
+                        .IsRequired();
+
                     b.Navigation("NotificationSettings")
                         .IsRequired();
+
+                    b.Navigation("Partner")
+                        .IsRequired();
+
+                    b.Navigation("PaymentMethods");
 
                     b.Navigation("Profile")
                         .IsRequired();
@@ -1367,6 +1568,8 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                         .IsRequired();
 
                     b.Navigation("Streams");
+
+                    b.Navigation("SubscriptionPlans");
 
                     b.Navigation("SystemRoles");
 

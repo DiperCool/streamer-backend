@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults;
-using Streamers.Features.Notifications.Services;
-using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.Streamers.Services;
@@ -103,4 +101,3 @@ public class CreateStreamHandler(
         return new CreateStreamResponse(stream.Id);
     }
 }
-

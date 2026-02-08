@@ -1,5 +1,4 @@
 ﻿using Streamers.Features.Bots.Enums;
-using Streamers.Features.Bots.Features.CreateBot;
 using Streamers.Features.Bots.Models;
 
 namespace Streamers.Features.Bots.Dtos;

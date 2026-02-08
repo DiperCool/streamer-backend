@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
-using Streamers.Features.Chats.Features.PinMessage;
-using Streamers.Features.Chats.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;

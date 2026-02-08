@@ -5,7 +5,6 @@ using HotChocolate.Execution;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
 using streamer.ServiceDefaults;
-using Streamers.Features.Chats.Dtos;
 using Streamers.Features.Notifications.Dtos;
 
 namespace Streamers.Features.Notifications.Graphql;

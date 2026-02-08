@@ -4,16 +4,12 @@ using Shared.Abstractions.Cqrs;
 
 namespace Streamers.Features.Shared.Cqrs.Behaviours;
 
-public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class ValidationBehavior<TRequest, TResponse>(IServiceProvider serviceProvider)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public ValidationBehavior(IServiceProvider serviceProvider)
-    {
-        _serviceProvider =
-            serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-    }
+    private readonly IServiceProvider _serviceProvider =
+        serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
     public async Task<TResponse> Handle(
         TRequest request,

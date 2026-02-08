@@ -1,5 +1,4 @@
 ﻿using GreenDonut.Data;
-using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Notifications.Dtos;

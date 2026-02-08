@@ -1,7 +1,5 @@
 using HotChocolate;
-using HotChocolate.Authorization;
 using HotChocolate.Types;
-using Minio.DataModel;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Files.Features;
 

@@ -1,7 +1,6 @@
 using HotChocolate.Authorization;
 using HotChocolate.Types;
 using Shared.Abstractions.Cqrs;
-using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Profiles.Features.UpdateBio;
 using Streamers.Features.Profiles.Features.UpdateChannelBanner;
 using Streamers.Features.Profiles.Features.UpdateOfflineBanner;

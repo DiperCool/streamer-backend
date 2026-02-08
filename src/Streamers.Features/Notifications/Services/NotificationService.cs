@@ -1,5 +1,4 @@
-﻿using HotChocolate.Subscriptions;
-using Streamers.Features.Notifications.Models;
+﻿using Streamers.Features.Notifications.Models;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
 

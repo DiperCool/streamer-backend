@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
-using Streamers.Features.Profiles.Dtos;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Roles.Services;

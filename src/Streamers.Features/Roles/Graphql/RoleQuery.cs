@@ -5,14 +5,11 @@ using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Cqrs;
-using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Dtos;
-using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Features;
 using Streamers.Features.Roles.Features.GetMyRole;
 using Streamers.Features.Roles.Features.GetMyRoles;
 using Streamers.Features.Roles.Features.GetRoles;
-using RoleType = Streamers.Features.Roles.Enums.RoleType;
 
 namespace Streamers.Features.Roles.Graphql;
 

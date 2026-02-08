@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Storage;
-using StackExchange.Redis;
 
 namespace Shared.AzureBlob;
 

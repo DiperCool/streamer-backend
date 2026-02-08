@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Bots.Dtos;
-using Streamers.Features.Bots.Enums;
-using Streamers.Features.Categories.Dtos;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.SystemRoles.Services;
 

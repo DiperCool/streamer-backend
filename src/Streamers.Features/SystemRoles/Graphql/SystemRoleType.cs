@@ -3,7 +3,6 @@ using HotChocolate.Types;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.GraphqQl;
 using Streamers.Features.SystemRoles.Dtos;
-using Streamers.Features.SystemRoles.Models;
 
 namespace Streamers.Features.SystemRoles.Graphql;
 

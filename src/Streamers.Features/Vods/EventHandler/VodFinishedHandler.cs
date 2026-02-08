@@ -2,7 +2,6 @@
 using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions.Cqrs;
-using Streamers.Features.AntMedia.Services;
 using Streamers.Features.Vods.Features.VodFinishProcess;
 
 namespace Streamers.Features.Vods.EventHandler;

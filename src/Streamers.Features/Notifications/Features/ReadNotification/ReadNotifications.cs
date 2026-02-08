@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
-using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Notifications.Features.ReadNotification;

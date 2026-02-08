@@ -4,7 +4,6 @@ using Streamers.Features.Analytics.Enums;
 using Streamers.Features.Analytics.Models;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
-using Stream = Streamers.Features.Streams.Models.Stream;
 
 namespace Streamers.Features.Analytics.Features.CreateStreamTimeAnalytics;
 

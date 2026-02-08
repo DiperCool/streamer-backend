@@ -2,7 +2,6 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Dtos;
-using Streamers.Features.Roles.Enums;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Roles.Features.GetMyRoles;

@@ -2,7 +2,6 @@
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Chats.Dtos;
 using Streamers.Features.Shared.Persistance;
-using Streamers.Features.Streams.Features.GetStreamsByIds;
 
 namespace Streamers.Features.Chats.Features.GetChatSettingsByIds;
 

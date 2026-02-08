@@ -8,7 +8,6 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.Followers.Dtos;
 using Streamers.Features.Followers.Features.GetMyFollowers;
 using Streamers.Features.Followers.Features.GetMyFollowings;
-using Streamers.Features.Streamers.Dtos;
 
 namespace Streamers.Features.Followers.GraphQl;
 

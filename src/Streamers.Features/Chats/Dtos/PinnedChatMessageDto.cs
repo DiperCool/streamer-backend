@@ -1,6 +1,4 @@
-﻿using Streamers.Features.Streamers.Dtos;
-
-namespace Streamers.Features.Chats.Dtos;
+﻿namespace Streamers.Features.Chats.Dtos;
 
 public class PinnedChatMessageDto
 {

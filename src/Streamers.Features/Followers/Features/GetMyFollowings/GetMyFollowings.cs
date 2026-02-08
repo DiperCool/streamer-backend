@@ -4,7 +4,6 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Followers.Dtos;
 using Streamers.Features.Shared.Persistance;
-using Streamers.Features.Streamers.Dtos;
 
 namespace Streamers.Features.Followers.Features.GetMyFollowings;
 

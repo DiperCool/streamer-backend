@@ -2,7 +2,6 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
-using Streamers.Features.Chats.Services;
 using Streamers.Features.Followers.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Shared.Persistance;

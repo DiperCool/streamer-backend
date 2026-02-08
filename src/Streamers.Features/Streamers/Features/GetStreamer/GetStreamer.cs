@@ -4,7 +4,6 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.Models;
-using Streamers.Features.Streams.Dtos;
 
 namespace Streamers.Features.Streamers.Features.GetStreamer;
 

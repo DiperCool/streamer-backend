@@ -1,6 +1,4 @@
-﻿using HotChocolate.Types;
-
-namespace Streamers.Features.Notifications.Dtos;
+﻿namespace Streamers.Features.Notifications.Dtos;
 
 public class NotificationDto
 {

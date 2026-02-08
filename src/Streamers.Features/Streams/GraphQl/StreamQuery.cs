@@ -10,7 +10,6 @@ using Streamers.Features.Streams.Features.GetCurrentStream;
 using Streamers.Features.Streams.Features.GetStreams;
 using Streamers.Features.Streams.Features.GetStreamSettings;
 using Streamers.Features.Streams.Features.GetTopStreams;
-using Streamers.Features.Streams.Features.UpdateStreamSettings;
 
 namespace Streamers.Features.Streams.GraphQl;
 

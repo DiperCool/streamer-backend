@@ -1,10 +1,5 @@
 ﻿using DotNetCore.CAP;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Shared.Abstractions.Domain;
-using streamer.ServiceDefaults;
-using Streamers.Features.Streamers.Services;
-using Streamers.Features.Streams.Enums;
 using Streamers.Features.Vods.Models;
 
 namespace Streamers.Features.Vods.EventHandler;

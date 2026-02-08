@@ -2,7 +2,6 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Bots.Dtos;
-using Streamers.Features.Bots.Enums;
 using Streamers.Features.Bots.Models;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.SystemRoles.Services;

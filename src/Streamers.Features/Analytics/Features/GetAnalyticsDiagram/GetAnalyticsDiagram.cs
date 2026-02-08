@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NpgsqlTypes;
 using Shared.Abstractions.Cqrs;
-using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Analytics.Enums;
 using Streamers.Features.Shared.Persistance;
 

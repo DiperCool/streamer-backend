@@ -2,7 +2,6 @@
 using HotChocolate;
 using HotChocolate.Authorization;
 using HotChocolate.Data;
-using HotChocolate.Resolvers;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
 using Shared.Abstractions.Cqrs;

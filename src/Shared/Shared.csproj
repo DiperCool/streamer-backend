@@ -19,6 +19,7 @@
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="Hangfire" />
     <PackageReference Include="Hangfire.PostgreSql" />
+    <PackageReference Include="Stripe.net" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\streamer.ServiceDefaults\streamer.ServiceDefaults.csproj" />

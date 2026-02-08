@@ -1,10 +1,7 @@
-﻿using Hangfire;
-using HotChocolate.Subscriptions;
-using Shared.Abstractions.Cqrs;
+﻿using HotChocolate.Subscriptions;
 using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Dtos;
 using Streamers.Features.Chats.Models;
-using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.BanUser;
 

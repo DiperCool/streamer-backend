@@ -1,12 +1,10 @@
 ﻿using FluentValidation;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared.Abstractions.Cqrs;
 using Shared.Auth0.Services;
-using Shared.AzureBlob;
 using Shared.DomainEvents;
 using Shared.Hangfire;
 using Shared.RabbitMQ.Extensions;
@@ -20,6 +18,8 @@ using Streamers.Features.Categories.Services;
 using Streamers.Features.Chats.Services;
 using Streamers.Features.Files.Seeds;
 using Streamers.Features.Notifications.Services;
+using Streamers.Features.Payments.Features.CreateCustomer;
+using Streamers.Features.Payments.Seeds;
 using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Cqrs.Behaviours;
@@ -30,7 +30,6 @@ using Streamers.Features.Streamers.EventHandlers;
 using Streamers.Features.Streamers.Features.UpdateStreamPreview.EventHandler;
 using Streamers.Features.Streamers.Seed;
 using Streamers.Features.Streamers.Services;
-using Streamers.Features.Streams.Features;
 using Streamers.Features.SystemRoles.Services;
 using Streamers.Features.Tags.Services;
 using Streamers.Features.Vods.EventHandler;
@@ -55,7 +54,9 @@ public static class Extensions
             });
         });
         services.AddScoped<IUserEventHandler, UserEventHandler>();
+        services.AddScoped<CreateStripeCustomerCapHandler>();
         services.AddScoped<StreamPreviewUpdated>();
+
         services.AddScoped<IAntmediaWebhook, AntmediaWebhook>();
         services.AddScoped<IVodFinishedHandler, VodFinishedHandler>();
         services.AddSingleton<IStreamKeyGenerator, StreamKeyGenerator>();
@@ -79,6 +80,7 @@ public static class Extensions
         builder.Services.AddHostedService<SeedWorker>();
         builder.Services.AddScoped<IDataSeeder, StorageSeed>();
         builder.Services.AddScoped<IDataSeeder, AdminSeed>();
+        builder.Services.AddScoped<IDataSeeder, StripeProductSeeder>();
         builder.Services.AddScoped<ISystemRoleService, SystemRoleService>();
         builder.Services.AddSingleton<ISlugGenerator, SlugGenerator>();
         builder.Services.AddScoped<ITagsService, TagsService>();

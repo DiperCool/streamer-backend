@@ -1,4 +1,3 @@
-using GreenDonut;
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Shared.Persistance;

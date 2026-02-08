@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
-using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Stream = Streamers.Features.Streams.Models.Stream;
 

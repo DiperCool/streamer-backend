@@ -1,5 +1,4 @@
-﻿using System.Data;
-using DotNetCore.CAP;
+﻿using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions.Cqrs;
@@ -7,23 +6,19 @@ using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Shared.Cqrs.Behaviours;
 
-public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class TransactionBehavior<TRequest, TResponse>(
+    StreamerDbContext dbContext,
+    ILogger<TransactionBehavior<TRequest, TResponse>> logger,
+    ICapPublisher publisher
+) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly StreamerDbContext _dbContext;
-    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger;
-    private readonly ICapPublisher _publisher;
-
-    public TransactionBehavior(
-        StreamerDbContext dbContext,
-        ILogger<TransactionBehavior<TRequest, TResponse>> logger,
-        ICapPublisher publisher
-    )
-    {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
-    }
+    private readonly StreamerDbContext _dbContext =
+        dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ICapPublisher _publisher =
+        publisher ?? throw new ArgumentNullException(nameof(publisher));
 
     public async Task<TResponse> Handle(
         TRequest request,
@@ -53,7 +48,6 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(
                 transactionalAttr.IsolationLevel,
                 _publisher,
-                true,
                 cancellationToken: cancellationToken
             );
 
@@ -67,7 +61,7 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
                 );
 
                 var response = await next();
-
+                await transaction.CommitAsync(cancellationToken);
                 _logger.LogInformation(
                     "Committed transaction {TransactionId} for {CommandName}",
                     transaction.TransactionId,

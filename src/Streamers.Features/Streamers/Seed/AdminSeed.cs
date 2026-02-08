@@ -4,7 +4,6 @@ using Shared.Auth0.Services;
 using Shared.Seeds;
 using streamer.ServiceDefaults;
 using Streamers.Features.Shared.Persistance;
-using Streamers.Features.Streamers.Models;
 using Streamers.Features.Streamers.Services;
 using Streamers.Features.SystemRoles.Enums;
 using Streamers.Features.SystemRoles.Models;

@@ -1,6 +1,5 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
-using Streamers.Features.Categories.Graphql;
 using Streamers.Features.Followers.Dtos;
 using Streamers.Features.Streams.Dtos;
 using Streamers.Features.Streams.GraphQl;

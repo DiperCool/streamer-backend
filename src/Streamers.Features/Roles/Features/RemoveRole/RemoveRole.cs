@@ -3,7 +3,6 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Shared.Persistance;
-using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Roles.Features.RemoveRole;
 

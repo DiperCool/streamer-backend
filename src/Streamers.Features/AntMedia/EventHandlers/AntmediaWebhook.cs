@@ -1,9 +1,7 @@
 ﻿using System.Text.Json;
 using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
-using Shared.Abstractions.Cqrs;
 using Streamers.Features.AntMedia.Services;
-using Streamers.Features.Streamers.EventHandlers;
 
 namespace Streamers.Features.AntMedia.EventHandlers;
 

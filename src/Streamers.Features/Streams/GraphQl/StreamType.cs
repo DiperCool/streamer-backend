@@ -1,6 +1,5 @@
 using HotChocolate;
 using HotChocolate.Types;
-using Shared.Abstractions.Cqrs;
 using Streamers.Features.Categories.Dtos;
 using Streamers.Features.Categories.Graphql;
 using Streamers.Features.Streamers.Dtos;
