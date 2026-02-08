@@ -28,11 +28,11 @@ The cornerstone of this project is its Vertical Slice Architecture, with feature
 
 All business logic is implemented through CQRS commands and queries. The MediatR implementation used in this project is a custom one, located under `Shared.Abstractions.Cqrs`.
 
-- **Commands/Queries**: Define commands and queries as `record` types within their feature slice file. They must implement `IRequest<TResponse>`. Always include a response record for commands and queries, even if it's an empty `Unit` response.
+- **Commands/Queries**: Define commands and queries as `record` types within their feature slice file. They must implement `IRequest<TResponse>`. Always include a response record for commands and queries, even if it's an empty `Unit` response. Command and query record names should not include the words "Command" or "Query".
   ```csharp
   // Example: src/Streamers.Features/Streamers/Features/GetStreamer/GetStreamer.cs
   public record GetStreamer() : IRequest<StreamerMeDto>;
-  public record CreateStreamerCommand(string Name) : IRequest<CreateStreamerResponse>;
+  public record CreateStreamer(string Name) : IRequest<CreateStreamerResponse>;
   public record CreateStreamerResponse(string Id);
   ```
 - **Handlers**:

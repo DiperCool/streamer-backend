@@ -2,18 +2,20 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Payments.Features.BecomePartner;
 
-public record BecomePartner() : IRequest<BecomePartnerResponse>;
+public record BecomePartner(string StreamerId) : IRequest<BecomePartnerResponse>;
 
 public record BecomePartnerResponse(string Id);
 
 public class BecomePartnerHandler(
     StreamerDbContext context,
     ICurrentUser currentUser,
-    IStripeService stripeService
+    IStripeService stripeService,
+    IRoleService roleService
 ) : IRequestHandler<BecomePartner, BecomePartnerResponse>
 {
     public async Task<BecomePartnerResponse> Handle(
@@ -21,7 +23,19 @@ public class BecomePartnerHandler(
         CancellationToken cancellationToken
     )
     {
-        var streamerId = currentUser.UserId;
+        var streamerId = request.StreamerId;
+
+        if (
+            currentUser.UserId != streamerId
+            && !await roleService.HasRole(
+                streamerId,
+                currentUser.UserId,
+                Roles.Enums.Permissions.Payments
+            )
+        )
+        {
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+        }
 
         var partner = await context
             .Partners.Include(x => x.Streamer)

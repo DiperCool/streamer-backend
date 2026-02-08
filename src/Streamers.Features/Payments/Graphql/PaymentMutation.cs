@@ -16,19 +16,21 @@ namespace Streamers.Features.Payments.Graphql;
 public static class PaymentMutation
 {
     public static async Task<BecomePartnerResponse> BecomePartner(
+        string streamerId,
         [Service] IMediator mediator,
         CancellationToken cancellationToken
     )
     {
-        return await mediator.Send(new BecomePartner(), cancellationToken);
+        return await mediator.Send(new BecomePartner(streamerId), cancellationToken);
     }
 
     public static async Task<OnboardingLinkResponse> GenerateOnboardingLink(
+        string streamerId,
         [Service] IMediator mediator,
         CancellationToken cancellationToken
     )
     {
-        return await mediator.Send(new GenerateOnboardingLinkQuery(), cancellationToken);
+        return await mediator.Send(new GenerateOnboardingLinkQuery(streamerId), cancellationToken);
     }
 
     public static async Task<CreateSetupIntentResponse> CreateSetupIntent(

@@ -3,19 +3,21 @@ using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using StackExchange.Redis;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Payments.Features.GenerateOnboardingLink;
 
 public record OnboardingLinkResponse(string OnboardingLink);
 
-public record GenerateOnboardingLinkQuery : IRequest<OnboardingLinkResponse>;
+public record GenerateOnboardingLinkQuery(string StreamerId) : IRequest<OnboardingLinkResponse>;
 
 public class GenerateOnboardingLinkQueryHandler(
     StreamerDbContext context,
     ICurrentUser currentUser,
     IStripeService stripeService,
-    IConnectionMultiplexer redis
+    IConnectionMultiplexer redis,
+    IRoleService roleService
 ) : IRequestHandler<GenerateOnboardingLinkQuery, OnboardingLinkResponse>
 {
     private readonly IDatabase _redisDb = redis.GetDatabase();
@@ -25,7 +27,20 @@ public class GenerateOnboardingLinkQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var streamerId = currentUser.UserId;
+        var streamerId = request.StreamerId;
+
+        if (
+            currentUser.UserId != streamerId
+            && !await roleService.HasRole(
+                streamerId,
+                currentUser.UserId,
+                Roles.Enums.Permissions.Payments
+            )
+        )
+        {
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+        }
+
         var cacheKey = $"onboarding-link:{streamerId}";
 
         var cachedLink = await _redisDb.StringGetAsync(cacheKey);

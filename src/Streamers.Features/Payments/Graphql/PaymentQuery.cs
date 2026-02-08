@@ -4,6 +4,7 @@ using HotChocolate.Types;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Payments.Dtos;
 using Streamers.Features.Payments.Features.GetPaymentMethods;
+using Streamers.Features.Payments.Features.GetPartner;
 
 namespace Streamers.Features.Payments.Graphql;
 
@@ -18,6 +19,15 @@ public static class PaymentQuery
     {
         var response = await mediator.Send(new GetPaymentMethods(), cancellationToken);
         return response.PaymentMethods;
+    }
+
+    public static async Task<PartnerDto> GetPartner(
+        string streamerId,
+        [Service] IMediator mediator,
+        CancellationToken cancellationToken
+    )
+    {
+        return await mediator.Send(new GetPartner(streamerId), cancellationToken);
     }
 }
 
