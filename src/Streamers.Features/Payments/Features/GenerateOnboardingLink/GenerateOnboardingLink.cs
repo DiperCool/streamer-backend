@@ -16,12 +16,9 @@ public class GenerateOnboardingLinkQueryHandler(
     StreamerDbContext context,
     ICurrentUser currentUser,
     IStripeService stripeService,
-    IConnectionMultiplexer redis,
     IRoleService roleService
 ) : IRequestHandler<GenerateOnboardingLinkQuery, OnboardingLinkResponse>
 {
-    private readonly IDatabase _redisDb = redis.GetDatabase();
-
     public async Task<OnboardingLinkResponse> Handle(
         GenerateOnboardingLinkQuery request,
         CancellationToken cancellationToken
@@ -39,14 +36,6 @@ public class GenerateOnboardingLinkQueryHandler(
         )
         {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-        }
-
-        var cacheKey = $"onboarding-link:{streamerId}";
-
-        var cachedLink = await _redisDb.StringGetAsync(cacheKey);
-        if (cachedLink.HasValue)
-        {
-            return new OnboardingLinkResponse(cachedLink.ToString());
         }
 
         var partner = await context.Partners.FirstOrDefaultAsync(
@@ -70,9 +59,6 @@ public class GenerateOnboardingLinkQueryHandler(
             partner.StripeAccountId,
             cancellationToken
         );
-
-        var expiryTime = expiresAt - DateTime.UtcNow;
-        await _redisDb.StringSetAsync(cacheKey, onboardingUrl, expiryTime);
 
         return new OnboardingLinkResponse(onboardingUrl);
     }

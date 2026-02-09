@@ -23,7 +23,7 @@ public class GetPartnerHandler(
             && !await roleService.HasRole(
                 request.StreamerId,
                 currentUser.UserId,
-                Roles.Enums.Permissions.Payments
+                Roles.Enums.Permissions.Revenue
             )
         )
         {
