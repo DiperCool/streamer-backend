@@ -31,7 +31,7 @@ public class GenerateOnboardingLinkQueryHandler(
             && !await roleService.HasRole(
                 streamerId,
                 currentUser.UserId,
-                Roles.Enums.Permissions.Payments
+                Roles.Enums.Permissions.Revenue
             )
         )
         {
