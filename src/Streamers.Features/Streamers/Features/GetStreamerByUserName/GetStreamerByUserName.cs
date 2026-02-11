@@ -6,12 +6,12 @@ using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Streamers.Features.GetStreamerByUserName;
 
-public record GetStreamerByUserName(string UserName) : IRequest<StreamerDto>;
+public record GetStreamerByUserName(string UserName) : IRequest<StreamerSummaryDto>;
 
 public class GetStreamerByUserNameHandler(StreamerDbContext context)
-    : IRequestHandler<GetStreamerByUserName, StreamerDto>
+    : IRequestHandler<GetStreamerByUserName, StreamerSummaryDto>
 {
-    public async Task<StreamerDto> Handle(
+    public async Task<StreamerSummaryDto> Handle(
         GetStreamerByUserName request,
         CancellationToken cancellationToken
     )
@@ -27,13 +27,14 @@ public class GetStreamerByUserNameHandler(StreamerDbContext context)
             );
         }
 
-        return new StreamerDto
+        return new StreamerSummaryDto
         {
             Id = streamer.Id,
             UserName = streamer.UserName,
             Avatar = streamer.Avatar,
             Followers = streamer.Followers,
             IsLive = streamer.IsLive,
+            SubscriptionEnabled = streamer.SubscriptionEnabled,
         };
     }
 }

@@ -36,7 +36,7 @@ public static partial class StreamerQuery
         return response;
     }
 
-    public static async Task<StreamerDto> GetStreamerAsync(
+    public static async Task<StreamerSummaryDto> GetStreamerAsync(
         string userName,
         [Service] IMediator mediator
     )
