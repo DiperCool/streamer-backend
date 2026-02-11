@@ -155,4 +155,40 @@ public class StripeService(IConfiguration configuration) : IStripeService
         );
         return customer.InvoiceSettings.DefaultPaymentMethod.Id == paymentMethodId;
     }
+
+    public async Task<StripePaymentIntentResponse> CreatePaymentIntentAsync(
+        long amount,
+        string currency,
+        string customerId,
+        string? paymentMethodId,
+        string? destinationAccountId,
+        long? applicationFeeAmount,
+        CancellationToken cancellationToken
+    )
+    {
+        var options = new PaymentIntentCreateOptions
+        {
+            Amount = amount,
+            Currency = currency,
+            Customer = customerId,
+            PaymentMethod = paymentMethodId,
+            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+            {
+                Enabled = true,
+            },
+        };
+
+        if (destinationAccountId is not null && applicationFeeAmount is not null)
+        {
+            options.TransferData = new PaymentIntentTransferDataOptions
+            {
+                Destination = destinationAccountId,
+            };
+            options.ApplicationFeeAmount = applicationFeeAmount;
+        }
+
+        var service = new PaymentIntentService();
+        var paymentIntent = await service.CreateAsync(options, cancellationToken: cancellationToken);
+        return new StripePaymentIntentResponse(paymentIntent.ClientSecret);
+    }
 }

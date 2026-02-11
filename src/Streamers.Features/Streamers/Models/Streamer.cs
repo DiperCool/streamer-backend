@@ -1,7 +1,9 @@
 ﻿using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.Customers.Models;
 using Streamers.Features.Notifications.Models;
-using Streamers.Features.Payments.Models;
+using Streamers.Features.Partners.Models;
+using Streamers.Features.PaymentMethods.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Settings.Models;
 using Streamers.Features.StreamInfos.Models;

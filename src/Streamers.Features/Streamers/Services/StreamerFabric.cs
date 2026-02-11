@@ -1,7 +1,8 @@
 ﻿using Streamers.Features.Chats.Models;
+using Streamers.Features.Customers.Models;
 using Streamers.Features.Files;
 using Streamers.Features.Notifications.Models;
-using Streamers.Features.Payments.Models;
+using Streamers.Features.Partners.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Models;

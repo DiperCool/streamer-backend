@@ -3,6 +3,7 @@ using Stripe;
 namespace Shared.Stripe;
 
 public record CreateStripeAccountResult(string AccountId);
+public record StripePaymentIntentResponse(string ClientSecret); // Added this record
 
 public interface IStripeService
 {
@@ -38,6 +39,15 @@ public interface IStripeService
     Task<bool> UpdateCustomerDefaultPaymentMethodAsync(
         string customerId,
         string paymentMethodId,
+        CancellationToken cancellationToken
+    );
+    Task<StripePaymentIntentResponse> CreatePaymentIntentAsync(
+        long amount,
+        string currency,
+        string customerId,
+        string? paymentMethodId,
+        string? destinationAccountId, // Added destinationAccountId
+        long? applicationFeeAmount, // Added applicationFeeAmount
         CancellationToken cancellationToken
     );
 }
