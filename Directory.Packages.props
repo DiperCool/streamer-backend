@@ -113,7 +113,7 @@
     <PackageVersion Include="HotChocolate.Data" Version="15.1.7" />
     <PackageVersion Include="HotChocolate.Data.EntityFramework" Version="15.1.7" />
     <PackageVersion Include="HotChocolate.Execution.Abstractions" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.7" />
+    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.11" />
     <PackageVersion Include="HotChocolate.Types.OffsetPagination" Version="15.1.7" />
     <PackageVersion Include="DotNetCore.CAP" Version="8.3.5" />
     <PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="8.3.5" />
