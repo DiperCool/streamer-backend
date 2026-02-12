@@ -1,60 +1,84 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using Shared.Stripe;
+using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Subscriptions.Models;
 
 namespace Streamers.Features.Subscriptions.Features.CreateSubscription;
 
-public record SubscriptionDto(
-    Guid Id,
-    string UserId,
-    string StreamerId,
-    string StripeSubscriptionId,
-    SubscriptionStatus Status,
-    DateTime CurrentPeriodEnd,
-    DateTime CreatedAt
-);
+public record CreateSubscription(Guid SubscriptionPlanId, Guid PaymentMethodId)
+    : IRequest<CreateSubscriptionResponse>;
 
-public record CreateSubscription(
-    string UserId,
-    string StreamerId,
-    string StripeSubscriptionId,
-    DateTime CurrentPeriodEnd
-) : IRequest<CreateSubscriptionResponse>;
+public record CreateSubscriptionResponse(string ClientSecret);
 
-public record CreateSubscriptionResponse(SubscriptionDto Subscription);
-
-public class CreateSubscriptionHandler(StreamerDbContext dbContext)
-    : IRequestHandler<CreateSubscription, CreateSubscriptionResponse>
+public class CreateSubscriptionHandler(
+    IStripeService stripeService,
+    StreamerDbContext context,
+    ICurrentUser currentUser
+) : IRequestHandler<CreateSubscription, CreateSubscriptionResponse>
 {
     public async Task<CreateSubscriptionResponse> Handle(
         CreateSubscription request,
         CancellationToken cancellationToken
     )
     {
+        var subscriptionPlan = await context
+            .SubscriptionPlans.Include(sp => sp.Streamer)
+            .ThenInclude(s => s.Partner)
+            .Where(x => x.Id == request.SubscriptionPlanId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (subscriptionPlan is null)
+        {
+            throw new Exception("Subscription plan not found.");
+        }
+
+        var destinationAccountId = subscriptionPlan.Streamer.Partner.StripeAccountId;
+
+        long applicationFeePercent = 5;
+
+        var payerStreamer = await context
+            .Streamers.Include(s => s.Customer)
+            .Where(s => s.Id == currentUser.UserId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (payerStreamer?.Customer?.StripeCustomerId is null)
+        {
+            throw new Exception("Stripe customer not found for the current user (payer)."); // TODO: Handle this gracefully
+        }
+        var stripeCustomerId = payerStreamer.Customer.StripeCustomerId;
+
+        var paymentMethod = await context
+            .PaymentMethods.Where(pm =>
+                pm.Id == request.PaymentMethodId && pm.StreamerId == currentUser.UserId
+            )
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (paymentMethod is null)
+        {
+            throw new Exception("Provided payment method is not valid for the current user.");
+        }
+
+        var subscriptionResponse = await stripeService.CreateSubscriptionAsync(
+            stripeCustomerId,
+            subscriptionPlan.StripePriceId,
+            paymentMethod.StripePaymentMethodId,
+            destinationAccountId,
+            applicationFeePercent,
+            cancellationToken
+        );
         var subscription = new Subscription(
             Guid.NewGuid(),
-            request.UserId,
-            request.StreamerId,
-            request.StripeSubscriptionId,
-            SubscriptionStatus.Active,
-            request.CurrentPeriodEnd,
+            payerStreamer.Id,
+            subscriptionPlan.Streamer.Id,
+            subscriptionResponse.SubscriptionId,
+            SubscriptionStatus.Incomplete,
             DateTime.UtcNow
         );
 
-        dbContext.Subscriptions.Add(subscription);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        var subscriptionDto = new SubscriptionDto(
-            subscription.Id,
-            subscription.UserId,
-            subscription.StreamerId,
-            subscription.StripeSubscriptionId,
-            subscription.Status,
-            subscription.CurrentPeriodEnd,
-            subscription.CreatedAt
-        );
-
-        return new CreateSubscriptionResponse(subscriptionDto);
+        context.Subscriptions.Add(subscription);
+        await context.SaveChangesAsync(cancellationToken);
+        return new CreateSubscriptionResponse(subscriptionResponse.ClientSecret);
     }
 }

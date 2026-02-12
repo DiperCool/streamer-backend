@@ -5,6 +5,7 @@ namespace Streamers.Features.Subscriptions.Models;
 
 public enum SubscriptionStatus
 {
+    Incomplete,
     Active,
     Canceled,
     PastDue,
@@ -19,13 +20,14 @@ public class Subscription : Entity<Guid>
     public DateTime CurrentPeriodEnd { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
+    private Subscription() { }
+
     public Subscription(
         Guid id,
         string userId,
         string streamerId,
         string stripeSubscriptionId,
         SubscriptionStatus status,
-        DateTime currentPeriodEnd,
         DateTime createdAt
     )
     {
@@ -34,7 +36,7 @@ public class Subscription : Entity<Guid>
         StreamerId = streamerId;
         StripeSubscriptionId = stripeSubscriptionId;
         Status = status;
-        CurrentPeriodEnd = currentPeriodEnd;
+        CurrentPeriodEnd = DateTime.MinValue;
         CreatedAt = createdAt;
     }
 }

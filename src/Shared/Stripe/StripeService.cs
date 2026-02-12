@@ -188,7 +188,54 @@ public class StripeService(IConfiguration configuration) : IStripeService
         }
 
         var service = new PaymentIntentService();
-        var paymentIntent = await service.CreateAsync(options, cancellationToken: cancellationToken);
+        var paymentIntent = await service.CreateAsync(
+            options,
+            cancellationToken: cancellationToken
+        );
         return new StripePaymentIntentResponse(paymentIntent.ClientSecret);
+    }
+
+    public async Task<CreateSubscriptionResponse> CreateSubscriptionAsync(
+        string customerId,
+        string priceId,
+        string? paymentMethodId,
+        string? destinationAccountId,
+        long? applicationFeePercent,
+        CancellationToken cancellationToken
+    )
+    {
+        var options = new SubscriptionCreateOptions
+        {
+            Customer = customerId,
+            Items = new List<SubscriptionItemOptions>
+            {
+                new SubscriptionItemOptions { Price = priceId },
+            },
+            TrialEnd = SubscriptionTrialEnd.Now,
+            PaymentBehavior = "default_incomplete",
+        };
+
+        if (paymentMethodId is not null)
+        {
+            options.DefaultPaymentMethod = paymentMethodId;
+        }
+
+        if (destinationAccountId is not null && applicationFeePercent is not null)
+        {
+            options.TransferData = new SubscriptionTransferDataOptions
+            {
+                Destination = destinationAccountId,
+            };
+            options.ApplicationFeePercent = 5;
+        }
+
+        options.AddExpand("latest_invoice.confirmation_secret");
+
+        var service = new SubscriptionService();
+        var subscription = await service.CreateAsync(options, cancellationToken: cancellationToken);
+        return new CreateSubscriptionResponse(
+            subscription.LatestInvoice.ConfirmationSecret.ClientSecret,
+            subscription.Id
+        );
     }
 }

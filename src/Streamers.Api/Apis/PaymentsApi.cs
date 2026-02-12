@@ -1,4 +1,4 @@
-using System.Linq; // Added this using
+using System.Linq;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Cqrs;
@@ -7,7 +7,6 @@ using streamer.ServiceDefaults;
 using Streamers.Features.Partners.Features.OnboardingCompleted;
 using Streamers.Features.PaymentMethods.Features.AttachePaymentMethod;
 using Streamers.Features.PaymentMethods.Features.DetachePaymentMethod;
-using Streamers.Features.Subscriptions.Features.CreateSubscription; // Added this using
 using Stripe;
 
 namespace Streamers.Api.Apis;
@@ -73,34 +72,6 @@ public static class PaymentsApi
                 if (paymentMethod != null)
                 {
                     await mediator.Send(new PaymentMethodDetached(paymentMethod.Id));
-                }
-            }
-            else if (stripeEvent.Type == EventTypes.CustomerSubscriptionCreated) // New condition
-            {
-                var stripeSubscription = stripeEvent.Data.Object as Subscription;
-                if (stripeSubscription is not null)
-                {
-                    var userId = stripeSubscription.Metadata.TryGetValue("user_id", out var uid)
-                        ? uid
-                        : null;
-                    var streamerId = stripeSubscription.Metadata.TryGetValue(
-                        "streamer_id",
-                        out var sid
-                    )
-                        ? sid
-                        : null;
-
-                    if (userId is not null && streamerId is not null)
-                    {
-                        await mediator.Send(
-                            new CreateSubscription(
-                                userId,
-                                streamerId,
-                                stripeSubscription.Id,
-                                stripeSubscription.Items.Data.First().CurrentPeriodEnd
-                            )
-                        );
-                    }
                 }
             }
 
