@@ -74,7 +74,8 @@ public class CreateSubscriptionHandler(
             subscriptionPlan.Streamer.Id,
             subscriptionResponse.SubscriptionId,
             SubscriptionStatus.Incomplete,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            subscriptionPlan.Name
         );
 
         context.Subscriptions.Add(subscription);

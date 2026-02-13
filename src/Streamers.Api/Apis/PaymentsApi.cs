@@ -7,6 +7,9 @@ using streamer.ServiceDefaults;
 using Streamers.Features.Partners.Features.OnboardingCompleted;
 using Streamers.Features.PaymentMethods.Features.AttachePaymentMethod;
 using Streamers.Features.PaymentMethods.Features.DetachePaymentMethod;
+using Streamers.Features.Subscriptions.Features.HandleSubscriptionCanceled;
+using Streamers.Features.Subscriptions.Features.HandleSubscriptionInvoicePaid;
+using Streamers.Features.Subscriptions.Features.HandleSubscriptionPastDue;
 using Stripe;
 
 namespace Streamers.Api.Apis;
@@ -72,6 +75,52 @@ public static class PaymentsApi
                 if (paymentMethod != null)
                 {
                     await mediator.Send(new PaymentMethodDetached(paymentMethod.Id));
+                }
+            }
+            else if (stripeEvent.Type == EventTypes.CustomerSubscriptionUpdated)
+            {
+                var subscription = stripeEvent.Data.Object as Subscription;
+                var previous = stripeEvent.Data.PreviousAttributes as Newtonsoft.Json.Linq.JObject;
+
+                if (subscription == null)
+                    return TypedResults.Ok();
+
+                var periodEnd = subscription.Items.Data.FirstOrDefault()?.CurrentPeriodEnd;
+                if (periodEnd.HasValue && subscription.Status == "active")
+                {
+                    bool isStatusChanged = previous != null && previous.ContainsKey("status");
+                    bool isPeriodChanged =
+                        previous != null
+                        && (
+                            previous.ContainsKey("current_period_end")
+                            || previous.ContainsKey("period_end")
+                        );
+
+                    if (isStatusChanged || isPeriodChanged || previous == null)
+                    {
+                        await mediator.Send(
+                            new HandleSubscriptionInvoicePaid(subscription.Id, periodEnd.Value)
+                        );
+                    }
+                }
+
+                if (previous != null && previous.ContainsKey("status"))
+                {
+                    var oldStatus = previous["status"]?.ToString();
+                    var newStatus = subscription.Status;
+
+                    if (newStatus == "past_due")
+                    {
+                        await mediator.Send(new HandleSubscriptionPastDue(subscription.Id));
+                    }
+                }
+            }
+            else if (stripeEvent.Type == EventTypes.CustomerSubscriptionDeleted)
+            {
+                var subscription = stripeEvent.Data.Object as Subscription;
+                if (subscription is not null)
+                {
+                    await mediator.Send(new HandleSubscriptionCanceled(subscription.Id));
                 }
             }
 

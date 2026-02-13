@@ -19,6 +19,7 @@ public class Subscription : Entity<Guid>
     public SubscriptionStatus Status { get; private set; }
     public DateTime CurrentPeriodEnd { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public string Title { get; private set; }
 
     private Subscription() { }
 
@@ -28,7 +29,8 @@ public class Subscription : Entity<Guid>
         string streamerId,
         string stripeSubscriptionId,
         SubscriptionStatus status,
-        DateTime createdAt
+        DateTime createdAt,
+        string title
     )
     {
         Id = id;
@@ -38,5 +40,16 @@ public class Subscription : Entity<Guid>
         Status = status;
         CurrentPeriodEnd = DateTime.MinValue;
         CreatedAt = createdAt;
+        Title = title;
+    }
+
+    public void SetStatus(SubscriptionStatus status)
+    {
+        Status = status;
+    }
+
+    public void SetCurrentPeriodEnd(DateTime currentPeriodEnd)
+    {
+        CurrentPeriodEnd = currentPeriodEnd;
     }
 }

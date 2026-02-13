@@ -13,4 +13,6 @@ public class StreamerInteractionDto
     public Permissions Permissions { get; set; }
 
     public DateTime? LastTimeMessage { get; set; }
+
+    public bool IsSubscribed { get; set; }
 }
