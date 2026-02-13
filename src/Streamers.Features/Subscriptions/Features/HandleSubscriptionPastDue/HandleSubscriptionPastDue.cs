@@ -10,17 +10,22 @@ public record HandleSubscriptionPastDue(string StripeSubscriptionId) : IRequest<
 public class HandleSubscriptionPastDueHandler(StreamerDbContext context)
     : IRequestHandler<HandleSubscriptionPastDue, bool>
 {
-    public async Task<bool> Handle(HandleSubscriptionPastDue request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(
+        HandleSubscriptionPastDue request,
+        CancellationToken cancellationToken
+    )
     {
-        var subscription = await context.Subscriptions
-            .FirstOrDefaultAsync(s => s.StripeSubscriptionId == request.StripeSubscriptionId, cancellationToken);
+        var subscription = await context.Subscriptions.FirstOrDefaultAsync(
+            s => s.StripeSubscriptionId == request.StripeSubscriptionId,
+            cancellationToken
+        );
 
         if (subscription is null)
         {
             return false;
         }
 
-        subscription.SetStatus(SubscriptionStatus.PastDue);
+        subscription.MarkAsPastDue();
 
         await context.SaveChangesAsync(cancellationToken);
 

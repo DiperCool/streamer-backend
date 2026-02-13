@@ -25,11 +25,17 @@ public class HandleSubscriptionInvoicePaidHandler(StreamerDbContext context)
 
         if (subscription is null)
         {
-            // Or should we throw?
             return false;
         }
 
-        subscription.SetStatus(SubscriptionStatus.Active);
+        if (subscription.Status == SubscriptionStatus.Incomplete)
+        {
+            subscription.MakeCurrentAndSucceedPayment();
+        }
+        else
+        {
+            subscription.SucceedPayment();
+        }
         subscription.SetCurrentPeriodEnd(request.CurrentPeriodEnd);
 
         await context.SaveChangesAsync(cancellationToken);

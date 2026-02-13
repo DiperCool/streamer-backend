@@ -20,6 +20,7 @@ public class Subscription : Entity<Guid>
     public DateTime CurrentPeriodEnd { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public string Title { get; private set; }
+    public bool IsCurrent { get; private set; }
 
     private Subscription() { }
 
@@ -41,11 +42,34 @@ public class Subscription : Entity<Guid>
         CurrentPeriodEnd = DateTime.MinValue;
         CreatedAt = createdAt;
         Title = title;
+        IsCurrent = false;
     }
 
-    public void SetStatus(SubscriptionStatus status)
+    public void SucceedPayment()
     {
-        Status = status;
+        Status = SubscriptionStatus.Active;
+    }
+
+    public void MakeCurrentAndSucceedPayment()
+    {
+        IsCurrent = true;
+        Status = SubscriptionStatus.Active;
+    }
+
+    public void MakeObsolete()
+    {
+        IsCurrent = false;
+    }
+
+    public void Cancel()
+    {
+        Status = SubscriptionStatus.Canceled;
+        IsCurrent = false;
+    }
+
+    public void MarkAsPastDue()
+    {
+        Status = SubscriptionStatus.PastDue;
     }
 
     public void SetCurrentPeriodEnd(DateTime currentPeriodEnd)

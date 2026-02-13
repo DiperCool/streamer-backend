@@ -1,4 +1,5 @@
 ﻿using Streamers.Features.Roles.Enums;
+using Streamers.Features.Subscriptions.Dtos;
 
 namespace Streamers.Features.Streams.Dtos;
 
@@ -14,5 +15,5 @@ public class StreamerInteractionDto
 
     public DateTime? LastTimeMessage { get; set; }
 
-    public bool IsSubscribed { get; set; }
+    public SubscriptionDto Subscription { get; set; }
 }

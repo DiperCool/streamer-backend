@@ -10,17 +10,22 @@ public record HandleSubscriptionCanceled(string StripeSubscriptionId) : IRequest
 public class HandleSubscriptionCanceledHandler(StreamerDbContext context)
     : IRequestHandler<HandleSubscriptionCanceled, bool>
 {
-    public async Task<bool> Handle(HandleSubscriptionCanceled request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(
+        HandleSubscriptionCanceled request,
+        CancellationToken cancellationToken
+    )
     {
-        var subscription = await context.Subscriptions
-            .FirstOrDefaultAsync(s => s.StripeSubscriptionId == request.StripeSubscriptionId, cancellationToken);
+        var subscription = await context.Subscriptions.FirstOrDefaultAsync(
+            s => s.StripeSubscriptionId == request.StripeSubscriptionId,
+            cancellationToken
+        );
 
         if (subscription is null)
         {
             return false;
         }
 
-        subscription.SetStatus(SubscriptionStatus.Canceled);
+        subscription.Cancel();
 
         await context.SaveChangesAsync(cancellationToken);
 

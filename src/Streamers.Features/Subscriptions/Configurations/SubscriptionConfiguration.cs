@@ -22,6 +22,6 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
         builder.Property(s => s.CurrentPeriodEnd).IsRequired();
 
         builder.Property(s => s.CreatedAt).IsRequired();
-        builder.HasQueryFilter(x => x.Status != SubscriptionStatus.Incomplete);
+        builder.HasQueryFilter(x => x.IsCurrent);
     }
 }
