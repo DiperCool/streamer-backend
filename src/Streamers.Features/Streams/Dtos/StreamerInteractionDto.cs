@@ -15,5 +15,5 @@ public class StreamerInteractionDto
 
     public DateTime? LastTimeMessage { get; set; }
 
-    public SubscriptionDto Subscription { get; set; }
+    public SubscriptionDto? Subscription { get; set; }
 }

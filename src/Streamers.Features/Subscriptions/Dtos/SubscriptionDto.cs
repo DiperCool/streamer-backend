@@ -2,13 +2,13 @@ using Streamers.Features.Subscriptions.Models;
 
 namespace Streamers.Features.Subscriptions.Dtos;
 
-public record SubscriptionDto
+public class SubscriptionDto
 {
-    public required Guid Id { get; init; }
-    public required string UserId { get; init; }
-    public required string StreamerId { get; init; }
-    public required SubscriptionStatus Status { get; init; }
-    public required DateTime CurrentPeriodEnd { get; init; }
-    public required DateTime CreatedAt { get; init; }
-    public required string Title { get; init; }
+    public required Guid Id { get; set; }
+    public required string UserId { get; set; }
+    public required string StreamerId { get; set; }
+    public required SubscriptionStatus Status { get; set; }
+    public required DateTime CurrentPeriodEnd { get; set; }
+    public required DateTime CreatedAt { get; set; }
+    public required string Title { get; set; }
 }
