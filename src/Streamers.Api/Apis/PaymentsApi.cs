@@ -10,6 +10,7 @@ using Streamers.Features.PaymentMethods.Features.DetachePaymentMethod;
 using Streamers.Features.Subscriptions.Features.HandleSubscriptionCanceled;
 using Streamers.Features.Subscriptions.Features.HandleSubscriptionInvoicePaid;
 using Streamers.Features.Subscriptions.Features.HandleSubscriptionPastDue;
+using Streamers.Features.Transactions.Features.CreateTransaction;
 using Stripe;
 
 namespace Streamers.Api.Apis;
@@ -122,6 +123,84 @@ public static class PaymentsApi
                 {
                     await mediator.Send(new HandleSubscriptionCanceled(subscription.Id));
                 }
+            }
+            else if (stripeEvent.Type == EventTypes.InvoicePaid)
+            {
+                var invoice = stripeEvent.Data.Object as Invoice;
+                if (invoice == null)
+                {
+                    logger.LogWarning("Invoice object is null for InvoicePaid event.");
+                    return TypedResults.Ok();
+                }
+
+                if (
+                    !invoice.Parent.SubscriptionDetails.Metadata.TryGetValue(
+                        "payerId",
+                        out var payerId
+                    )
+                    || !invoice.Parent.SubscriptionDetails.Metadata.TryGetValue(
+                        "streamerId",
+                        out var streamerId
+                    )
+                )
+                {
+                    logger.LogWarning(
+                        "PayerId or StreamerId not found in subscription metadata for InvoicePaid event."
+                    );
+                    return TypedResults.Ok();
+                }
+
+                var grossAmount = invoice.AmountPaid / 100m;
+
+                await mediator.Send(
+                    new CreateTransaction(
+                        payerId,
+                        streamerId,
+                        Features.Transactions.Models.TransactionType.Subscription,
+                        grossAmount,
+                        Features.Transactions.Models.TransactionStatus.Succeeded,
+                        invoice.HostedInvoiceUrl
+                    )
+                );
+            }
+            else if (stripeEvent.Type == EventTypes.InvoicePaymentFailed)
+            {
+                var invoice = stripeEvent.Data.Object as Invoice;
+                if (invoice == null)
+                {
+                    logger.LogWarning("Invoice object is null for InvoicePaymentFailed event.");
+                    return TypedResults.Ok();
+                }
+
+                if (
+                    !invoice.Parent.SubscriptionDetails.Metadata.TryGetValue(
+                        "payerId",
+                        out var payerId
+                    )
+                    || !invoice.Parent.SubscriptionDetails.Metadata.TryGetValue(
+                        "streamerId",
+                        out var streamerId
+                    )
+                )
+                {
+                    logger.LogWarning(
+                        "PayerId or StreamerId not found in subscription metadata for InvoicePaymentFailed event."
+                    );
+                    return TypedResults.Ok();
+                }
+
+                var grossAmount = invoice.AmountDue / 100m;
+
+                await mediator.Send(
+                    new CreateTransaction(
+                        payerId,
+                        streamerId,
+                        Features.Transactions.Models.TransactionType.Subscription,
+                        grossAmount,
+                        Features.Transactions.Models.TransactionStatus.Failed,
+                        invoice.HostedInvoiceUrl
+                    )
+                );
             }
 
             return TypedResults.Ok();

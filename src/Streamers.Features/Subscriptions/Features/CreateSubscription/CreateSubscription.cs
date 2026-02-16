@@ -66,7 +66,12 @@ public class CreateSubscriptionHandler(
             paymentMethod.StripePaymentMethodId,
             destinationAccountId,
             applicationFeePercent,
-            cancellationToken
+            cancellationToken,
+            new Dictionary<string, string>
+            {
+                { "payerId", payerStreamer.Id },
+                { "streamerId", subscriptionPlan.Streamer.Id },
+            }
         );
         var subscription = new Subscription(
             Guid.NewGuid(),

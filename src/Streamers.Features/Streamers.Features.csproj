@@ -14,6 +14,7 @@
       <Folder Include="Achievments\Models\" />
       <Folder Include="Files\Models\" />
       <Folder Include="Subscriptions\Features\" />
+      <Folder Include="Transactions\Graphql\" />
     </ItemGroup>
   <PropertyGroup>
     <NoWarn>CS8618</NoWarn>

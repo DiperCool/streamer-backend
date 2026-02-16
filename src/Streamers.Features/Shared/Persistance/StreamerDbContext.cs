@@ -21,6 +21,7 @@ using Streamers.Features.SubscriptionPlans.Models;
 using Streamers.Features.Subscriptions.Models;
 using Streamers.Features.SystemRoles.Models;
 using Streamers.Features.Tags.Models;
+using Streamers.Features.Transactions.Models; // Added for Transaction entity
 using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
@@ -62,6 +63,7 @@ public class StreamerDbContext(
     public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

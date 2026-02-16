@@ -201,7 +201,8 @@ public class StripeService(IConfiguration configuration) : IStripeService
         string? paymentMethodId,
         string? destinationAccountId,
         long? applicationFeePercent,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        Dictionary<string, string> metadata
     )
     {
         var options = new SubscriptionCreateOptions
@@ -228,6 +229,7 @@ public class StripeService(IConfiguration configuration) : IStripeService
             };
             options.ApplicationFeePercent = 5;
         }
+        options.Metadata = metadata;
 
         options.AddExpand("latest_invoice.confirmation_secret");
 

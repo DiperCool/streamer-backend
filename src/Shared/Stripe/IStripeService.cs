@@ -60,6 +60,7 @@ public interface IStripeService
         string? paymentMethodId,
         string? destinationAccountId,
         long? applicationFeePercent,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        Dictionary<string, string> metadata
     );
 }
