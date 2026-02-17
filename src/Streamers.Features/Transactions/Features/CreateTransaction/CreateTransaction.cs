@@ -3,6 +3,9 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Models;
 using Streamers.Features.Transactions.Models;
+using Microsoft.Extensions.Configuration;
+using streamer.ServiceDefaults;
+using Streamers.Features.ApplicationSettings;
 
 namespace Streamers.Features.Transactions.Features.CreateTransaction;
 
@@ -17,7 +20,7 @@ public record CreateTransaction(
 
 public record CreateTransactionResponse(Guid Id);
 
-public class CreateTransactionHandler(StreamerDbContext streamerDbContext)
+public class CreateTransactionHandler(StreamerDbContext streamerDbContext, IConfiguration configuration)
     : IRequestHandler<CreateTransaction, CreateTransactionResponse>
 {
     public async Task<CreateTransactionResponse> Handle(
@@ -44,7 +47,8 @@ public class CreateTransactionHandler(StreamerDbContext streamerDbContext)
             throw new Exception($"Streamer with ID {request.StreamerId} not found.");
         }
 
-        const decimal applicationFeePercent = 5;
+        var applicationOptions = configuration.BindOptions<ApplicationOptions>();
+        decimal applicationFeePercent = applicationOptions.FeePercent;
 
         var platformFee = request.GrossAmount * (applicationFeePercent / 100m);
         var streamerNet = request.GrossAmount - platformFee;

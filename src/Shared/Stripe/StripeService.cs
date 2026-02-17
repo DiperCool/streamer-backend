@@ -97,8 +97,8 @@ public class StripeService(IConfiguration configuration) : IStripeService
         {
             Account = stripeAccountId,
             Type = "account_onboarding",
-            ReturnUrl = "http://localhost:5173/onboarding-completed", // This should be configurable
-            RefreshUrl = "http://localhost:5173/onboarding-refresh", // This should be configurable
+            ReturnUrl = "http://localhost:5173/onboarding-completed",
+            RefreshUrl = "http://localhost:5173/onboarding-refresh",
         };
         var accountLinkService = new AccountLinkService();
         var accountLink = await accountLinkService.CreateAsync(
@@ -227,7 +227,7 @@ public class StripeService(IConfiguration configuration) : IStripeService
             {
                 Destination = destinationAccountId,
             };
-            options.ApplicationFeePercent = 5;
+            options.ApplicationFeePercent = applicationFeePercent;
         }
         options.Metadata = metadata;
 

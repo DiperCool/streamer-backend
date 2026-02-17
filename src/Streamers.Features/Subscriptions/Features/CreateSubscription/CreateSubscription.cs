@@ -4,6 +4,9 @@ using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Subscriptions.Models;
+using Microsoft.Extensions.Configuration;
+using streamer.ServiceDefaults;
+using Streamers.Features.ApplicationSettings;
 
 namespace Streamers.Features.Subscriptions.Features.CreateSubscription;
 
@@ -15,7 +18,8 @@ public record CreateSubscriptionResponse(string ClientSecret);
 public class CreateSubscriptionHandler(
     IStripeService stripeService,
     StreamerDbContext context,
-    ICurrentUser currentUser
+    ICurrentUser currentUser,
+    IConfiguration configuration
 ) : IRequestHandler<CreateSubscription, CreateSubscriptionResponse>
 {
     public async Task<CreateSubscriptionResponse> Handle(
@@ -36,7 +40,8 @@ public class CreateSubscriptionHandler(
 
         var destinationAccountId = subscriptionPlan.Streamer.Partner.StripeAccountId;
 
-        long applicationFeePercent = 5;
+        var applicationOptions = configuration.BindOptions<ApplicationOptions>();
+        long applicationFeePercent = applicationOptions.FeePercent;
 
         var payerStreamer = await context
             .Streamers.Include(s => s.Customer)
@@ -45,7 +50,7 @@ public class CreateSubscriptionHandler(
 
         if (payerStreamer?.Customer?.StripeCustomerId is null)
         {
-            throw new Exception("Stripe customer not found for the current user (payer)."); // TODO: Handle this gracefully
+            throw new Exception("Stripe customer not found for the current user (payer).");
         }
         var stripeCustomerId = payerStreamer.Customer.StripeCustomerId;
 
