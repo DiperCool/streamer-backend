@@ -5,4 +5,5 @@ public enum AnalyticsItemType
     StreamViewers,
     Follower,
     StreamTime,
+    Subscriptions,
 }
