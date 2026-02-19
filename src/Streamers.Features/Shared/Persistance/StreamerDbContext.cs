@@ -11,6 +11,7 @@ using Streamers.Features.Followers.Models;
 using Streamers.Features.Notifications.Models;
 using Streamers.Features.Partners.Models;
 using Streamers.Features.PaymentMethods.Models;
+using Streamers.Features.Payouts.Models;
 using Streamers.Features.Profiles.Models;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Settings.Models;
@@ -64,6 +65,7 @@ public class StreamerDbContext(
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<Payout> Payouts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

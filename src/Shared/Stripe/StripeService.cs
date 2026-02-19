@@ -240,4 +240,17 @@ public class StripeService(IConfiguration configuration) : IStripeService
             subscription.Id
         );
     }
+
+    public async Task<decimal> GetCurrentBalanceAsync(CancellationToken cancellationToken)
+    {
+        var service = new BalanceService();
+        var balance = await service.GetAsync(cancellationToken: cancellationToken);
+
+        if (balance?.Available != null && balance.Available.Any())
+        {
+            return balance.Available[0].Amount / 100m;
+        }
+
+        return 0m;
+    }
 }

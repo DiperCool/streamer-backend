@@ -7,6 +7,10 @@ using streamer.ServiceDefaults;
 using Streamers.Features.Partners.Features.OnboardingCompleted;
 using Streamers.Features.PaymentMethods.Features.AttachePaymentMethod;
 using Streamers.Features.PaymentMethods.Features.DetachePaymentMethod;
+using Streamers.Features.Payouts.Features.HandlePayoutCreated;
+using Streamers.Features.Payouts.Features.HandlePayoutFailed;
+using Streamers.Features.Payouts.Features.HandlePayoutPaid;
+using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Subscriptions.Features.HandleSubscriptionCanceled;
 using Streamers.Features.Subscriptions.Features.HandleSubscriptionInvoicePaid;
 using Streamers.Features.Subscriptions.Features.HandleSubscriptionPastDue;
@@ -202,7 +206,55 @@ public static class PaymentsApi
                     )
                 );
             }
+            else if (stripeEvent.Type == EventTypes.PayoutPaid)
+            {
+                var payout = stripeEvent.Data.Object as Payout;
+                if (payout is not null)
+                {
+                    await mediator.Send(new HandlePayoutPaid(payout.Id));
+                }
+            }
+            else if (stripeEvent.Type == EventTypes.PayoutFailed)
+            {
+                var payout = stripeEvent.Data.Object as Payout;
+                if (payout is not null)
+                {
+                    await mediator.Send(
+                        new HandlePayoutFailed(
+                            payout.Id,
+                            payout.FailureMessage ?? "Unknown failure"
+                        )
+                    );
+                }
+            }
+            else if (stripeEvent.Type == EventTypes.PayoutCreated)
+            {
+                string stripeAccountId = stripeEvent.Account;
+                var payout = stripeEvent.Data.Object as Payout;
 
+                if (payout is not null)
+                {
+                    if (string.IsNullOrEmpty(stripeAccountId))
+                    {
+                        logger.LogWarning(
+                            "Stripe Account ID is null or empty for PayoutCreated event. Cannot link to streamer."
+                        );
+                        return TypedResults.Ok();
+                    }
+
+                    await mediator.Send(
+                        new HandlePayoutCreated(
+                            payout.Id,
+                            stripeAccountId,
+                            payout.Amount / 100m,
+                            payout.Currency,
+                            payout.ArrivalDate,
+                            payout.Status,
+                            (payout.ApplicationFeeAmount ?? 0) / 100m
+                        )
+                    );
+                }
+            }
             return TypedResults.Ok();
         }
         catch (StripeException e)

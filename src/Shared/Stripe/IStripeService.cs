@@ -63,4 +63,6 @@ public interface IStripeService
         CancellationToken cancellationToken,
         Dictionary<string, string> metadata
     );
+
+    Task<decimal> GetCurrentBalanceAsync(CancellationToken cancellationToken);
 }
