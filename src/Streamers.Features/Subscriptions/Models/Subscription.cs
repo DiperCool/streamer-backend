@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Shared.Abstractions.Domain;
+using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Subscriptions.Models;
 
@@ -14,7 +14,9 @@ public enum SubscriptionStatus
 public class Subscription : Entity<Guid>
 {
     public string UserId { get; private set; }
+    public Streamer User { get; private set; }
     public string StreamerId { get; private set; }
+    public Streamer Streamer { get; private set; }
     public string StripeSubscriptionId { get; private set; }
     public SubscriptionStatus Status { get; private set; }
     public DateTime CurrentPeriodEnd { get; private set; }

@@ -8,6 +8,7 @@ using HotChocolate.Types.Pagination;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Subscriptions.Dtos;
 using Streamers.Features.Subscriptions.Features.GetMySubscriptions;
+using Streamers.Features.Subscriptions.Features.GetSubscriptions;
 using Streamers.Features.Subscriptions.Features.GetStreamerSubscriptionsStats;
 
 namespace Streamers.Features.Subscriptions.Graphql;
@@ -26,6 +27,26 @@ public static partial class SubscriptionQuery
     {
         var result = await mediator.Send(
             new GetMySubscriptions(rcontext, offsetPagingArguments),
+            cancellationToken
+        );
+        return result.ToConnection();
+    }
+
+    [UsePaging(MaxPageSize = 15)]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize]
+    public static async Task<Connection<SubscriptionDto>> GetSubscriptionsAsync(
+        string streamerId,
+        string? search,
+        [Service] IMediator mediator,
+        QueryContext<SubscriptionDto> rcontext,
+        PagingArguments offsetPagingArguments,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await mediator.Send(
+            new GetSubscriptions(streamerId, search, rcontext, offsetPagingArguments),
             cancellationToken
         );
         return result.ToConnection();
