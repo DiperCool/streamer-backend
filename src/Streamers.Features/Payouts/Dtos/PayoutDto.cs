@@ -1,3 +1,5 @@
+using Streamers.Features.Payouts.Enums;
+
 namespace Streamers.Features.Payouts.Dtos;
 
 public record PayoutDto
@@ -7,7 +9,7 @@ public record PayoutDto
     public required string StripePayoutId { get; init; }
     public required decimal Amount { get; init; }
     public required string Currency { get; init; }
-    public required string Status { get; init; }
+    public required PayoutStatus Status { get; init; }
     public required DateTime ArrivalDate { get; init; }
     public string? FailureMessage { get; init; }
     public required DateTime CreatedAt { get; init; }

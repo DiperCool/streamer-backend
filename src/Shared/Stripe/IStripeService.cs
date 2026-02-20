@@ -64,5 +64,8 @@ public interface IStripeService
         Dictionary<string, string> metadata
     );
 
-    Task<decimal> GetCurrentBalanceAsync(CancellationToken cancellationToken);
+    Task<decimal> GetCurrentBalanceAsync(
+        string? stripeAccountId = null,
+        CancellationToken cancellationToken = default
+    );
 }

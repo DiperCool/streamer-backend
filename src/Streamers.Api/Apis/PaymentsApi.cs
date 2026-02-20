@@ -249,7 +249,6 @@ public static class PaymentsApi
                             payout.Amount / 100m,
                             payout.Currency,
                             payout.ArrivalDate,
-                            payout.Status,
                             (payout.ApplicationFeeAmount ?? 0) / 100m
                         )
                     );

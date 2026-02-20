@@ -241,10 +241,18 @@ public class StripeService(IConfiguration configuration) : IStripeService
         );
     }
 
-    public async Task<decimal> GetCurrentBalanceAsync(CancellationToken cancellationToken)
+    public async Task<decimal> GetCurrentBalanceAsync(
+        string? stripeAccountId = null,
+        CancellationToken cancellationToken = default
+    )
     {
         var service = new BalanceService();
-        var balance = await service.GetAsync(cancellationToken: cancellationToken);
+        var balance = await service.GetAsync(
+            requestOptions: stripeAccountId is not null
+                ? new RequestOptions { StripeAccount = stripeAccountId }
+                : null,
+            cancellationToken: cancellationToken
+        );
 
         if (balance?.Available != null && balance.Available.Any())
         {

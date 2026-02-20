@@ -43,22 +43,34 @@ public class GetStreamerSubscriptionsStatsHandler(
             .Subscriptions.Where(s => s.StreamerId == request.StreamerId)
             .CountAsync(cancellationToken);
 
-        decimal futurePayoutAmount;
-        string cacheKey = $"stripe_balance_{request.StreamerId}";
-        string? cachedBalance = await _db.StringGetAsync(cacheKey);
+        var partner = await streamerDbContext.Partners.FirstOrDefaultAsync(
+            p => p.StreamerId == request.StreamerId,
+            cancellationToken
+        );
 
-        if (cachedBalance != null)
+        decimal futurePayoutAmount = 0;
+
+        if (partner?.StripeAccountId != null)
         {
-            futurePayoutAmount = JsonSerializer.Deserialize<decimal>(cachedBalance);
-        }
-        else
-        {
-            futurePayoutAmount = await stripeService.GetCurrentBalanceAsync(cancellationToken);
-            await _db.StringSetAsync(
-                cacheKey,
-                JsonSerializer.Serialize(futurePayoutAmount),
-                CacheDuration
-            );
+            string cacheKey = $"stripe_balance_{partner.StripeAccountId}";
+            string? cachedBalance = await _db.StringGetAsync(cacheKey);
+
+            if (cachedBalance != null)
+            {
+                futurePayoutAmount = JsonSerializer.Deserialize<decimal>(cachedBalance);
+            }
+            else
+            {
+                futurePayoutAmount = await stripeService.GetCurrentBalanceAsync(
+                    partner.StripeAccountId,
+                    cancellationToken
+                );
+                await _db.StringSetAsync(
+                    cacheKey,
+                    JsonSerializer.Serialize(futurePayoutAmount),
+                    CacheDuration
+                );
+            }
         }
 
         return new GetStreamerSubscriptionsStatsResponse(

@@ -11,7 +11,6 @@ public record HandlePayoutCreated(
     decimal Amount,
     string Currency,
     DateTime ArrivalDate,
-    string Status,
     decimal ApplicationFee
 ) : IRequest<HandlePayoutCreatedResponse>;
 
@@ -63,7 +62,6 @@ public class HandlePayoutCreatedHandler(StreamerDbContext dbContext)
             request.StripePayoutId,
             request.Amount,
             request.Currency,
-            request.Status,
             request.ArrivalDate,
             DateTime.UtcNow,
             request.ApplicationFee
