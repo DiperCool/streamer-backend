@@ -42,7 +42,7 @@ public class AuthenticatedSocketSessionInterceptor : DefaultSocketSessionInterce
             return ConnectionStatus.Accept();
 
         if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            token = token.Substring(7); // убираем "Bearer "
+            token = token.Substring(7);
 
         // валидируем токен и получаем ClaimsPrincipal
         var principal = await ValidateTokenAsync(token);
@@ -60,7 +60,6 @@ public class AuthenticatedSocketSessionInterceptor : DefaultSocketSessionInterce
 
         using var http = new HttpClient();
 
-        // Получаем OpenID Connect discovery документ
         OpenIdConnectDiscovery? discovery;
         try
         {
@@ -112,7 +111,6 @@ public class AuthenticatedSocketSessionInterceptor : DefaultSocketSessionInterce
     }
 }
 
-// вспомогательные модели для OpenID Connect discovery
 public class OpenIdConnectDiscovery
 {
     [JsonPropertyName("jwks_uri")]

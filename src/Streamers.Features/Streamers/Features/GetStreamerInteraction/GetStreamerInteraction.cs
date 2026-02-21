@@ -99,6 +99,7 @@ public class GetStreamerInteractionHandler(
                 CurrentPeriodEnd = subscription.CurrentPeriodEnd,
                 CreatedAt = subscription.CreatedAt,
                 Title = subscription.Title,
+                CurrentStreak = subscription.CurrentStreak,
             };
         }
         return interaction;

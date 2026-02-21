@@ -15,6 +15,7 @@ public static class Extensions
             .AddProjections()
             .AddFiltering()
             .AddSorting()
+            .AddHttpRequestInterceptor<AnonymousRequestInterceptor>()
             .AddSocketSessionInterceptor<AuthenticatedSocketSessionInterceptor>()
             .AddPagingArguments()
             .AddInMemorySubscriptions()

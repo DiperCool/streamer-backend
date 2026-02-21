@@ -23,6 +23,7 @@ public class Subscription : Entity<Guid>
     public DateTime CreatedAt { get; private set; }
     public string Title { get; private set; }
     public bool IsCurrent { get; private set; }
+    public int CurrentStreak { get; private set; }
 
     private Subscription() { }
 
@@ -45,11 +46,13 @@ public class Subscription : Entity<Guid>
         CreatedAt = createdAt;
         Title = title;
         IsCurrent = false;
+        CurrentStreak = 0;
     }
 
     public void SucceedPayment()
     {
         Status = SubscriptionStatus.Active;
+        CurrentStreak += 1;
     }
 
     public void MakeCurrentAndSucceedPayment()

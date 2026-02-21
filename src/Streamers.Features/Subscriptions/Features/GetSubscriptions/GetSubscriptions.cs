@@ -48,6 +48,7 @@ public class GetSubscriptionsHandler(
             CurrentPeriodEnd = s.CurrentPeriodEnd,
             CreatedAt = s.CreatedAt,
             Title = s.Title,
+            CurrentStreak = s.CurrentStreak,
         });
 
         Page<SubscriptionDto> result = await dtoQuery

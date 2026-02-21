@@ -107,14 +107,14 @@
     <PackageVersion Include="Aspire.Hosting.Keycloak" Version="9.0.0-preview.4.24511.1" />
     <PackageVersion Include="Aspire.Keycloak.Authentication" Version="9.0.0-preview.5.24551.3" />
     <PackageVersion Include="Stripe.net" Version="50.3.0" />
-    <PackageVersion Include="HotChocolate" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.AspNetCore.Authorization" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.Data" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.Data.EntityFramework" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.Execution.Abstractions" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.7" />
-    <PackageVersion Include="HotChocolate.Types.OffsetPagination" Version="15.1.7" />
+    <PackageVersion Include="HotChocolate" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.AspNetCore" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.AspNetCore.Authorization" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.Data" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.Data.EntityFramework" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.Execution.Abstractions" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.Types.Analyzers" Version="15.1.12" />
+    <PackageVersion Include="HotChocolate.Types.OffsetPagination" Version="15.1.12" />
     <PackageVersion Include="DotNetCore.CAP" Version="8.3.5" />
     <PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="8.3.5" />
     <PackageVersion Include="DotNetCore.CAP.PostgreSql" Version="8.3.5" />

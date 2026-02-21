@@ -11,4 +11,5 @@ public class SubscriptionDto
     public required DateTime CurrentPeriodEnd { get; set; }
     public required DateTime CreatedAt { get; set; }
     public required string Title { get; set; }
+    public required int CurrentStreak { get; set; }
 }

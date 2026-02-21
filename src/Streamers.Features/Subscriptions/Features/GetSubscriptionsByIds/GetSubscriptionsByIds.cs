@@ -30,6 +30,7 @@ public class GetSubscriptionsByIdsHandler(StreamerDbContext context)
                 CurrentPeriodEnd = s.CurrentPeriodEnd,
                 CreatedAt = s.CreatedAt,
                 Title = s.Title,
+                CurrentStreak = s.CurrentStreak,
             })
             .ToDictionaryAsync(s => s.Id, cancellationToken);
 
