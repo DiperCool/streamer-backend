@@ -21,6 +21,7 @@ public class ChatMessageDeletedEventHandler(ITopicEventSender sender)
             IsDeleted = message.IsDeleted,
             IsActive = message.IsActive,
             ReplyId = message.ReplyId,
+            IsUserSubscribed = message.IsUserSubscribed,
         };
         await sender.SendAsync(
             $"{nameof(ChatMessageDeleted)}-{message.Chat.Id}",

@@ -18,7 +18,8 @@ public class ChatMessage : Entity
         string message,
         DateTime createdAt,
         ChatMessage? reply,
-        Chat chat
+        Chat chat,
+        bool isUserSubscribed
     )
     {
         Sender = sender;
@@ -27,6 +28,7 @@ public class ChatMessage : Entity
         Type = type;
         Reply = reply;
         Chat = chat;
+        IsUserSubscribed = isUserSubscribed;
         Raise(new ChatMessageCreated(this));
     }
 
@@ -37,7 +39,7 @@ public class ChatMessage : Entity
     public DateTime CreatedAt { get; set; }
     public bool IsDeleted { get; set; }
     public bool IsActive { get; set; }
-
+    public bool IsUserSubscribed { get; set; }
     public ChatMessage? Reply { get; set; }
     public Guid? ReplyId { get; set; }
     public Chat Chat { get; set; }

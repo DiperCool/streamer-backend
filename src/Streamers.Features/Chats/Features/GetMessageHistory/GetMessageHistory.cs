@@ -36,6 +36,7 @@ public class GetMessageHistoryHandler(StreamerDbContext streamerDbContext)
                 IsDeleted = x.IsDeleted,
                 IsActive = x.IsActive,
                 ReplyId = x.ReplyId,
+                IsUserSubscribed = x.IsUserSubscribed,
             })
             .With(request.QueryContext)
             .ToListAsync(cancellationToken: cancellationToken);

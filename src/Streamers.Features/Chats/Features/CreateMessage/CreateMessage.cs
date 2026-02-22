@@ -68,13 +68,19 @@ public class CreateMessageHandler(
                 $"Could not find chat message with ID {request.ReplyMessageId}"
             );
         }
+
+        var subscription = await streamerDbContext.Subscriptions.AnyAsync(
+            x => x.UserId == currentUser.UserId && x.StreamerId == chat.StreamerId,
+            cancellationToken: cancellationToken
+        );
         var chatMessage = new ChatMessage(
             ChatMessageType.UserMessage,
             streamer,
             request.Message,
             DateTime.UtcNow,
             reply,
-            chat
+            chat,
+            subscription
         );
         await streamerDbContext.ChatMessages.AddAsync(chatMessage, cancellationToken);
         await streamerDbContext.SaveChangesAsync(cancellationToken);

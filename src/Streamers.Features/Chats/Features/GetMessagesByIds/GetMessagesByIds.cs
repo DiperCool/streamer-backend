@@ -28,6 +28,7 @@ public class GetMessagesByIdsHandler(StreamerDbContext streamerDbContext)
                 IsDeleted = s.IsDeleted,
                 IsActive = s.IsActive,
                 ReplyId = s.ReplyId,
+                IsUserSubscribed = s.IsUserSubscribed,
             })
             .ToListAsync(cancellationToken);
 

@@ -12,4 +12,5 @@ public class ChatMessageDto
     public required bool IsDeleted { get; set; }
     public required bool IsActive { get; set; }
     public required Guid? ReplyId { get; set; }
+    public required bool IsUserSubscribed { get; set; }
 }
