@@ -13,14 +13,16 @@ public abstract class ModeratorActionType : Entity
     public string StreamerId { get; protected set; } = default!;
     public Streamer Streamer { get; protected set; } = default!;
 
+    public DateTimeOffset CreatedDate { get; protected set; }
+
     protected ModeratorActionType(string name, string moderatorId, string streamerId)
     {
         Id = Guid.NewGuid();
         Name = name;
         ModeratorId = moderatorId;
         StreamerId = streamerId;
+        CreatedDate = DateTimeOffset.UtcNow;
     }
 
-    // Parameterless constructor for EF Core
     protected ModeratorActionType() { }
 }

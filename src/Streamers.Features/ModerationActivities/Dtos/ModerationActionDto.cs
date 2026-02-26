@@ -8,11 +8,13 @@ using Streamers.Features.Streamers.GraphqQl;
 namespace Streamers.Features.ModerationActivities.Dtos;
 
 [UnionType("ModeratorAction")]
-public class ModeratorActionDto
+public abstract class ModeratorActionDto
 {
     public required Guid Id { get; init; }
     public required string Name { get; init; }
     public required string ModeratorId { get; init; }
+    public required string StreamerId { get; init; }
+    public required DateTimeOffset CreatedDate { get; init; }
 
     public Task<StreamerDto?> GetModerator(
         [Parent] ModeratorActionDto parent,

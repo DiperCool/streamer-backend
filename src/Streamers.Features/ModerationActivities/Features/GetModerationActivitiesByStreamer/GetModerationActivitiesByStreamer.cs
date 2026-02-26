@@ -2,8 +2,11 @@ using System.Collections.Immutable;
 using GreenDonut.Data;
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using streamer.ServiceDefaults.Identity;
 using Streamers.Features.ModerationActivities.Dtos;
 using Streamers.Features.ModerationActivities.Models;
+using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.ModerationActivities.Features.GetModerationActivitiesByStreamer;
@@ -11,18 +14,28 @@ namespace Streamers.Features.ModerationActivities.Features.GetModerationActiviti
 public record GetModerationActivitiesByStreamer(string StreamerId, PagingArguments PagingArguments)
     : IRequest<Page<ModeratorActionDto>>;
 
-public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContext)
-    : IRequestHandler<GetModerationActivitiesByStreamer, Page<ModeratorActionDto>>
+public class GetModerationActivitiesByStreamerHandler(
+    StreamerDbContext dbContext,
+    IRoleService roleService,
+    ICurrentUser currentUser
+) : IRequestHandler<GetModerationActivitiesByStreamer, Page<ModeratorActionDto>>
 {
     public async Task<Page<ModeratorActionDto>> Handle(
         GetModerationActivitiesByStreamer request,
         CancellationToken cancellationToken
     )
     {
+        if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Chat))
+        {
+            throw new UnauthorizedAccessException(
+                "You do not have permission to view moderation activities for this streamer."
+            );
+        }
+
         var query = dbContext
             .ModeratorActionTypes.AsNoTracking()
             .Where(x => x.StreamerId == request.StreamerId)
-            .OrderByDescending(x => x.Id);
+            .OrderByDescending(x => x.CreatedDate);
 
         var pageOfEntities = await query.ToPageAsync(
             request.PagingArguments,
@@ -39,6 +52,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                             Id = banAction.Id,
                             Name = banAction.Name,
                             ModeratorId = banAction.ModeratorId,
+                            StreamerId = banAction.StreamerId,
+                            CreatedDate = banAction.CreatedDate,
                             TargetUserId = banAction.TargetUserId,
                             BannedUntil = banAction.BannedUntil,
                             Reason = banAction.Reason,
@@ -48,6 +63,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = unbanAction.Id,
                         Name = unbanAction.Name,
                         ModeratorId = unbanAction.ModeratorId,
+                        StreamerId = unbanAction.StreamerId,
+                        CreatedDate = unbanAction.CreatedDate,
                         TargetUserId = unbanAction.TargetUserId,
                     },
                     Models.PinAction pinAction => new PinActionDto
@@ -55,6 +72,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = pinAction.Id,
                         Name = pinAction.Name,
                         ModeratorId = pinAction.ModeratorId,
+                        StreamerId = pinAction.StreamerId,
+                        CreatedDate = pinAction.CreatedDate,
                         ChatMessageId = pinAction.ChatMessageId,
                     },
                     Models.UnpinAction unpinAction => new UnpinActionDto
@@ -62,6 +81,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = unpinAction.Id,
                         Name = unpinAction.Name,
                         ModeratorId = unpinAction.ModeratorId,
+                        StreamerId = unpinAction.StreamerId,
+                        CreatedDate = unpinAction.CreatedDate,
                         ChatMessageId = unpinAction.ChatMessageId,
                     },
                     StreamCategoryAction categoryAction => new StreamCategoryActionDto
@@ -69,6 +90,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = categoryAction.Id,
                         Name = categoryAction.Name,
                         ModeratorId = categoryAction.ModeratorId,
+                        StreamerId = categoryAction.StreamerId,
+                        CreatedDate = categoryAction.CreatedDate,
                         NewCategory = categoryAction.NewCategory,
                     },
                     StreamLanguageAction languageAction => new StreamLanguageActionDto
@@ -76,6 +99,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = languageAction.Id,
                         Name = languageAction.Name,
                         ModeratorId = languageAction.ModeratorId,
+                        StreamerId = languageAction.StreamerId,
+                        CreatedDate = languageAction.CreatedDate,
                         NewLanguage = languageAction.NewLanguage,
                     },
                     StreamNameAction nameAction => new StreamNameActionDto
@@ -83,6 +108,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = nameAction.Id,
                         Name = nameAction.Name,
                         ModeratorId = nameAction.ModeratorId,
+                        StreamerId = nameAction.StreamerId,
+                        CreatedDate = nameAction.CreatedDate,
                         NewStreamName = nameAction.NewStreamName,
                     },
                     ChatModeAction modeAction => new ChatModeActionDto
@@ -90,6 +117,8 @@ public class GetModerationActivitiesByStreamerHandler(StreamerDbContext dbContex
                         Id = modeAction.Id,
                         Name = modeAction.Name,
                         ModeratorId = modeAction.ModeratorId,
+                        StreamerId = modeAction.StreamerId,
+                        CreatedDate = modeAction.CreatedDate,
                         NewChatMode = modeAction.NewChatMode,
                     },
                     _ => null,

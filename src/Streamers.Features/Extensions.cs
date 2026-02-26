@@ -18,6 +18,7 @@ using Streamers.Features.Categories.Services;
 using Streamers.Features.Chats.Services;
 using Streamers.Features.Customers.Features.CreateCustomer;
 using Streamers.Features.Files.Seeds;
+using Streamers.Features.ModerationActivities.Services;
 using Streamers.Features.Notifications.Services;
 using Streamers.Features.Profiles.Features.UpdateProfile;
 using Streamers.Features.Roles.Services;
@@ -74,6 +75,7 @@ public static class Extensions
         services.AddScoped<IChatRule, BanChatRule>();
         services.AddScoped<IChatRule, OnlyFollowerModeChatRule>();
         services.AddScoped<IChatRule, SlowModeChatRule>();
+        services.AddScoped<IModerationActivityEventPublisher, ModerationActivityEventPublisher>();
 
         services.AddHostedService<RecurringJobsHostedService>();
         builder.Services.AddHostedService<MigrationWorker<StreamerDbContext>>();
@@ -92,7 +94,6 @@ public static class Extensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         builder.Services.AddGraphQl();
-        // Add the authentication services to DI
         builder.AddDefaultAuthentication();
         builder.Services.AddRabbitMq(builder.Configuration);
         builder.Services.AddRedis(builder.Configuration);

@@ -3,9 +3,12 @@ using Streamers.Features.ModerationActivities.Models;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.StreamInfos.Models;
 
+using Streamers.Features.ModerationActivities.Dtos;
+using Streamers.Features.ModerationActivities.Services;
+
 namespace Streamers.Features.ModerationActivities.Features.LogStreamTitleChange;
 
-public class LogStreamTitleChangeEventHandler(StreamerDbContext dbContext)
+public class LogStreamTitleChangeEventHandler(StreamerDbContext dbContext, IModerationActivityEventPublisher publisher)
     : IDomainEventHandler<StreamTitleChanged>
 {
     public async Task Handle(StreamTitleChanged notification, CancellationToken cancellationToken)
@@ -18,5 +21,17 @@ public class LogStreamTitleChangeEventHandler(StreamerDbContext dbContext)
 
         await dbContext.ModeratorActionTypes.AddAsync(action, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        var actionDto = new StreamNameActionDto
+        {
+            Id = action.Id,
+            Name = action.Name,
+            ModeratorId = action.ModeratorId,
+            StreamerId = action.StreamerId,
+            CreatedDate = action.CreatedDate,
+            NewStreamName = action.NewStreamName,
+        };
+
+        await publisher.PublishModerationActivityCreatedAsync(actionDto, cancellationToken);
     }
 }

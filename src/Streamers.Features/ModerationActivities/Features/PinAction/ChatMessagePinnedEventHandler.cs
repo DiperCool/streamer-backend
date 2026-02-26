@@ -3,9 +3,12 @@ using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Shared.Persistance;
 
+using Streamers.Features.ModerationActivities.Dtos;
+using Streamers.Features.ModerationActivities.Services;
+
 namespace Streamers.Features.ModerationActivities.Features.PinAction;
 
-public class ChatMessagePinnedEventHandler(StreamerDbContext dbContext)
+public class ChatMessagePinnedEventHandler(StreamerDbContext dbContext, IModerationActivityEventPublisher publisher)
     : IDomainEventHandler<ChatMessagePinnedEvent>
 {
     public async Task Handle(
@@ -29,5 +32,17 @@ public class ChatMessagePinnedEventHandler(StreamerDbContext dbContext)
 
         await dbContext.ModeratorActionTypes.AddAsync(pinAction, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        var pinActionDto = new PinActionDto
+        {
+            Id = pinAction.Id,
+            Name = pinAction.Name,
+            ModeratorId = pinAction.ModeratorId,
+            StreamerId = pinAction.StreamerId,
+            CreatedDate = pinAction.CreatedDate,
+            ChatMessageId = pinAction.ChatMessageId,
+        };
+
+        await publisher.PublishModerationActivityCreatedAsync(pinActionDto, cancellationToken);
     }
 }
