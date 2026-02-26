@@ -27,11 +27,18 @@ public class Chat : Entity
     {
         PinnedMessage = new PinnedChatMessage(id, message, streamer, dateTime);
         PinnedMessageId = id;
+        PinnedMessage.RaisePinnedEvent(StreamerId);
         Raise(new ChatUpdated(this));
     }
 
-    public void UnpinMessage()
+    public void UnpinMessage(string moderatorId)
     {
+        if (PinnedMessage is null)
+            return;
+
+        var pinnedBy = PinnedMessage.PinnedById;
+        PinnedMessage.RaiseUnpinnedEvent(StreamerId, moderatorId);
+
         PinnedMessage = null;
         PinnedMessageId = null;
         Raise(new ChatUpdated(this));

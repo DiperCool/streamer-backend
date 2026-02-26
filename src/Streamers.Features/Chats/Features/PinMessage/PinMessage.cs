@@ -58,6 +58,7 @@ public class PinMessageHandle(
             streamerDbContext.PinnedChatMessages.Remove(chat.PinnedMessage);
         }
         chat.PinMessage(Guid.NewGuid(), message, streamer, DateTime.UtcNow);
+
         streamerDbContext.Chats.Update(chat);
         if (chat.PinnedMessage != null)
         {

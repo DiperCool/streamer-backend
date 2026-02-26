@@ -55,7 +55,7 @@ public class UnpinMessageHandler(
         {
             throw new UnauthorizedAccessException();
         }
-        message.Message.Chat.UnpinMessage();
+        message.Message.Chat.UnpinMessage(currentUser.UserId);
         streamerDbContext.PinnedChatMessages.Remove(message);
 
         await streamerDbContext.SaveChangesAsync(cancellationToken);

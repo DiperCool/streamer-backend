@@ -1,6 +1,7 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
 using Streamers.Features.Chats.Dtos;
+using Streamers.Features.Chats.GraphQl; // Added for ChatMessagesDataLoader
 using Streamers.Features.ModerationActivities.Graphql;
 using Streamers.Features.Streamers.Dtos;
 using Streamers.Features.Streamers.GraphqQl;
@@ -65,12 +66,30 @@ public class StreamLanguageActionDto : ModeratorActionDto, IModeratorAction
 public class PinActionDto : ModeratorActionDto, IModeratorAction
 {
     public required Guid ChatMessageId { get; init; }
+
+    public Task<ChatMessageDto?> GetChatMessage(
+        [Parent] PinActionDto parent,
+        IChatMessagesByIdDataLoader chatMessagesDataLoader,
+        CancellationToken cancellationToken
+    )
+    {
+        return chatMessagesDataLoader.LoadAsync(parent.ChatMessageId, cancellationToken);
+    }
 }
 
 [ObjectType]
 public class UnpinActionDto : ModeratorActionDto, IModeratorAction
 {
     public required Guid ChatMessageId { get; init; }
+
+    public Task<ChatMessageDto?> GetChatMessage(
+        [Parent] UnpinActionDto parent,
+        IChatMessagesByIdDataLoader chatMessagesDataLoader,
+        CancellationToken cancellationToken
+    )
+    {
+        return chatMessagesDataLoader.LoadAsync(parent.ChatMessageId, cancellationToken);
+    }
 }
 
 [ObjectType]
