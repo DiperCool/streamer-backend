@@ -4,12 +4,14 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.PinMessage;
 
 public record PinMessageResponse(Guid Id);
 
+[Transactional]
 public record PinMessage(Guid MessageId) : IRequest<PinMessageResponse>;
 
 public class PinMessageHandle(

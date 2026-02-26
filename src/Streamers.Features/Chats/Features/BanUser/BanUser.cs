@@ -6,12 +6,14 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.BanUser;
 
 public record BanUserResponse(Guid Id);
 
+[Transactional]
 public record BanUser(string BroadcasterId, string UserId, DateTime BanUntil, string Reason)
     : IRequest<BanUserResponse>;
 

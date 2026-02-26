@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
+using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Tags.Services;
 
@@ -9,6 +10,7 @@ namespace Streamers.Features.StreamInfos.Features.UpdateStreamInfo;
 
 public record UpdateStreamInfoResponse(Guid Id);
 
+[Transactional]
 public record UpdateStreamInfo(
     string StreamerId,
     string Language,
@@ -58,7 +60,7 @@ public class UpdateStreamInfoHandler(
             cancellationToken: cancellationToken
         );
         var tags = await tagsService.Create(request.Tags);
-        streamInfo.Update(request.Title, category, tags, request.Language);
+        streamInfo.Update(request.Title, category, tags, request.Language, currentUser.UserId);
         streamerDbContext.StreamInfos.Update(streamInfo);
 
         var currentStream = await streamerDbContext

@@ -3,12 +3,14 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.UnpinMessage;
 
 public record UnpinMessageResponse(Guid MessageId);
 
+[Transactional]
 public record UnpinMessage(Guid ChatId) : IRequest<UnpinMessageResponse>;
 
 public class UnpinMessageHandler(

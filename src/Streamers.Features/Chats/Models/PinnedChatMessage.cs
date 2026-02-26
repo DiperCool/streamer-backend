@@ -1,7 +1,12 @@
-﻿using Shared.Abstractions.Domain;
+using Shared.Abstractions.Domain;
+using Streamers.Features.Chats.Models;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Chats.Models;
+
+public record ChatMessagePinnedEvent(string ModeratorId, Guid ChatMessageId) : IDomainEvent;
+
+public record ChatMessageUnpinnedEvent(string ModeratorId, Guid ChatMessageId) : IDomainEvent;
 
 public class PinnedChatMessage : Entity
 {

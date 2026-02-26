@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Models;
+using Streamers.Features.ModerationActivities.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
@@ -46,6 +47,28 @@ public class UpdateChatSettingsHandler(
         {
             throw new UnauthorizedAccessException();
         }
+
+        if (chatSettings.SlowMode != request.SlowMode)
+        {
+            var newChatMode = request.SlowMode.HasValue ? $"Slow mode enabled: {request.SlowMode}s" : "Slow mode disabled";
+            var action = new ChatModeAction(currentUser.UserId, chatSettings.StreamerId, newChatMode);
+            await streamerDbContext.ModeratorActionTypes.AddAsync(action, cancellationToken);
+        }
+
+        if (chatSettings.FollowersOnly != request.FollowersOnly)
+        {
+            var newChatMode = request.FollowersOnly ? "Followers only enabled" : "Followers only disabled";
+            var action = new ChatModeAction(currentUser.UserId, chatSettings.StreamerId, newChatMode);
+            await streamerDbContext.ModeratorActionTypes.AddAsync(action, cancellationToken);
+        }
+
+        if (chatSettings.SubscribersOnly != request.SubscribersOnly)
+        {
+            var newChatMode = request.SubscribersOnly ? "Subscribers only enabled" : "Subscribers only disabled";
+            var action = new ChatModeAction(currentUser.UserId, chatSettings.StreamerId, newChatMode);
+            await streamerDbContext.ModeratorActionTypes.AddAsync(action, cancellationToken);
+        }
+
         chatSettings.Update(
             request.SlowMode,
             request.FollowersOnly,

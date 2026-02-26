@@ -13,7 +13,7 @@ namespace Streamers.Features.Chats.GraphQl;
 [MutationType]
 public static partial class ChatMutations
 {
-    [Authorize]
+    [HotChocolate.Authorization.Authorize]
     public static async Task<PinMessageResponse> PinMessage(
         PinMessage pinMessage,
         IMediator mediator
@@ -22,7 +22,7 @@ public static partial class ChatMutations
         return await mediator.Send(pinMessage);
     }
 
-    [Authorize]
+    [HotChocolate.Authorization.Authorize]
     public static async Task<UnpinMessageResponse> UnpinMessage(
         UnpinMessage request,
         [Service] IMediator mediator
@@ -31,7 +31,7 @@ public static partial class ChatMutations
         return await mediator.Send(request);
     }
 
-    [Authorize]
+    [HotChocolate.Authorization.Authorize]
     public static async Task<UpdateChatSettingsResponse> UpdateChatSettings(
         UpdateChatSettings request,
         [Service] IMediator mediator
@@ -40,7 +40,7 @@ public static partial class ChatMutations
         return await mediator.Send(request);
     }
 
-    [Authorize]
+    [HotChocolate.Authorization.Authorize]
     public static async Task<CreateMessageResponse> CreateMessage(
         CreateMessage request,
         [Service] IMediator mediator
@@ -49,7 +49,7 @@ public static partial class ChatMutations
         return await mediator.Send(request);
     }
 
-    [Authorize]
+    [HotChocolate.Authorization.Authorize]
     public static async Task<DeleteMessageResponse> DeleteMessage(
         DeleteMessage request,
         [Service] IMediator mediator

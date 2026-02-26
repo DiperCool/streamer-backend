@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shared.Abstractions.Domain;
 using Streamers.Features.Analytics.Models;
@@ -8,6 +8,7 @@ using Streamers.Features.Categories.Models;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Customers.Models;
 using Streamers.Features.Followers.Models;
+using Streamers.Features.ModerationActivities.Models; // Added
 using Streamers.Features.Notifications.Models;
 using Streamers.Features.Partners.Models;
 using Streamers.Features.PaymentMethods.Models;
@@ -22,7 +23,7 @@ using Streamers.Features.SubscriptionPlans.Models;
 using Streamers.Features.Subscriptions.Models;
 using Streamers.Features.SystemRoles.Models;
 using Streamers.Features.Tags.Models;
-using Streamers.Features.Transactions.Models; // Added for Transaction entity
+using Streamers.Features.Transactions.Models;
 using Streamers.Features.Vods.Models;
 using Stream = Streamers.Features.Streams.Models.Stream;
 
@@ -66,6 +67,15 @@ public class StreamerDbContext(
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Payout> Payouts { get; set; }
+    public DbSet<ModeratorActionType> ModeratorActionTypes { get; set; }
+    public DbSet<BanAction> BanActions { get; set; }
+    public DbSet<UnbanAction> UnbanActions { get; set; }
+    public DbSet<PinAction> PinActions { get; set; }
+    public DbSet<UnpinAction> UnpinActions { get; set; }
+    public DbSet<StreamCategoryAction> StreamCategoryActions { get; set; }
+    public DbSet<StreamLanguageAction> StreamLanguageActions { get; set; }
+    public DbSet<StreamNameAction> StreamNameActions { get; set; }
+    public DbSet<ChatModeAction> ChatModeActions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,12 +3,14 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.UnbanUser;
 
 public record UnbanUserResponse(Guid Id);
 
+[Transactional]
 public record UnbanUser(string BroadcasterId, string UserId) : IRequest<UnbanUserResponse>;
 
 public class UnbanUserHandler(
