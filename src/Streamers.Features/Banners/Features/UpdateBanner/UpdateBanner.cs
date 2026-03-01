@@ -4,7 +4,9 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Banners.Exceptions; // New using statement
 
 namespace Streamers.Features.Banners.Features.UpdateBanner;
 
@@ -59,7 +61,7 @@ public class UpdateBannerHandler(
     {
         if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Banners))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         var banner = await streamerDbContext.Banners.FirstOrDefaultAsync(
@@ -68,9 +70,7 @@ public class UpdateBannerHandler(
         );
         if (banner == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find banner with id: {request.BannerId}"
-            );
+            throw new BannerNotFoundException(request.BannerId);
         }
         banner.Update(request.Title, request.Description, request.Image, request.Url);
         streamerDbContext.Banners.Update(banner);

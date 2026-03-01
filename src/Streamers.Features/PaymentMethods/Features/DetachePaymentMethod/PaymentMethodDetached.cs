@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
+using Streamers.Features.PaymentMethods.Exceptions;
 using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
 
@@ -25,7 +26,7 @@ public class PaymentMethodDetachedHandler(StreamerDbContext streamerDbContext)
 
         if (paymentMethod == null)
         {
-            throw new InvalidOperationException("Payment method not found");
+            throw new PaymentMethodNotFoundException();
         }
 
         paymentMethod.Delete();

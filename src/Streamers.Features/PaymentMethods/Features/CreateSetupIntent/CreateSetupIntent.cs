@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.PaymentMethods.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.PaymentMethods.Features.CreateSetupIntent;
@@ -27,7 +28,7 @@ public class CreateSetupIntentHandler(
             .FirstAsync(cancellationToken);
 
         var clientSecret = await stripeService.CreateSetupIntentAsync(
-            streamer.Customer.StripeCustomerId ?? throw new InvalidOperationException("Stripe Error"),
+            streamer.Customer.StripeCustomerId ?? throw new StripeErrorException("Stripe customer id not found"),
             cancellationToken
         );
 

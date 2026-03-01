@@ -5,6 +5,7 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.SystemRoles.Services;
 using Streamers.Features.Payouts.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Streamers.Features.Shared.Exceptions;
 
 namespace Streamers.Features.Payouts.Features.GetAdminPayouts;
 
@@ -28,7 +29,7 @@ public class GetAdminPayoutsHandler(
     {
         if (!await systemRoleService.HasAdministratorRole(currentUser.UserId))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         var query = context.Payouts.AsQueryable();

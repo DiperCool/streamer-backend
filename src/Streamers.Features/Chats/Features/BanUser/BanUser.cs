@@ -3,11 +3,14 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Cqrs;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Chats.Features.BanUser;
 
@@ -55,7 +58,7 @@ public class BanUserHandler(
         );
         if (me == null)
         {
-            throw new InvalidOperationException("Streamer not found.");
+            throw new StreamerNotFoundException(currentUser.UserId);
         }
         var broadcaster = await streamerDbContext.Streamers.FirstOrDefaultAsync(
             x => x.Id == request.BroadcasterId,
@@ -63,11 +66,11 @@ public class BanUserHandler(
         );
         if (broadcaster == null)
         {
-            throw new InvalidOperationException("Broadcaster not found");
+            throw new StreamerNotFoundException(request.BroadcasterId);
         }
         if (!await roleService.HasRole(broadcaster.Id, currentUser.UserId, Permissions.Chat))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         if (
             await streamerDbContext.BannedUsers.AnyAsync(
@@ -76,7 +79,7 @@ public class BanUserHandler(
             )
         )
         {
-            throw new InvalidOperationException("Already banned user");
+            throw new UserAlreadyBannedException(request.UserId);
         }
 
         var user = await streamerDbContext.Streamers.FirstOrDefaultAsync(
@@ -85,7 +88,7 @@ public class BanUserHandler(
         );
         if (user == null)
         {
-            throw new InvalidOperationException("User not found");
+            throw new StreamerNotFoundException(request.UserId);
         }
         BannedUser bannedUser = new BannedUser(
             user,

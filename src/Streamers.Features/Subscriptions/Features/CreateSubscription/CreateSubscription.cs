@@ -3,6 +3,7 @@ using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Subscriptions.Exceptions;
 using Streamers.Features.Subscriptions.Models;
 using Microsoft.Extensions.Configuration;
 using streamer.ServiceDefaults;
@@ -35,7 +36,7 @@ public class CreateSubscriptionHandler(
 
         if (subscriptionPlan is null)
         {
-            throw new Exception("Subscription plan not found.");
+            throw new SubscriptionPlanNotFoundException();
         }
 
         var destinationAccountId = subscriptionPlan.Streamer.Partner.StripeAccountId;
@@ -50,7 +51,7 @@ public class CreateSubscriptionHandler(
 
         if (payerStreamer?.Customer?.StripeCustomerId is null)
         {
-            throw new Exception("Stripe customer not found for the current user (payer).");
+            throw new StripeCustomerNotFoundException();
         }
         var stripeCustomerId = payerStreamer.Customer.StripeCustomerId;
 
@@ -62,7 +63,7 @@ public class CreateSubscriptionHandler(
 
         if (paymentMethod is null)
         {
-            throw new Exception("Provided payment method is not valid for the current user.");
+            throw new InvalidPaymentMethodException();
         }
 
         var subscriptionResponse = await stripeService.CreateSubscriptionAsync(

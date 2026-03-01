@@ -3,7 +3,9 @@ using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Partners.Features.BecomePartner;
 
@@ -34,7 +36,7 @@ public class BecomePartnerHandler(
             )
         )
         {
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new ForbiddenException("You are not authorized to perform this action.");
         }
 
         var partner = await context
@@ -43,7 +45,7 @@ public class BecomePartnerHandler(
 
         if (partner == null)
         {
-            throw new InvalidOperationException($"Streamer with ID {streamerId} not found.");
+            throw new StreamerNotFoundException(streamerId);
         }
 
         var account = await stripeService.CreateExpressAccountAsync(

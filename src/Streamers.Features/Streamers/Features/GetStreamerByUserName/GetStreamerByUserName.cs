@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Dtos;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Streamers.Features.GetStreamerByUserName;
@@ -22,9 +23,7 @@ public class GetStreamerByUserNameHandler(StreamerDbContext context)
         );
         if (streamer == null)
         {
-            throw new NullReferenceException(
-                $"Streamer with name {request.UserName} does not exist"
-            );
+            throw new StreamerNotFoundException(request.UserName);
         }
 
         return new StreamerSummaryDto

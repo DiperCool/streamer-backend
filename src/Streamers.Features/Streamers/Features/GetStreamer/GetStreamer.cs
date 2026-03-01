@@ -3,6 +3,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Dtos;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Streamers.Features.GetStreamer;
@@ -25,9 +26,7 @@ public class GetStreamerHandler(StreamerDbContext context, ICurrentUser currentU
             );
         if (streamer == null)
         {
-            throw new InvalidOperationException(
-                $"Streamer with id {currentUser.UserId} does not exist"
-            );
+            throw new StreamerNotFoundException(currentUser.UserId);
         }
 
         return new StreamerMeDto

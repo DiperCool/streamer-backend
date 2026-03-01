@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Bots.Dtos;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.SystemRoles.Services;
 
@@ -21,7 +22,7 @@ public class GetBotsHandler(
     {
         if (!await systemRoleService.HasAdministratorRole(currentUser.UserId))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         var query = streamerDbContext.Bots.AsNoTracking();
 

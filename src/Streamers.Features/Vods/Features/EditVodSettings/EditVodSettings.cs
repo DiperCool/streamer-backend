@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Vods.Exceptions;
 
 namespace Streamers.Features.Vods.Features.EditVodSettings;
 
@@ -23,7 +24,7 @@ public class EditVodSettingsHandler(StreamerDbContext streamerDbContext, ICurren
         );
         if (settings == null)
         {
-            throw new InvalidOperationException("No Vod settings found");
+            throw new VodSettingsNotFoundException();
         }
         settings.VodEnabled = request.VodEnabled;
         streamerDbContext.VodSettings.Update(settings);

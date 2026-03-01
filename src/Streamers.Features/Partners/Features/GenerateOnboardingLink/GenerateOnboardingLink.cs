@@ -3,8 +3,11 @@ using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using StackExchange.Redis;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Partners.Exceptions;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.PaymentMethods.Exceptions;
 
 namespace Streamers.Features.Partners.Features.GenerateOnboardingLink;
 
@@ -35,7 +38,7 @@ public class GenerateOnboardingLinkQueryHandler(
             )
         )
         {
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new ForbiddenException("You are not authorized to perform this action.");
         }
 
         var partner = await context.Partners.FirstOrDefaultAsync(
@@ -45,14 +48,12 @@ public class GenerateOnboardingLinkQueryHandler(
 
         if (partner is null)
         {
-            throw new InvalidOperationException($"Partner not found: {streamerId}");
+            throw new PartnerNotFoundException(streamerId);
         }
 
         if (string.IsNullOrEmpty(partner.StripeAccountId))
         {
-            throw new InvalidOperationException(
-                $"Partner {partner.Id} has no Stripe Account ID and cannot generate an onboarding link."
-            );
+            throw new StripeErrorException($"Partner {partner.Id} has no Stripe Account ID and cannot generate an onboarding link.");
         }
 
         var (onboardingUrl, expiresAt) = await stripeService.CreateAccountLinkAsync(

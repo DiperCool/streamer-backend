@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Chats.Dtos;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.GetChat;
@@ -25,7 +26,7 @@ public class GetChatHandler(StreamerDbContext streamerDbContext) : IRequestHandl
             );
         if (chat == null)
         {
-            throw new InvalidOperationException("Chat not found");
+            throw new ChatForStreamerNotFoundException(request.StreamerId);
         }
 
         return chat;

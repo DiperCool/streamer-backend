@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.DeleteMessage;
@@ -31,7 +33,7 @@ public class DeleteMessageHandler(
 
         if (message == null)
         {
-            throw new InvalidOperationException("Message not found");
+            throw new MessageNotFoundException(request.MessageId);
         }
         if (
             !await roleService.HasRole(
@@ -41,7 +43,7 @@ public class DeleteMessageHandler(
             )
         )
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         message.Remove();
         streamerDbContext.ChatMessages.Update(message);

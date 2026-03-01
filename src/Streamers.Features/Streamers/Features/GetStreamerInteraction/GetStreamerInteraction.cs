@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Followers.Models;
 using Streamers.Features.Roles.Enums;
@@ -35,7 +36,7 @@ public class GetStreamerInteractionHandler(
             );
         if (chatSettings == null)
         {
-            throw new InvalidOperationException("Chat settings not found");
+            throw new ChatSettingsForStreamerNotFoundException(request.StreamerId);
         }
         var interaction = new StreamerInteractionDto();
         Follower? follower = await streamerDbContext

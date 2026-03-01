@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Followers.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Followers.Features.Unfollow;
@@ -23,7 +24,7 @@ public class UnfollowHandler(StreamerDbContext streamerDbContext, ICurrentUser c
         );
         if (following == null)
         {
-            throw new InvalidOperationException("Following is already unfollowing");
+            throw new AlreadyUnfollowingException();
         }
         await streamerDbContext
             .Streamers.Where(s => s.Id == request.StreamerId)

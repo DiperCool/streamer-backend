@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Dtos;
+using Streamers.Features.Roles.Exceptions;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Shared.Persistance;
 
@@ -19,7 +20,7 @@ public class GetMyRoleHandler(StreamerDbContext streamerDbContext, ICurrentUser 
         );
         if (role == null)
         {
-            throw new InvalidOperationException("Role not found");
+            throw new RoleNotFoundException(Guid.Empty);
         }
 
         return new RoleDto

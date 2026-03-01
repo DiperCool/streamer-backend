@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Streamers.Features.GetEmail;
 
@@ -23,7 +24,7 @@ public class GetEmailHandler(StreamerDbContext streamerDbContext)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (email == null)
         {
-            throw new InvalidOperationException("Email not found");
+            throw new EmailNotFoundException();
         }
         return new GetEmailResponse(email);
     }

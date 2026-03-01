@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Notifications.Dtos;
+using Streamers.Features.Notifications.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Notifications.Features.GetNotificationSettings;
@@ -24,7 +25,7 @@ public class GetNotificationSettingsHandler(
         );
         if (settings == null)
         {
-            throw new InvalidOperationException("Notification settings not found");
+            throw new NotificationSettingsNotFoundException();
         }
 
         return new NotificationSettingsDto

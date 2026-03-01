@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.PaymentMethods.Exceptions;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers;
 
@@ -33,7 +34,7 @@ public class MakePaymentMethodDefaultHandler(
 
         if (paymentMethodToSetDefault == null)
         {
-            throw new InvalidOperationException("Payment method not found");
+            throw new PaymentMethodNotFoundException();
         }
 
         await streamerDbContext

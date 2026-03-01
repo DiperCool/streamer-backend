@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.PaymentMethods.Exceptions;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers;
 
@@ -33,12 +34,12 @@ public class RemovePaymentMethodHandler(
 
         if (paymentMethod == null)
         {
-            throw new InvalidOperationException("Payment Method not found");
+            throw new PaymentMethodNotFoundException();
         }
 
         await stripeService.DetachPaymentMethodAsync(
             paymentMethod.Streamer.Customer.StripeCustomerId
-                ?? throw new InvalidOperationException("Stripe Error"),
+                ?? throw new StripeErrorException("Stripe customer id not found"),
             paymentMethod.StripePaymentMethodId,
             cancellationToken
         );

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Notifications.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Notifications.Features.EditNotificationSettings;
@@ -26,7 +27,7 @@ public class EditNotificationSettingsHandler(
         );
         if (settings == null)
         {
-            throw new InvalidOperationException("Notification settings not found");
+            throw new NotificationSettingsNotFoundException();
         }
 
         settings.StreamerLive = request.StreamerLive;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Roles.Dtos;
+using Streamers.Features.Roles.Exceptions;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Shared.Persistance;
 
@@ -19,7 +20,7 @@ public class GetRoleByIdHandler(StreamerDbContext streamerDbContext)
         );
         if (role == null)
         {
-            throw new InvalidOperationException($"Role with id {request.RoleId} not found");
+            throw new RoleNotFoundException(request.RoleId);
         }
         return new RoleDto
         {

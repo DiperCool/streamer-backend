@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Streamers.Features.FinishAuth;
@@ -26,9 +27,7 @@ public class FinishAuthHandler(StreamerDbContext streamerDbContext, ICurrentUser
             );
         if (streamer == null)
         {
-            throw new NullReferenceException(
-                $"Streamer with id {currentUser.UserId} does not exist"
-            );
+            throw new StreamerNotFoundException(currentUser.UserId);
         }
         var exist = await streamerDbContext.Streamers.AnyAsync(
             x => x.UserName == request.UserName,
@@ -36,7 +35,7 @@ public class FinishAuthHandler(StreamerDbContext streamerDbContext, ICurrentUser
         );
         if (exist)
         {
-            throw new InvalidOperationException("Streamer already exists");
+            throw new StreamerAlreadyExistsException(request.UserName);
         }
         streamer.FinishAuth(request.UserName);
         streamerDbContext.Streamers.Update(streamer);

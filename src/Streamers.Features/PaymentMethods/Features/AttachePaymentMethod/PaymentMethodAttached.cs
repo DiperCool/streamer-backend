@@ -3,6 +3,7 @@ using Shared.Abstractions.Cqrs;
 using Streamers.Features.PaymentMethods.Models;
 using Streamers.Features.Shared.Cqrs;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.PaymentMethods.Features.AttachePaymentMethod;
 
@@ -32,7 +33,7 @@ public class PaymentMethodAttachedHandler(StreamerDbContext streamerDbContext)
         );
         if (streamer == null)
         {
-            throw new InvalidOperationException("Streamer not found");
+            throw new StreamerNotFoundException(request.CustomerId);
         }
         var paymentMethod = new PaymentMethod(
             request.StripePaymentMethodId,

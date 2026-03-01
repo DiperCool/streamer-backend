@@ -4,6 +4,7 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Vods.Enums;
+using Streamers.Features.Vods.Exceptions;
 
 namespace Streamers.Features.Vods.Features.RemoveVod;
 
@@ -34,7 +35,7 @@ public class RemoveVodHandler(StreamerDbContext streamerDbContext, ICurrentUser 
         );
         if (vod == null)
         {
-            throw new InvalidOperationException("Could not find vod");
+            throw new VodNotFoundException(request.Id);
         }
         streamerDbContext.Vods.Remove(vod);
         await streamerDbContext.SaveChangesAsync(cancellationToken);

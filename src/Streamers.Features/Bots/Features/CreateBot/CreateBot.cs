@@ -6,7 +6,9 @@ using Streamers.Features.Bots.Dtos;
 using Streamers.Features.Bots.Enums;
 using Streamers.Features.Bots.Models;
 using Streamers.Features.Shared.Cqrs;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.SystemRoles.Services;
 
 namespace Streamers.Features.Bots.Features.CreateBot;
@@ -31,7 +33,7 @@ public class CreateBotHandler(
     {
         if (!await systemRoleService.HasAdministratorRole(currentUser.UserId))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         var streamer = await streamerDbContext
             .Streamers.Include(x => x.StreamSettings)
@@ -41,7 +43,7 @@ public class CreateBotHandler(
             );
         if (streamer == null)
         {
-            throw new InvalidOperationException("Streamer not found");
+            throw new StreamerNotFoundException(request.StreamerId);
         }
 
         Bot bot = new Bot(streamer, request.State, request.StreamVideoUrl);

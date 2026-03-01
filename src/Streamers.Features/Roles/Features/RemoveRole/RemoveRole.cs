@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Roles.Exceptions;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Shared.Persistance;
 
@@ -24,7 +25,7 @@ public class RemoveRoleHandler(StreamerDbContext streamerDbContext, ICurrentUser
         );
         if (role == null)
         {
-            throw new InvalidOperationException("Could not find role");
+            throw new RoleNotFoundException(request.RoleId);
         }
         streamerDbContext.Roles.Remove(role);
         await streamerDbContext.SaveChangesAsync(cancellationToken);

@@ -5,6 +5,7 @@ using Streamers.Features.Roles.Enums;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Vods.Dtos;
 using Streamers.Features.Vods.Enums;
+using Streamers.Features.Vods.Exceptions;
 
 namespace Streamers.Features.Vods.Features.GetVod;
 
@@ -46,7 +47,7 @@ public class GetVodHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (vod == null)
         {
-            throw new InvalidOperationException("Vod not found");
+            throw new VodNotFoundException(request.VodId);
         }
         await streamerDbContext
             .Vods.Where(s => s.Id == request.VodId)

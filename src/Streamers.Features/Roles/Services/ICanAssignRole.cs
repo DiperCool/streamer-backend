@@ -1,4 +1,5 @@
 ﻿using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Exceptions;
 using Streamers.Features.Roles.Models;
 
 namespace Streamers.Features.Roles.Services;
@@ -23,18 +24,18 @@ public class CanAssignRole(IRolesHierarchy rolesHierarchy) : ICanAssignRole
     )
     {
         if (creatorRole == null)
-            throw new UnauthorizedAccessException("You do not have a role in this broadcaster.");
+            throw new PermissionDeniedException("You do not have a role in this broadcaster.");
 
         if (!rolesHierarchy.CanAssign(creatorRole.Type, targetRoleType))
-            throw new UnauthorizedAccessException(
+            throw new PermissionDeniedException(
                 $"Your role '{creatorRole.Type}' cannot assign role '{targetRoleType}'."
             );
 
         if (!AssignablePermissions.TryGetValue(creatorRole.Type, out var allowed))
-            throw new UnauthorizedAccessException("You cannot assign any permissions.");
+            throw new PermissionDeniedException("You cannot assign any permissions.");
 
         if ((targetPermissions & allowed) != targetPermissions)
-            throw new UnauthorizedAccessException(
+            throw new PermissionDeniedException(
                 "You are trying to assign permissions you are not allowed to."
             );
 
@@ -42,6 +43,6 @@ public class CanAssignRole(IRolesHierarchy rolesHierarchy) : ICanAssignRole
             creatorRole.Type == RoleType.Administrator
             && targetPermissions.HasPermission(Permissions.Roles)
         )
-            throw new UnauthorizedAccessException("Administrators cannot assign Roles permission.");
+            throw new PermissionDeniedException("Administrators cannot assign Roles permission.");
     }
 }

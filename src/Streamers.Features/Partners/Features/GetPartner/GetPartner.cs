@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Partners.Dtos;
+using Streamers.Features.Partners.Exceptions;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streamers.Enums;
 
@@ -27,9 +29,7 @@ public class GetPartnerHandler(
             )
         )
         {
-            throw new UnauthorizedAccessException(
-                "You are not authorized to view this partner's information."
-            );
+            throw new ForbiddenException("You are not authorized to view this partner's information.");
         }
 
         var partner = await context
@@ -38,9 +38,7 @@ public class GetPartnerHandler(
 
         if (partner == null)
         {
-            throw new InvalidOperationException(
-                $"Partner with StreamerId {request.StreamerId} not found."
-            );
+            throw new PartnerNotFoundException(request.StreamerId);
         }
 
         return new PartnerDto

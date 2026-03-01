@@ -6,6 +6,7 @@ using Streamers.Features.Roles.Enums;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Tags.Services;
 using Streamers.Features.Vods.Enums;
+using Streamers.Features.Vods.Exceptions;
 using Streamers.Features.Vods.Models;
 
 namespace Streamers.Features.Vods.Features.UpdateVod;
@@ -50,7 +51,7 @@ public class UpdateVodHandler(
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (vod == null)
         {
-            throw new InvalidOperationException("Could not find vod");
+            throw new VodNotFoundException(request.Id);
         }
 
         Category? category = await streamerDbContext.Categories.FirstOrDefaultAsync(

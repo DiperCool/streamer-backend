@@ -3,6 +3,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streams.Dtos;
+using Streamers.Features.Streams.Exceptions;
 using Streamers.Features.Streams.Models;
 
 namespace Streamers.Features.Streams.Features.GetStreamSettings;
@@ -22,9 +23,7 @@ public class GetStreamSettingsHandler(StreamerDbContext context, ICurrentUser cu
         );
         if (settings == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find stream settings for user {currentUser.UserId}"
-            );
+            throw new StreamSettingsNotFoundException(currentUser.UserId);
         }
 
         return new StreamSettingsDto

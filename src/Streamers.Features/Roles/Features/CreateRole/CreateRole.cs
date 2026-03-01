@@ -4,7 +4,9 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Models;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Roles.Features.CreateRole;
@@ -35,7 +37,7 @@ public class CreateRoleHandler(
         );
         if (admin == null)
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         assignRole.EnsureCanAssign(admin, request.RoleType, request.Permissions);
 
@@ -45,9 +47,7 @@ public class CreateRoleHandler(
         );
         if (broadcaster == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find broadcaster with id: {currentUser.UserId}"
-            );
+            throw new StreamerNotFoundException(request.BroadcasterId);
         }
         Streamer? streamer = await streamerDbContext.Streamers.FirstOrDefaultAsync(
             x => x.Id == request.StreamerId,
@@ -56,9 +56,7 @@ public class CreateRoleHandler(
 
         if (streamer == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find streamer with id: {currentUser.UserId}"
-            );
+            throw new StreamerNotFoundException(request.StreamerId);
         }
 
         Role role = new Role(

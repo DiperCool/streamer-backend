@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.ModerationActivities.Models;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.UpdateChatSettings;
@@ -35,7 +37,7 @@ public class UpdateChatSettingsHandler(
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
         if (chatSettings == null)
         {
-            throw new InvalidOperationException("Chat settings not found");
+            throw new ChatSettingsNotFoundException(request.Id);
         }
         if (
             !await roleService.HasRole(
@@ -45,7 +47,7 @@ public class UpdateChatSettingsHandler(
             )
         )
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         if (chatSettings.SlowMode != request.SlowMode)

@@ -11,7 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Achievments\Models\" />
       <Folder Include="Files\Models\" />
       <Folder Include="ModerationActivities\Graphql\" />
       <Folder Include="Transactions\Graphql\" />

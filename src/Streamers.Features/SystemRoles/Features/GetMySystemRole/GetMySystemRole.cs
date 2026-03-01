@@ -3,6 +3,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.SystemRoles.Dtos;
+using Streamers.Features.SystemRoles.Exceptions;
 
 namespace Streamers.Features.SystemRoles.Features.GetMySystemRole;
 
@@ -22,9 +23,7 @@ public class GetMySystemRoleHandler(StreamerDbContext streamerDbContext, ICurren
         );
         if (role == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find role with streamerId: {currentUser.UserId}"
-            );
+            throw new SystemRoleNotFoundException(currentUser.UserId);
         }
 
         return new SystemRoleDto { StreamerId = role.StreamerId, RoleType = role.RoleType };

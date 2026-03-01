@@ -3,6 +3,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Vods.Dtos;
+using Streamers.Features.Vods.Exceptions;
 
 namespace Streamers.Features.Vods.Features.GetVodSettings;
 
@@ -22,7 +23,7 @@ public class GetVodSettingsHandler(StreamerDbContext streamerDbContext, ICurrent
         );
         if (settings == null)
         {
-            throw new InvalidOperationException("No Vod settings found");
+            throw new VodSettingsNotFoundException();
         }
         return new VodSettingsDto { Id = settings.Id, VodEnabled = settings.VodEnabled };
     }

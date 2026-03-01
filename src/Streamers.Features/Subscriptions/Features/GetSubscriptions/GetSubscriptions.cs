@@ -4,6 +4,7 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Subscriptions.Dtos;
 
@@ -29,7 +30,7 @@ public class GetSubscriptionsHandler(
     {
         if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Revenue))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         var query = context.Subscriptions.Where(s => s.StreamerId == request.StreamerId);

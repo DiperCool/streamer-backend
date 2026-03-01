@@ -5,6 +5,7 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Payouts.Dtos;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Payouts.Features.GetPayouts;
@@ -28,7 +29,7 @@ public class GetPayoutsHandler(
     {
         if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Revenue))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         var query = context.Payouts.Where(p => p.StreamerId == request.StreamerId);

@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.Streams.Dtos;
+using Streamers.Features.Streams.Exceptions;
 
 namespace Streamers.Features.Streams.Features.GetCurrentStream;
 
@@ -21,7 +22,7 @@ public class GetCurrentStreamHandler(StreamerDbContext streamerDbContext)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (stream == null)
         {
-            throw new InvalidOperationException("Stream not found");
+            throw new StreamNotFoundException(request.StreamerId);
         }
 
         return new StreamDto

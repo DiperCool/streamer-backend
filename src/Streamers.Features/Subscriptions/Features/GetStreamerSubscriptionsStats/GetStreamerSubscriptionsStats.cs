@@ -6,6 +6,7 @@ using StackExchange.Redis;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Subscriptions.Features.GetStreamerSubscriptionsStats;
@@ -36,7 +37,7 @@ public class GetStreamerSubscriptionsStatsHandler(
     {
         if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Revenue))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         var activeSubscriptionsCount = await streamerDbContext

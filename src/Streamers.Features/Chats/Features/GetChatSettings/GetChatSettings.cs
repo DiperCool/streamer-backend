@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Dtos;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Shared.Persistance;
 
@@ -23,9 +24,7 @@ public class GetChatSettingsHandler(StreamerDbContext streamerDbContext, ICurren
         );
         if (settings == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find stream settings for user {currentUser.UserId}"
-            );
+            throw new ChatSettingsForStreamerNotFoundException(currentUser.UserId);
         }
 
         return new ChatSettingsDto

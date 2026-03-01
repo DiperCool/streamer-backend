@@ -5,7 +5,9 @@ using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Banners.Model;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Banners.Features.CreateBanner;
 
@@ -59,7 +61,7 @@ public class CreateBannerHandle(
     {
         if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Banners))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         var broadcaster = await streamerDbContext.Streamers.FirstOrDefaultAsync(
             x => x.Id == request.StreamerId,
@@ -67,7 +69,7 @@ public class CreateBannerHandle(
         );
         if (broadcaster == null)
         {
-            throw new InvalidOperationException("Streamer not found");
+            throw new StreamerNotFoundException(request.StreamerId);
         }
         var banner = new Banner(
             request.Title,

@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Followers.Exceptions;
 using Streamers.Features.Followers.Models;
 using Streamers.Features.Notifications.Job;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Followers.Features.Follow;
 
@@ -17,15 +19,18 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
 {
     public async Task<FollowResponse> Handle(Follow request, CancellationToken cancellationToken)
     {
+        if (request.StreamerId == currentUser.UserId)
+        {
+            throw new FollowerLoopException();
+        }
+
         var whoFollows = await streamerDbContext.Streamers.FirstOrDefaultAsync(
             x => x.Id == currentUser.UserId,
             cancellationToken: cancellationToken
         );
         if (whoFollows == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find streamer with ID {currentUser.UserId}"
-            );
+            throw new StreamerNotFoundException(currentUser.UserId);
         }
         var streamer = await streamerDbContext.Streamers.FirstOrDefaultAsync(
             x => x.Id == request.StreamerId,
@@ -33,9 +38,7 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
         );
         if (streamer == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find streamer with ID {request.StreamerId}"
-            );
+            throw new StreamerNotFoundException(request.StreamerId);
         }
 
         var alreadyFollows = await streamerDbContext.Followers.AnyAsync(
@@ -44,9 +47,7 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
         );
         if (alreadyFollows)
         {
-            throw new InvalidOperationException(
-                $"Already following streamer with ID {request.StreamerId}"
-            );
+            throw new AlreadyFollowingException();
         }
         Follower follower = new Follower(whoFollows, streamer, DateTime.UtcNow);
         await streamerDbContext

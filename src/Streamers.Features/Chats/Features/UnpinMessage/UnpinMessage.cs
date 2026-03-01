@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Cqrs;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Chats.Features.UnpinMessage;
 
@@ -30,9 +33,7 @@ public class UnpinMessageHandler(
         );
         if (streamer == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find streamer with ID {currentUser.UserId}"
-            );
+            throw new StreamerNotFoundException(currentUser.UserId);
         }
         var message = await streamerDbContext
             .PinnedChatMessages.Include(x => x.Message)
@@ -43,7 +44,7 @@ public class UnpinMessageHandler(
             );
         if (message == null)
         {
-            throw new InvalidOperationException("Message not found");
+            throw new MessageNotFoundException(Guid.Empty);
         }
         if (
             !await roleService.HasRole(
@@ -53,7 +54,7 @@ public class UnpinMessageHandler(
             )
         )
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         message.Message.Chat.UnpinMessage(currentUser.UserId);
         streamerDbContext.PinnedChatMessages.Remove(message);

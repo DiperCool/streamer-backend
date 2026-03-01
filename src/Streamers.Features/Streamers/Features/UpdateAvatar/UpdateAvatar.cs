@@ -2,6 +2,7 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.Streamers.Features.UpdateAvatar;
@@ -25,7 +26,7 @@ public class UpdateAvatarHandler(StreamerDbContext context, ICurrentUser current
         );
         if (streamer == null)
         {
-            throw new NullReferenceException($"Streamer with id {streamerId} does not exist");
+            throw new StreamerNotFoundException(streamerId);
         }
         streamer.Avatar = request.File;
         await context.SaveChangesAsync(cancellationToken: cancellationToken);

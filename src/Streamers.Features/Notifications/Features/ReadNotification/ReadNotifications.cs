@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Notifications.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Notifications.Features.ReadNotification;
@@ -23,7 +24,7 @@ public class ReadNotificationsHandler(StreamerDbContext streamerDbContext, ICurr
             .FirstOrDefaultAsync(cancellationToken);
         if (notification == null)
         {
-            throw new InvalidOperationException($"Notification with id {request.Id} not found");
+            throw new NotificationNotFoundException(request.Id);
         }
 
         notification.Seen = true;

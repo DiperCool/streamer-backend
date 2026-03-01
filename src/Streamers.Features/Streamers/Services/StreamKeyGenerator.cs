@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
+using Streamers.Features.Streamers.Exceptions;
 using Streamers.Features.Streams.Models;
 
 namespace Streamers.Features.Streamers.Services;
@@ -28,7 +29,7 @@ public class StreamKeyGenerator(IConfiguration configuration) : IStreamKeyGenera
         var streamId = Guid.NewGuid();
         var options =
             configuration.GetSection("RtmpOptions").Get<RtmpOptions>()
-            ?? throw new InvalidOperationException("RtmpOptions not found in configuration.");
+            ?? throw new RtmpOptionsNotFoundException();
         streamSettings.StreamId = streamId;
 
         streamSettings.StreamName = $"{options.App}/{streamSettings.StreamId}";

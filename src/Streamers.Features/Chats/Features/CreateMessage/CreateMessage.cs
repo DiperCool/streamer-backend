@@ -3,9 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Chats.Enums;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Chats.Models;
 using Streamers.Features.Chats.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Exceptions;
 
 namespace Streamers.Features.Chats.Features.CreateMessage;
 
@@ -39,21 +42,19 @@ public class CreateMessageHandler(
         );
         if (streamer == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find streamer with ID {currentUser.UserId}"
-            );
+            throw new StreamerNotFoundException(currentUser.UserId);
         }
         var chat = await streamerDbContext
             .Chats.Include(x => x.Settings)
             .FirstOrDefaultAsync(x => x.Id == request.ChatId, cancellationToken: cancellationToken);
         if (chat == null)
         {
-            throw new InvalidOperationException($"Could not find chat with ID {request.ChatId}");
+            throw new ChatNotFoundException(request.ChatId);
         }
         var chatPermissions = await permissionService.Check(chat.Settings, currentUser.UserId);
         if (chatPermissions != null)
         {
-            throw new InvalidOperationException(chatPermissions.Message);
+            throw new ForbiddenException(chatPermissions.Message);
         }
         var reply =
             request.ReplyMessageId == null
@@ -64,9 +65,7 @@ public class CreateMessageHandler(
                 );
         if (reply == null && request.ReplyMessageId != null)
         {
-            throw new InvalidOperationException(
-                $"Could not find chat message with ID {request.ReplyMessageId}"
-            );
+            throw new MessageNotFoundException(request.ReplyMessageId.Value);
         }
 
         var subscription = await streamerDbContext.Subscriptions.AnyAsync(

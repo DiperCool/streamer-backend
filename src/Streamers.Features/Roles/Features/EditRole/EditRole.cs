@@ -2,7 +2,9 @@
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Roles.Enums;
+using Streamers.Features.Roles.Exceptions;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Roles.Features.EditRole;
@@ -28,7 +30,7 @@ public class EditRoleHandler(
             .FirstOrDefaultAsync(x => x.Id == request.RoleId, cancellationToken: cancellationToken);
         if (role == null)
         {
-            throw new InvalidOperationException("Role not found");
+            throw new RoleNotFoundException(request.RoleId);
         }
 
         var currentRole = await streamerDbContext.Roles.FirstOrDefaultAsync(
@@ -37,7 +39,7 @@ public class EditRoleHandler(
         );
         if (currentRole == null)
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         assignRole.EnsureCanAssign(currentRole, role.Type, request.Permissions);
         role.Permissions = request.Permissions;

@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Chats.Exceptions;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Cqrs;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Chats.Features.UnbanUser;
@@ -26,7 +28,7 @@ public class UnbanUserHandler(
     {
         if (!await roleService.HasRole(request.BroadcasterId, currentUser.UserId, Permissions.Chat))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
 
         var bannedUser = await streamerDbContext.BannedUsers.FirstOrDefaultAsync(
@@ -35,7 +37,7 @@ public class UnbanUserHandler(
         );
         if (bannedUser == null)
         {
-            throw new InvalidOperationException("You do not have permission to use this command");
+            throw new UserNotBannedException(request.UserId);
         }
         bannedUser.Unban();
         streamerDbContext.BannedUsers.Remove(bannedUser);

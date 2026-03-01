@@ -4,8 +4,10 @@ using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Bots.Dtos;
 using Streamers.Features.Bots.Enums;
+using Streamers.Features.Bots.Exceptions;
 using Streamers.Features.Bots.Models;
 using Streamers.Features.Shared.Cqrs;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 using Streamers.Features.SystemRoles.Services;
 
@@ -27,7 +29,7 @@ public class EditBotHandler(
     {
         if (!await systemRoleService.HasAdministratorRole(currentUser.UserId))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         Bot? bot = await streamerDbContext
             .Bots.Include(x => x.Streamer)
@@ -35,7 +37,7 @@ public class EditBotHandler(
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
         if (bot == null)
         {
-            throw new InvalidOperationException("Bot not found");
+            throw new BotNotFoundException(request.Id);
         }
         bot.Edit(request.State, request.StreamVideoUrl);
         streamerDbContext.Bots.Update(bot);
