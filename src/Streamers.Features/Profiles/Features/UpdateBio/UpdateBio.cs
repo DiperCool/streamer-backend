@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Profiles.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Profiles.Features.UpdateBio;
@@ -35,7 +36,7 @@ public class UpdateBioHandler(StreamerDbContext context, ICurrentUser currentUse
 
         if (profile == null)
         {
-            throw new Exception($"Profile for user {currentUser.UserId} not found");
+            throw new ProfileNotFoundException(currentUser.UserId);
         }
 
         profile.Bio = request.Bio;

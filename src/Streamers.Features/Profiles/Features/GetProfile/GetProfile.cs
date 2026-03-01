@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Profiles.Dtos;
+using Streamers.Features.Profiles.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Profiles.Features.GetProfile;
@@ -17,7 +18,7 @@ public class GetProfileHandler(StreamerDbContext context) : IRequestHandler<GetP
             .FirstOrDefaultAsync(p => p.StreamerId == request.StreamerId, cancellationToken);
 
         if (profile == null)
-            throw new Exception($"Profile for user {request.StreamerId} not found");
+            throw new ProfileNotFoundException(request.StreamerId);
 
         return new ProfileDto
         {

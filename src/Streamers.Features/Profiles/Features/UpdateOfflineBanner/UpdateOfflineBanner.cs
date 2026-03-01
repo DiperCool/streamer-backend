@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Profiles.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Profiles.Features.UpdateOfflineBanner;
@@ -24,7 +25,7 @@ public class UpdateOfflineBannerHandler(StreamerDbContext context, ICurrentUser 
 
         if (profile == null)
         {
-            throw new Exception($"Profile for user {currentUser.UserId} not found");
+            throw new ProfileNotFoundException(currentUser.UserId);
         }
 
         profile.OfflineStreamBanner = request.OfflineBanner;
