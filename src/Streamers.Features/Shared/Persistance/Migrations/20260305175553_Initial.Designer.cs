@@ -13,8 +13,8 @@ using Streamers.Features.Shared.Persistance;
 namespace Streamers.Features.Shared.Persistance.Migrations
 {
     [DbContext(typeof(StreamerDbContext))]
-    [Migration("20260225182132_AddModeratorActivity")]
-    partial class AddModeratorActivity
+    [Migration("20260305175553_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -433,6 +433,9 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()

@@ -1,15 +1,16 @@
 using Shared.Abstractions.Domain;
 using Streamers.Features.Chats.Models;
-using Streamers.Features.ModerationActivities.Models;
-using Streamers.Features.Persistence;
-using Streamers.Features.Shared.Persistance;
-
 using Streamers.Features.ModerationActivities.Dtos;
+using Streamers.Features.ModerationActivities.Models;
 using Streamers.Features.ModerationActivities.Services;
+using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.ModerationActivities.Features.BanUserAction;
 
-public class UserBannedEventHandler(StreamerDbContext dbContext, IModerationActivityEventPublisher publisher) : IDomainEventHandler<UserBanned>
+public class UserBannedEventHandler(
+    StreamerDbContext dbContext,
+    IModerationActivityEventPublisher publisher
+) : IDomainEventHandler<UserBanned>
 {
     public async Task Handle(UserBanned notification, CancellationToken cancellationToken) // Changed signature
     {

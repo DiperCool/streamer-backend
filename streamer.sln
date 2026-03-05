@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streamers.Features", "src\S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{FD0DE853-5B25-48D1-B570-0848905ADC0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streamers.Features.IntegrationTests", "tests\Streamers.Features.IntegrationTests\Streamers.Features.IntegrationTests.csproj", "{9AA591C6-DE16-48D2-9051-F988468B15A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{CEA5173D-66F0-4F62-AAAE-810E202930F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEA5173D-66F0-4F62-AAAE-810E202930F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEA5173D-66F0-4F62-AAAE-810E202930F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AA591C6-DE16-48D2-9051-F988468B15A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA591C6-DE16-48D2-9051-F988468B15A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AA591C6-DE16-48D2-9051-F988468B15A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AA591C6-DE16-48D2-9051-F988468B15A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{FD0DE853-5B25-48D1-B570-0848905ADC0F} = {932D8224-11F6-4D07-B109-DA28AD288A63}
 		{CB04FF2E-F033-487F-8CC1-F2D3490F2187} = {FD0DE853-5B25-48D1-B570-0848905ADC0F}
 		{F3DCC17A-F57E-452B-900D-613957EE34FA} = {FD0DE853-5B25-48D1-B570-0848905ADC0F}
+		{9AA591C6-DE16-48D2-9051-F988468B15A2} = {A857AD10-40FF-4303-BEC2-FF1C58D5735E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25728519-5F0F-4973-8A64-0A81EB4EA8D9}

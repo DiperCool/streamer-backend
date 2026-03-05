@@ -115,6 +115,22 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bots",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<int>(type: "integer", nullable: false),
+                    StreamVideoUrl = table.Column<string>(type: "text", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bots", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChatMessages",
                 schema: "public",
                 columns: table => new
@@ -126,6 +142,7 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsUserSubscribed = table.Column<bool>(type: "boolean", nullable: false),
                     ReplyId = table.Column<Guid>(type: "uuid", nullable: true),
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
                     OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
@@ -176,6 +193,22 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customers",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    StripeCustomerId = table.Column<string>(type: "text", nullable: true),
+                    StripeCustomerCreationStatus = table.Column<int>(type: "integer", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Followers",
                 schema: "public",
                 columns: table => new
@@ -189,6 +222,48 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Followers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ModeratorActionTypes",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ModeratorId = table.Column<string>(type: "text", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    TargetUserId = table.Column<string>(type: "text", nullable: true),
+                    BannedUntil = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Reason = table.Column<string>(type: "text", nullable: true),
+                    NewChatMode = table.Column<string>(type: "text", nullable: true),
+                    ChatMessageId = table.Column<Guid>(type: "uuid", nullable: true),
+                    NewCategory = table.Column<string>(type: "text", nullable: true),
+                    NewLanguage = table.Column<string>(type: "text", nullable: true),
+                    NewStreamName = table.Column<string>(type: "text", nullable: true),
+                    UnbanAction_TargetUserId = table.Column<string>(type: "text", nullable: true),
+                    UnpinAction_ChatMessageId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ModeratorActionTypes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ModeratorActionTypes_ChatMessages_ChatMessageId",
+                        column: x => x.ChatMessageId,
+                        principalSchema: "public",
+                        principalTable: "ChatMessages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ModeratorActionTypes_ChatMessages_UnpinAction_ChatMessageId",
+                        column: x => x.UnpinAction_ChatMessageId,
+                        principalSchema: "public",
+                        principalTable: "ChatMessages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,6 +299,64 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NotificationSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Partners",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    StripeAccountId = table.Column<string>(type: "text", nullable: true),
+                    StripeOnboardingStatus = table.Column<int>(type: "integer", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Partners", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentMethods",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StripePaymentMethodId = table.Column<string>(type: "text", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    CardBrand = table.Column<string>(type: "text", nullable: false),
+                    CardLast4 = table.Column<string>(type: "text", nullable: false),
+                    CardExpMonth = table.Column<long>(type: "bigint", nullable: false),
+                    CardExpYear = table.Column<long>(type: "bigint", nullable: false),
+                    IsDefault = table.Column<bool>(type: "boolean", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentMethods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payouts",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StreamerId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    StripePayoutId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    Currency = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Status = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
+                    ArrivalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FailureMessage = table.Column<string>(type: "text", nullable: true),
+                    ApplicationFee = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payouts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -303,6 +436,7 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CurrentStreamId = table.Column<Guid>(type: "uuid", nullable: true),
                     HasUnreadNotifications = table.Column<bool>(type: "boolean", nullable: false),
+                    SubscriptionEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -410,6 +544,75 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SubscriptionPlans",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    StripeProductId = table.Column<string>(type: "text", nullable: false),
+                    StripePriceId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StreamerId1 = table.Column<string>(type: "text", nullable: true),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionPlans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionPlans_Streamers_StreamerId",
+                        column: x => x.StreamerId,
+                        principalSchema: "public",
+                        principalTable: "Streamers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionPlans_Streamers_StreamerId1",
+                        column: x => x.StreamerId1,
+                        principalSchema: "public",
+                        principalTable: "Streamers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscriptions",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    StreamerId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    StripeSubscriptionId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    CurrentPeriodEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    IsCurrent = table.Column<bool>(type: "boolean", nullable: false),
+                    CurrentStreak = table.Column<int>(type: "integer", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Streamers_StreamerId",
+                        column: x => x.StreamerId,
+                        principalSchema: "public",
+                        principalTable: "Streamers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Streamers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "public",
+                        principalTable: "Streamers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SystemRoles",
                 schema: "public",
                 columns: table => new
@@ -425,6 +628,42 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                     table.ForeignKey(
                         name: "FK_SystemRoles_Streamers_StreamerId",
                         column: x => x.StreamerId,
+                        principalSchema: "public",
+                        principalTable: "Streamers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    StreamerId = table.Column<string>(type: "text", nullable: false),
+                    TransactionType = table.Column<int>(type: "integer", nullable: false),
+                    GrossAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    PlatformFee = table.Column<decimal>(type: "numeric", nullable: false),
+                    StreamerNet = table.Column<decimal>(type: "numeric", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    StripeInvoiceUrl = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    OriginalVersion = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Streamers_StreamerId",
+                        column: x => x.StreamerId,
+                        principalSchema: "public",
+                        principalTable: "Streamers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Streamers_UserId",
+                        column: x => x.UserId,
                         principalSchema: "public",
                         principalTable: "Streamers",
                         principalColumn: "Id",
@@ -627,6 +866,12 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 column: "StreamerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bots_StreamerId",
+                schema: "public",
+                table: "Bots",
+                column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_ChatId",
                 schema: "public",
                 table: "ChatMessages",
@@ -672,6 +917,13 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customers_StreamerId",
+                schema: "public",
+                table: "Customers",
+                column: "StreamerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Followers_FollowerStreamerId_StreamerId",
                 schema: "public",
                 table: "Followers",
@@ -683,6 +935,42 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 schema: "public",
                 table: "Followers",
                 column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModeratorActionTypes_ChatMessageId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "ChatMessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModeratorActionTypes_ModeratorId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "ModeratorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModeratorActionTypes_StreamerId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModeratorActionTypes_TargetUserId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "TargetUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModeratorActionTypes_UnbanAction_TargetUserId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "UnbanAction_TargetUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModeratorActionTypes_UnpinAction_ChatMessageId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "UnpinAction_ChatMessageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_StreamerId",
@@ -708,6 +996,25 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 table: "NotificationSettings",
                 column: "StreamerId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Partners_StreamerId",
+                schema: "public",
+                table: "Partners",
+                column: "StreamerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentMethods_StreamerId",
+                schema: "public",
+                table: "PaymentMethods",
+                column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payouts_StreamerId",
+                schema: "public",
+                table: "Payouts",
+                column: "StreamerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PinnedChatMessages_MessageId",
@@ -818,6 +1125,37 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionPlans_StreamerId",
+                schema: "public",
+                table: "SubscriptionPlans",
+                column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionPlans_StreamerId1",
+                schema: "public",
+                table: "SubscriptionPlans",
+                column: "StreamerId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_StreamerId",
+                schema: "public",
+                table: "Subscriptions",
+                column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_StripeSubscriptionId",
+                schema: "public",
+                table: "Subscriptions",
+                column: "StripeSubscriptionId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_UserId",
+                schema: "public",
+                table: "Subscriptions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SystemRoles_StreamerId",
                 schema: "public",
                 table: "SystemRoles",
@@ -828,6 +1166,18 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 schema: "public",
                 table: "TagVod",
                 column: "VodsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_StreamerId",
+                schema: "public",
+                table: "Transactions",
+                column: "StreamerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_UserId",
+                schema: "public",
+                table: "Transactions",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vods_CategoryId",
@@ -899,6 +1249,16 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Bots_Streamers_StreamerId",
+                schema: "public",
+                table: "Bots",
+                column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_ChatMessages_Chats_ChatId",
                 schema: "public",
                 table: "ChatMessages",
@@ -958,6 +1318,16 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Customers_Streamers_StreamerId",
+                schema: "public",
+                table: "Customers",
+                column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Followers_Streamers_FollowerStreamerId",
                 schema: "public",
                 table: "Followers",
@@ -972,6 +1342,46 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 schema: "public",
                 table: "Followers",
                 column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ModeratorActionTypes_Streamers_ModeratorId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "ModeratorId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ModeratorActionTypes_Streamers_StreamerId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ModeratorActionTypes_Streamers_TargetUserId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "TargetUserId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ModeratorActionTypes_Streamers_UnbanAction_TargetUserId",
+                schema: "public",
+                table: "ModeratorActionTypes",
+                column: "UnbanAction_TargetUserId",
                 principalSchema: "public",
                 principalTable: "Streamers",
                 principalColumn: "Id",
@@ -1016,6 +1426,36 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 principalTable: "Streamers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Partners_Streamers_StreamerId",
+                schema: "public",
+                table: "Partners",
+                column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_PaymentMethods_Streamers_StreamerId",
+                schema: "public",
+                table: "PaymentMethods",
+                column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Payouts_Streamers_StreamerId",
+                schema: "public",
+                table: "Payouts",
+                column: "StreamerId",
+                principalSchema: "public",
+                principalTable: "Streamers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_PinnedChatMessages_Streamers_PinnedById",
@@ -1114,7 +1554,19 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "Bots",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Customers",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "Followers",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "ModeratorActionTypes",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -1123,6 +1575,18 @@ namespace Streamers.Features.Shared.Persistance.Migrations
 
             migrationBuilder.DropTable(
                 name: "NotificationSettings",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Partners",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "PaymentMethods",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Payouts",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -1150,11 +1614,23 @@ namespace Streamers.Features.Shared.Persistance.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "SubscriptionPlans",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "SystemRoles",
                 schema: "public");
 
             migrationBuilder.DropTable(
                 name: "TagVod",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Transactions",
                 schema: "public");
 
             migrationBuilder.DropTable(
