@@ -37,9 +37,12 @@ public class GetCategoriesHandler(StreamerDbContext streamerDbContext)
         });
 
         Page<CategoryDto> result = await dtoQuery
-            .With(request.QueryContext)
+            .With(request.QueryContext, DefaultOrder)
             .ToPageAsync(request.Paging, cancellationToken: cancellationToken);
 
         return result;
     }
+
+    private static SortDefinition<CategoryDto> DefaultOrder(SortDefinition<CategoryDto> sort) =>
+        sort.IfEmpty(o => o.AddDescending(t => t.Title));
 }
