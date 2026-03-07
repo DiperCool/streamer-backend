@@ -8,18 +8,18 @@ using Streamers.Features.SystemRoles.Models;
 
 namespace Streamers.Features.IntegrationTests;
 
-public abstract class BaseIntegrationTest
-    : IClassFixture<StreamerWebApplicationFactory>,
-        IDisposable
+[Collection(nameof(FixtureCollection))]
+public abstract class BaseIntegrationTest : IAsyncLifetime
 {
     private readonly IServiceScope _scope;
     protected readonly IMediator Sender;
     protected readonly StreamerDbContext DbContext;
+    private readonly StreamerWebApplicationFactory _factory;
 
     protected BaseIntegrationTest(StreamerWebApplicationFactory factory)
     {
+        _factory = factory;
         _scope = factory.Services.CreateScope();
-
         Sender = _scope.ServiceProvider.GetRequiredService<IMediator>();
         DbContext = _scope.ServiceProvider.GetRequiredService<StreamerDbContext>();
     }
@@ -34,15 +34,29 @@ public abstract class BaseIntegrationTest
             "sdfsdf@gmail.com",
             DateTime.UtcNow
         );
+
         await DbContext.SystemRoles.AddAsync(
             new SystemRole(streamer, SystemRoleType.Administrator)
         );
+
         await DbContext.SaveChangesAsync();
+        ClearChangeTracker();
     }
 
-    public void Dispose()
+    public async Task InitializeAsync()
     {
-        _scope?.Dispose();
-        DbContext?.Dispose();
+        await _factory.Respawn();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await DbContext.DisposeAsync();
+
+        _scope.Dispose();
+    }
+
+    protected void ClearChangeTracker()
+    {
+        DbContext.ChangeTracker.Clear();
     }
 }

@@ -99,6 +99,8 @@
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
     <PackageVersion Include="Polly.Core" Version="8.6.3" />
+    <PackageVersion Include="Respawn" Version="7.0.0" />
+    <PackageVersion Include="Respawn.Postgres" Version="1.0.15" />
     <PackageVersion Include="StackExchange.Redis" Version="2.8.58" />
     <PackageVersion Include="System.Reflection.TypeExtensions" Version="4.7.0" />
     <PackageVersion Include="xunit" Version="2.9.2" />
