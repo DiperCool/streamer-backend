@@ -21,7 +21,8 @@ public interface IStreamerFabric
         string id,
         string username,
         string email,
-        DateTime created
+        DateTime created,
+        bool finishedAuth = false
     );
 }
 
@@ -32,7 +33,8 @@ public class StreamerFabric(IStreamKeyGenerator generator, StreamerDbContext str
         string id,
         string username,
         string email,
-        DateTime created
+        DateTime created,
+        bool finishedAuth = false
     )
     {
         var streamSettings = new StreamSettings();
@@ -59,6 +61,7 @@ public class StreamerFabric(IStreamKeyGenerator generator, StreamerDbContext str
             new Partner(),
             new Customer()
         );
+        streamer.FinishedAuth = finishedAuth;
         var role = new Role(
             streamer,
             RoleType.Broadcaster,

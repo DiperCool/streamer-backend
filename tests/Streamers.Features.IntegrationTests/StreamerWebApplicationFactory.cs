@@ -1,6 +1,9 @@
 using System.Data.Common;
 using DotNet.Testcontainers.Builders;
 using DotNetCore.CAP;
+using Hangfire;
+using Hangfire.AspNetCore;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -12,12 +15,14 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Respawn;
 using Respawn.Graph;
+using Shared.Abstractions.Domain;
 using Shared.Seeds;
 using StackExchange.Redis;
 using streamer.ServiceDefaults;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Api;
 using Streamers.Features.Shared.Persistance;
+using Streamers.Features.Streamers.Models;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 

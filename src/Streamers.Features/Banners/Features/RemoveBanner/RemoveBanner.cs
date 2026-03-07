@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Cqrs;
 using streamer.ServiceDefaults.Identity;
+using Streamers.Features.Banners.Exceptions;
 using Streamers.Features.Roles.Enums;
 using Streamers.Features.Roles.Services;
+using Streamers.Features.Shared.Exceptions;
 using Streamers.Features.Shared.Persistance;
 
 namespace Streamers.Features.Banners.Features.RemoveBanner;
@@ -24,7 +26,7 @@ public class RemoveBannerHandler(
     {
         if (!await roleService.HasRole(request.StreamerId, currentUser.UserId, Permissions.Banners))
         {
-            throw new UnauthorizedAccessException();
+            throw new ForbiddenException();
         }
         var banner = await streamerDbContext.Banners.FirstOrDefaultAsync(
             x => x.Id == request.BannerId,
@@ -32,9 +34,7 @@ public class RemoveBannerHandler(
         );
         if (banner == null)
         {
-            throw new InvalidOperationException(
-                $"Could not find banner with id: {request.BannerId}"
-            );
+            throw new BannerNotFoundException(request.BannerId);
         }
         streamerDbContext.Banners.Remove(banner);
         await streamerDbContext.SaveChangesAsync(cancellationToken);
