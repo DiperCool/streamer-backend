@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.EditCategory;
 using Streamers.Features.Shared.Exceptions;
 using ValidationException = Streamers.Features.Shared.Cqrs.Behaviours.ValidationException;

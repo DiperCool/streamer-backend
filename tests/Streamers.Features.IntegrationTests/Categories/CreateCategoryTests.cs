@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.CreateCategory;
 using ValidationException = Streamers.Features.Shared.Cqrs.Behaviours.ValidationException;
 
@@ -14,7 +17,11 @@ public class CreateCategoryTests : BaseIntegrationTest
         // Arrange
         var admin = await CreateAdmin();
         CurrentUser.MakeAuthenticated(admin.Id);
-        var command = new CreateCategory("", "https://test.com/image.png") { Title = "", Image = "https://test.com/image.png" };
+        var command = new CreateCategory("", "https://test.com/image.png")
+        {
+            Title = "",
+            Image = "https://test.com/image.png",
+        };
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(() => Sender.Send(command));
@@ -26,7 +33,11 @@ public class CreateCategoryTests : BaseIntegrationTest
         // Arrange
         var streamer = await CreateStreamer();
         CurrentUser.MakeAuthenticated(streamer.Id);
-        var command = new CreateCategory("Test", "https://test.com/image.png") { Title = "Test", Image = "https://test.com/image.png" };
+        var command = new CreateCategory("Test", "https://test.com/image.png")
+        {
+            Title = "Test",
+            Image = "https://test.com/image.png",
+        };
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => Sender.Send(command));
@@ -38,7 +49,11 @@ public class CreateCategoryTests : BaseIntegrationTest
         // Arrange
         var admin = await CreateAdmin();
         CurrentUser.MakeAuthenticated(admin.Id);
-        var command = new CreateCategory("Test", "https://test.com/image.png") { Title = "Test", Image = "https://test.com/image.png" };
+        var command = new CreateCategory("Test", "https://test.com/image.png")
+        {
+            Title = "Test",
+            Image = "https://test.com/image.png",
+        };
 
         // Act
         var categoryId = await Sender.Send(command);

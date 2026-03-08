@@ -1,4 +1,7 @@
+using System;
 using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using DotNetCore.CAP;
 using Hangfire;
@@ -13,10 +16,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using NSubstitute;
 using Respawn;
 using Respawn.Graph;
 using Shared.Abstractions.Domain;
 using Shared.Seeds;
+using Shared.Stripe;
 using StackExchange.Redis;
 using streamer.ServiceDefaults;
 using streamer.ServiceDefaults.Identity;
@@ -40,8 +45,65 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:7.2.5-alpine")
         .Build();
+
+    public IStripeService StripeService { get; }
+
     private Respawner _respawner = null!;
     private DbConnection _connection = null!;
+
+    public StreamerWebApplicationFactory()
+    {
+        StripeService = Substitute.For<IStripeService>();
+        StripeService
+            .CreateExpressAccountAsync(default!, default!, default)
+            .ReturnsForAnyArgs(new CreateStripeAccountResult("acct_12345"));
+
+        StripeService
+            .CreateCustomerAsync(default!, default!, default)
+            .ReturnsForAnyArgs("cus_12345");
+
+        StripeService
+            .CreateAccountLinkAsync(default!, default)
+            .ReturnsForAnyArgs(("https://stripe.com/onboard", DateTime.UtcNow.AddHours(1)));
+
+        StripeService
+            .CreateSetupIntentAsync(default!, default)
+            .ReturnsForAnyArgs("seti_12345_secret_67890");
+
+        StripeService.DetachPaymentMethodAsync(default!, default!, default).ReturnsForAnyArgs(true);
+
+        StripeService
+            .UpdateCustomerDefaultPaymentMethodAsync(default!, default!, default)
+            .ReturnsForAnyArgs(true);
+
+        StripeService
+            .CreatePaymentIntentAsync(
+                default,
+                default!,
+                default!,
+                default,
+                default,
+                default,
+                default
+            )
+            .ReturnsForAnyArgs(new StripePaymentIntentResponse("pi_12345_secret_67890"));
+
+        StripeService
+            .CreateSubscriptionAsync(
+                default!,
+                default!,
+                default,
+                default,
+                default,
+                default,
+                default!
+            )
+            .ReturnsForAnyArgs(
+                new CreateSubscriptionResponse("sub_12345_secret_67890", "sub_12345")
+            );
+
+        StripeService.GetCurrentBalanceAsync(default, default).ReturnsForAnyArgs(100.0m);
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -54,6 +116,7 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
 
         builder.ConfigureTestServices(services =>
         {
+            services.Replace(new ServiceDescriptor(typeof(IStripeService), StripeService));
             services.RemoveAll<IDataSeeder>();
 
             services.RemoveAll<ICurrentUser>();

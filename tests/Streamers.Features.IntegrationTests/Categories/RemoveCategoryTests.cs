@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.RemoveCategory;
 
 namespace Streamers.Features.IntegrationTests.Categories;

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.GetCategoriesByIds;
 
 namespace Streamers.Features.IntegrationTests.Categories;

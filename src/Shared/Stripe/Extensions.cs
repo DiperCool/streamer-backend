@@ -14,6 +14,13 @@ public static class Extensions
     {
         StripeOptions stripeOptions = configuration.BindOptions<StripeOptions>();
         StripeConfiguration.ApiKey = stripeOptions.ApiKey;
+
+        if (!string.IsNullOrEmpty(stripeOptions.ApiBase))
+        {
+            var stripeClient = new StripeClient(stripeOptions.ApiKey, apiBase: stripeOptions.ApiBase);
+            StripeConfiguration.StripeClient = stripeClient;
+        }
+
         services.AddSingleton<IStripeService, StripeService>();
         return services;
     }

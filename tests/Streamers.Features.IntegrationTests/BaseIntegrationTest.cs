@@ -1,7 +1,11 @@
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Abstractions.Cqrs;
 using Shared.Abstractions.Domain;
+using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Categories.Features.CreateCategory;
 using Streamers.Features.Shared.Persistance;
@@ -24,6 +28,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
     protected readonly StreamerDbContext DbContext;
     private readonly StreamerWebApplicationFactory _factory;
     protected readonly StubCurrentUser CurrentUser;
+    protected readonly IStripeService StripeService;
 
     protected BaseIntegrationTest(StreamerWebApplicationFactory factory)
     {
@@ -32,6 +37,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         Sender = _scope.ServiceProvider.GetRequiredService<IMediator>();
         DbContext = _scope.ServiceProvider.GetRequiredService<StreamerDbContext>();
         CurrentUser = (StubCurrentUser)_scope.ServiceProvider.GetRequiredService<ICurrentUser>();
+        StripeService = factory.StripeService;
     }
 
     public async Task<Streamer> CreateAdmin()
@@ -55,23 +61,24 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         return streamer;
     }
 
-            public async Task<Streamer> CreateStreamer()
-            {
-            var streamerFabric = _scope.ServiceProvider.GetRequiredService<IStreamerFabric>();
-            var userName = Guid.NewGuid().ToString();
-            var streamerId = Guid.NewGuid().ToString();
-            Streamer streamer = await streamerFabric.CreateStreamer(
-                streamerId,
-                userName,
-                $"{userName}@email.com",
-                DateTime.UtcNow,
-                true
-            );
+    public async Task<Streamer> CreateStreamer()
+    {
+        var streamerFabric = _scope.ServiceProvider.GetRequiredService<IStreamerFabric>();
+        var userName = Guid.NewGuid().ToString();
+        var streamerId = Guid.NewGuid().ToString();
+        Streamer streamer = await streamerFabric.CreateStreamer(
+            streamerId,
+            userName,
+            $"{userName}@email.com",
+            DateTime.UtcNow,
+            true
+        );
 
-            await DbContext.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
 
-            return streamer;
-            }
+        return streamer;
+    }
+
     public async Task<Guid> CreateCategory(string? title = null)
     {
         var categoryTitle = title ?? Guid.NewGuid().ToString();
