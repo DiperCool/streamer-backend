@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Streamers.Features.Banners.Features.CreateBanner;
-using Streamers.Features.Shared.Cqrs.Behaviours;
 using Streamers.Features.Shared.Exceptions;
 using ValidationException = Streamers.Features.Shared.Cqrs.Behaviours.ValidationException;
 
@@ -56,7 +55,7 @@ public class CreateBannerTests : BaseIntegrationTest
         // Arrange
         var admin = await CreateAdmin();
 
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         CurrentUser.MakeAuthenticated(streamer.Id);
 
         var command = new CreateBanner(

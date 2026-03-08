@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Streamers.Features.Customers.Models;
 using Streamers.Features.PaymentMethods.Features.AttachePaymentMethod;
 
 namespace Streamers.Features.IntegrationTests.PaymentMethods;
@@ -15,25 +14,20 @@ public class PaymentMethodAttachedTests : BaseIntegrationTest
     public async Task PaymentMethodAttached_ShouldCreatePaymentMethod()
     {
         // Arrange
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         streamer.Customer.MarkAsSuccess("cus_123");
-        
+
         await DbContext.SaveChangesAsync();
-        
-        var command = new PaymentMethodAttached(
-            "pm_123",
-            "cus_123",
-            "visa",
-            "4242",
-            12,
-            2030
-        );
+
+        var command = new PaymentMethodAttached("pm_123", "cus_123", "visa", "4242", 12, 2030);
 
         // Act
         await Sender.Send(command);
 
         // Assert
-        var paymentMethod = await DbContext.PaymentMethods.FirstOrDefaultAsync(pm => pm.StreamerId == streamer.Id);
+        var paymentMethod = await DbContext.PaymentMethods.FirstOrDefaultAsync(pm =>
+            pm.StreamerId == streamer.Id
+        );
         Assert.NotNull(paymentMethod);
         Assert.Equal(command.StripePaymentMethodId, paymentMethod.StripePaymentMethodId);
         Assert.Equal(command.CardBrand, paymentMethod.CardBrand);

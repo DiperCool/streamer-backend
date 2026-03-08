@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using streamer.ServiceDefaults.Identity;
+﻿using streamer.ServiceDefaults.Identity;
 
 namespace Streamers.Features.IntegrationTests;
 

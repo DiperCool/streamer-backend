@@ -77,7 +77,7 @@ public class UpdateBannerTests : BaseIntegrationTest
         );
         var bannerId = await Sender.Send(createCommand);
 
-        var regularUser = await CreateStreamer();
+        var regularUser = await CreateStreamer(Guid.NewGuid().ToString());
         CurrentUser.MakeAuthenticated(regularUser.Id);
         var updateCommand = new UpdateBanner(
             admin.Id,

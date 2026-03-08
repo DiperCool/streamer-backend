@@ -1,10 +1,9 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Streamers.Features.Customers.Models;
 using Streamers.Features.PaymentMethods.Features.RemovePaymentMethod;
-using Streamers.Features.PaymentMethods.Models;
 using Stripe;
 using PaymentMethod = Streamers.Features.PaymentMethods.Models.PaymentMethod;
 
@@ -19,7 +18,7 @@ public class RemovePaymentMethodTests : BaseIntegrationTest
     public async Task RemovePaymentMethod_ShouldRemovePaymentMethod()
     {
         // Arrange
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         var stripeCustomerId = "cus_123";
         streamer.Customer.MarkAsSuccess(stripeCustomerId);
         await DbContext.SaveChangesAsync();
@@ -60,7 +59,7 @@ public class RemovePaymentMethodTests : BaseIntegrationTest
     public async Task RemovePaymentMethod_ShouldThrowStripeException_WhenStripeFails()
     {
         // Arrange
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         var stripeCustomerId = "cus_123";
         streamer.Customer.MarkAsSuccess(stripeCustomerId);
         await DbContext.SaveChangesAsync();

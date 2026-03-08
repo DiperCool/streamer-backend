@@ -14,7 +14,7 @@ public class GetPaymentMethodsTests : BaseIntegrationTest
     public async Task GetPaymentMethods_ShouldReturnPaymentMethodsForStreamer()
     {
         // Arrange
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         CurrentUser.MakeAuthenticated(streamer.Id);
 
         var paymentMethod = new PaymentMethod(

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.GetCategory;
 

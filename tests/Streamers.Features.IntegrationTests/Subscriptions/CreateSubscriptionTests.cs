@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
-using Shared.Stripe;
-using Streamers.Features.Partners.Models;
 using Streamers.Features.PaymentMethods.Models;
 using Streamers.Features.SubscriptionPlans.Models;
 using Streamers.Features.Subscriptions.Features.CreateSubscription;
@@ -26,11 +23,11 @@ public class CreateSubscriptionTests : BaseIntegrationTest
     public async Task CreateSubscription_ShouldCreateSubscription()
     {
         // Arrange
-        var subscribingStreamer = await CreateStreamer();
+        var subscribingStreamer = await CreateStreamer(Guid.NewGuid().ToString());
         var stripeCustomerId = "cus_subscriber";
         subscribingStreamer.Customer.MarkAsSuccess(stripeCustomerId);
 
-        var partnerStreamer = await CreateStreamer();
+        var partnerStreamer = await CreateStreamer(Guid.NewGuid().ToString());
         partnerStreamer.Partner.StartOnboarding("acct_partner");
         await DbContext.SaveChangesAsync();
 

@@ -55,7 +55,8 @@ public class GetAdminPayoutsHandler(
             ArrivalDate = p.ArrivalDate,
             FailureMessage = p.FailureMessage,
             CreatedAt = p.CreatedAt,
-        });
+        })
+        .OrderBy(p => p.CreatedAt);
 
         Page<PayoutDto> result = await dtoQuery
             .With(request.Query)

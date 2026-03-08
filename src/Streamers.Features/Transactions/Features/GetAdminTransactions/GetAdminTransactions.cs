@@ -57,6 +57,7 @@ public class GetAdminTransactionsHandler(
         });
 
         Page<TransactionDto> result = await dtoQuery
+            .OrderByDescending(x => x.CreatedAt) // Added OrderBy for cursor pagination
             .With(request.Query)
             .ToPageAsync(request.PagingArguments, cancellationToken: cancellationToken);
 

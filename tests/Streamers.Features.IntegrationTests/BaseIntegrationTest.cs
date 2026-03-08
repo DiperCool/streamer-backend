@@ -1,10 +1,9 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using NSubstitute;
+using NSubstitute.ClearExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Abstractions.Cqrs;
-using Shared.Abstractions.Domain;
 using Shared.Stripe;
 using streamer.ServiceDefaults.Identity;
 using Streamers.Features.Categories.Features.CreateCategory;
@@ -23,10 +22,11 @@ namespace Streamers.Features.IntegrationTests;
 [Collection(nameof(FixtureCollection))]
 public abstract class BaseIntegrationTest : IAsyncLifetime
 {
-    private readonly IServiceScope _scope;
+    protected readonly IServiceScope _scope;
     protected readonly IMediator Sender;
     protected readonly StreamerDbContext DbContext;
     private readonly StreamerWebApplicationFactory _factory;
+    protected StreamerWebApplicationFactory Factory => _factory;
     protected readonly StubCurrentUser CurrentUser;
     protected readonly IStripeService StripeService;
 
@@ -61,10 +61,9 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         return streamer;
     }
 
-    public async Task<Streamer> CreateStreamer()
+    public async Task<Streamer> CreateStreamer(string userName)
     {
         var streamerFabric = _scope.ServiceProvider.GetRequiredService<IStreamerFabric>();
-        var userName = Guid.NewGuid().ToString();
         var streamerId = Guid.NewGuid().ToString();
         Streamer streamer = await streamerFabric.CreateStreamer(
             streamerId,
@@ -124,7 +123,9 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        await Task.Delay(TimeSpan.FromMilliseconds(100));
         await _factory.Respawn();
+        _factory.MockStorage.ClearSubstitute(ClearOptions.All);
     }
 
     public async Task DisposeAsync()

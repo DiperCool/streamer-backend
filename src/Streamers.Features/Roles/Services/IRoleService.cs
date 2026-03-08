@@ -14,7 +14,7 @@ public class RoleService(StreamerDbContext streamerDbContext) : IRoleService
     public async Task<bool> HasRole(string broadcasterId, string userId, Permissions permissions)
     {
         var role = await streamerDbContext.Roles.FirstOrDefaultAsync(x =>
-            x.StreamerId == broadcasterId && x.StreamerId == userId
+            x.BroadcasterId == broadcasterId && x.StreamerId == userId
         );
         if (role == null)
         {

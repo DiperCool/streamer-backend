@@ -45,7 +45,9 @@ public class BecomePartnerHandler(
 
         if (partner == null)
         {
-            throw new StreamerNotFoundException(streamerId);
+            throw new InvalidOperationException(
+                $"Partner not found for StreamerId: {streamerId}. This should not happen as a Partner is always created with a Streamer."
+            );
         }
 
         var account = await stripeService.CreateExpressAccountAsync(

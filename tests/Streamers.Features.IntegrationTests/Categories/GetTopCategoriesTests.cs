@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.GetTopCategories;
-using Streamers.Features.Streamers.Models;
 
 namespace Streamers.Features.IntegrationTests.Categories;
 
@@ -16,7 +15,7 @@ public class GetTopCategoriesTests : BaseIntegrationTest
         // Arrange
         var admin = await CreateAdmin();
         CurrentUser.MakeAuthenticated(admin.Id);
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         var categoryId = await CreateCategory("cat1");
         var categoryId2 = await CreateCategory("cat2");
         await CreateStream(streamer, categoryId, 100);

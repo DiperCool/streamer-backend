@@ -52,7 +52,7 @@ public class CreateMessageHandler(
             throw new ChatNotFoundException(request.ChatId);
         }
         var chatPermissions = await permissionService.Check(chat.Settings, currentUser.UserId);
-        if (chatPermissions != null)
+        if (chatPermissions?.Response == false)
         {
             throw new ForbiddenException(chatPermissions.Message);
         }

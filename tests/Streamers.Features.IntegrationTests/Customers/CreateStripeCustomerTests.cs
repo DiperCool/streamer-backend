@@ -16,7 +16,7 @@ public class CreateStripeCustomerTests : BaseIntegrationTest
         var stripeCustomerId = "cus_12345";
         
         // Act
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         await Task.Delay(1000);
 
         // Assert

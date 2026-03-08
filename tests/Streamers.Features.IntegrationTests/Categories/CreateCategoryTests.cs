@@ -31,7 +31,7 @@ public class CreateCategoryTests : BaseIntegrationTest
     public async Task Create_ShouldFail_WhenUserIsNotAdmin()
     {
         // Arrange
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         CurrentUser.MakeAuthenticated(streamer.Id);
         var command = new CreateCategory("Test", "https://test.com/image.png")
         {

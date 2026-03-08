@@ -14,7 +14,7 @@ public record FollowResponse(Guid Id);
 
 public record Follow(string StreamerId) : IRequest<FollowResponse>;
 
-public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser)
+public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser currentUser, IBackgroundJobClient backgroundJobClient)
     : IRequestHandler<Follow, FollowResponse>
 {
     public async Task<FollowResponse> Handle(Follow request, CancellationToken cancellationToken)
@@ -59,7 +59,7 @@ public class FollowHandler(StreamerDbContext streamerDbContext, ICurrentUser cur
 
         await streamerDbContext.Followers.AddAsync(follower, cancellationToken);
         await streamerDbContext.SaveChangesAsync(cancellationToken);
-        BackgroundJob.Enqueue<NotifyUserFollowedJob>(x =>
+        backgroundJobClient.Enqueue<NotifyUserFollowedJob>(x =>
             x.NotifyUserFollowed(streamer.Id, whoFollows.Id)
         );
         return new FollowResponse(follower.Id);

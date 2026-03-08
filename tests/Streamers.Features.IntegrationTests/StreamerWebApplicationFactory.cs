@@ -2,16 +2,13 @@ using System;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using DotNet.Testcontainers.Builders;
 using DotNetCore.CAP;
 using Hangfire;
-using Hangfire.AspNetCore;
-using Hangfire.MemoryStorage;
+using HotChocolate.Subscriptions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -19,15 +16,15 @@ using Npgsql;
 using NSubstitute;
 using Respawn;
 using Respawn.Graph;
-using Shared.Abstractions.Domain;
 using Shared.Seeds;
 using Shared.Stripe;
 using StackExchange.Redis;
 using streamer.ServiceDefaults;
 using streamer.ServiceDefaults.Identity;
-using Streamers.Api;
+using Streamers.Features.Chats.Services;
+using Streamers.Features.Roles.Services;
 using Streamers.Features.Shared.Persistance;
-using Streamers.Features.Streamers.Models;
+using Shared.Storage;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -47,9 +44,6 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
         .Build();
 
     public IStripeService StripeService { get; }
-
-    private Respawner _respawner = null!;
-    private DbConnection _connection = null!;
 
     public StreamerWebApplicationFactory()
     {
@@ -103,7 +97,16 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
             );
 
         StripeService.GetCurrentBalanceAsync(default, default).ReturnsForAnyArgs(100.0m);
+
+        BackgroundJobClient = Substitute.For<IBackgroundJobClient>();
+        MockTopicEventSender = Substitute.For<ITopicEventSender>();
+        MockStorage = Substitute.For<IStorage>();
+
     }
+
+    public IBackgroundJobClient BackgroundJobClient { get; }
+    public ITopicEventSender MockTopicEventSender { get; }
+    public IStorage MockStorage { get; }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -137,6 +140,26 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
             {
                 services.Remove(migrationServiceDescriptor);
             }
+            // Remove Hangfire hosted service
+            var hangfireHostedServiceDescriptor = services.FirstOrDefault(d =>
+                d.ServiceType == typeof(IHostedService)
+                && d.ImplementationType == typeof(BackgroundJobServerHostedService)
+            );
+            if (hangfireHostedServiceDescriptor != null)
+            {
+                services.Remove(hangfireHostedServiceDescriptor);
+            }
+
+            services.RemoveAll<IBackgroundJobClient>();
+            services.AddSingleton(BackgroundJobClient);
+
+            services.RemoveAll<ITopicEventSender>();
+            services.AddSingleton(MockTopicEventSender);
+
+            services.RemoveAll<IStorage>();
+            services.AddSingleton(MockStorage);
+
+
         });
     }
 
@@ -148,17 +171,15 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<StreamerDbContext>();
         await dbContext.Database.MigrateAsync();
-
-        await InitRespawn();
     }
 
-    private async Task InitRespawn()
+    public async Task Respawn()
     {
-        _connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
-        await _connection.OpenAsync();
+        await using var connection = new NpgsqlConnection(_dbContainer.GetConnectionString());
+        await connection.OpenAsync();
 
-        _respawner = await Respawner.CreateAsync(
-            _connection,
+        var respawner = await Respawner.CreateAsync(
+            connection,
             new RespawnerOptions
             {
                 SchemasToInclude = ["public"],
@@ -166,11 +187,8 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
                 DbAdapter = DbAdapter.Postgres,
             }
         );
-    }
+        await respawner.ResetAsync(connection);
 
-    public async Task Respawn()
-    {
-        await _respawner.ResetAsync(_connection);
         var redisConnection = Services.GetRequiredService<IConnectionMultiplexer>();
         var endpoints = redisConnection.GetEndPoints();
 
@@ -183,10 +201,6 @@ public class StreamerWebApplicationFactory : WebApplicationFactory<Program>, IAs
     {
         await _dbContainer.StopAsync();
         await _redisContainer.StopAsync();
-        if (_connection != null)
-        {
-            await _connection.DisposeAsync();
-        }
         await base.DisposeAsync();
     }
 }

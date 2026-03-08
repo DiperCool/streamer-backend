@@ -1,7 +1,6 @@
+using System.Threading.Tasks;
 using GreenDonut.Data;
 using Streamers.Features.Categories.Dtos;
-using System;
-using System.Threading.Tasks;
 using Streamers.Features.Categories.Features.GetCategories;
 
 namespace Streamers.Features.IntegrationTests.Categories;

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Streamers.Features.PaymentMethods.Features.MakePaymentMethodDefault;
 using Streamers.Features.PaymentMethods.Models;
 
@@ -15,19 +14,12 @@ public class MakePaymentMethodDefaultTests : BaseIntegrationTest
     public async Task MakePaymentMethodDefault_ShouldSetPaymentMethodAsDefault()
     {
         // Arrange
-        var streamer = await CreateStreamer();
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString());
         CurrentUser.MakeAuthenticated(streamer.Id);
 
-        var paymentMethod1 = new PaymentMethod(
-            "pm_123",
-            streamer.Id,
-            "visa",
-            "4242",
-            12,
-            2030
-        );
+        var paymentMethod1 = new PaymentMethod("pm_123", streamer.Id, "visa", "4242", 12, 2030);
         paymentMethod1.MakeDefault();
-        
+
         var paymentMethod2 = new PaymentMethod(
             "pm_456",
             streamer.Id,

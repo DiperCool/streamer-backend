@@ -38,6 +38,7 @@ public class GetMyFollowersHandler(StreamerDbContext streamerDbContext, ICurrent
         });
 
         Page<FollowerDto> result = await dtoQuery
+            .OrderByDescending(x => x.FollowedAt) // Added OrderBy for cursor pagination
             .With(request.Query)
             .ToPageAsync(request.PagingArguments, cancellationToken: cancellationToken);
 

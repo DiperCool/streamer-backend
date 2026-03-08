@@ -55,7 +55,7 @@ public class EditCategoryTests : BaseIntegrationTest
         CurrentUser.MakeAuthenticated(admin.Id);
         var categoryId = await CreateCategory();
 
-        var streamer = await CreateStreamer(); // logs in as a regular user
+        var streamer = await CreateStreamer(Guid.NewGuid().ToString()); // logs in as a regular user
         CurrentUser.MakeAuthenticated(streamer.Id);
         var editCommand = new EditCategory(categoryId, "Test 2", "https://test.com/image2.png")
         {

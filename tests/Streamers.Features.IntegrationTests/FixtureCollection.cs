@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿namespace Streamers.Features.IntegrationTests;
 
-namespace Streamers.Features.IntegrationTests;
-
-[CollectionDefinition(nameof(FixtureCollection))]
+[CollectionDefinition(nameof(FixtureCollection), DisableParallelization = true)]
 public class FixtureCollection : ICollectionFixture<StreamerWebApplicationFactory> { }

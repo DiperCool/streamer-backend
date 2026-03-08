@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Streamers.Features.Banners.Features.CreateBanner;
 using Streamers.Features.Banners.Features.GetBanners;
@@ -32,8 +31,20 @@ public class GetBannersTests : BaseIntegrationTest
         // Arrange
         var admin = await CreateAdmin();
         CurrentUser.MakeAuthenticated(admin.Id);
-        var createCommand1 = new CreateBanner(admin.Id, "Banner 1", "Description 1", "https://test.com/banner1.png", "https://test.com/link1");
-        var createCommand2 = new CreateBanner(admin.Id, "Banner 2", "Description 2", "https://test.com/banner2.png", "https://test.com/link2");
+        var createCommand1 = new CreateBanner(
+            admin.Id,
+            "Banner 1",
+            "Description 1",
+            "https://test.com/banner1.png",
+            "https://test.com/link1"
+        );
+        var createCommand2 = new CreateBanner(
+            admin.Id,
+            "Banner 2",
+            "Description 2",
+            "https://test.com/banner2.png",
+            "https://test.com/link2"
+        );
         await Sender.Send(createCommand1);
         await Sender.Send(createCommand2);
 
