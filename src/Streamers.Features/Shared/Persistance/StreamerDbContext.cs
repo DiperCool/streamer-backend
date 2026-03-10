@@ -34,10 +34,10 @@ public class StreamerDbContext(
     IDomainEventsDispatcher domainEventsDispatcher
 ) : DbContext(options)
 {
-    public DbSet<Streamer> Streamers { get; set; }
+    public virtual DbSet<Streamer> Streamers { get; set; }
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Setting> Settings { get; set; }
-    public DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
     public DbSet<Stream> Streams { get; set; }
     public DbSet<StreamSettings> StreamSettings { get; set; }
     public DbSet<StreamSource> StreamSources { get; set; }

@@ -4,7 +4,7 @@ public abstract class Entity : Entity<Guid>;
 
 public abstract class Entity<T> : IHaveAggregateVersion, IHasDomainEvents
 {
-    public T Id { get; protected set; }
+    public virtual T Id { get; protected set; }
 
     private readonly List<IDomainEvent> _domainEvents = [];
     private const long NewAggregateVersion = 0;

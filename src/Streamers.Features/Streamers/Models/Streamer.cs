@@ -46,7 +46,7 @@ public class Streamer : Entity<string>
     public Partner Partner { get; set; }
     public List<PaymentMethod> PaymentMethods { get; set; } = new();
 
-    private Streamer() { }
+    protected Streamer() { }
 
     public Streamer(
         string id,
