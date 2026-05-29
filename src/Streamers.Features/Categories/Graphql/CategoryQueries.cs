@@ -1,5 +1,6 @@
 ﻿using GreenDonut.Data;
 using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
@@ -15,12 +16,14 @@ namespace Streamers.Features.Categories.Graphql;
 [QueryType]
 public static partial class CategoryQueries
 {
+    [AllowAnonymous]
     public static async Task<CategoryDto> GetCategory(Guid id, [Service] IMediator mediator)
     {
         var response = await mediator.Send(new GetCategory(id));
         return response;
     }
 
+    [AllowAnonymous]
     public static async Task<CategoryDto> GetCategoryBySlug(
         string slug,
         [Service] IMediator mediator
@@ -30,12 +33,14 @@ public static partial class CategoryQueries
         return response;
     }
 
+    [AllowAnonymous]
     public static async Task<List<CategoryDto>> GetTopCategories([Service] IMediator mediator)
     {
         var response = await mediator.Send(new GetTopCategories());
         return response;
     }
 
+    [AllowAnonymous]
     [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]

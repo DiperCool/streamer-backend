@@ -16,7 +16,7 @@ public class LogStreamCategoryChangeEventHandler(StreamerDbContext dbContext, IM
         CancellationToken cancellationToken
     )
     {
-        if (notification.NewCategoryId is null)
+        if (notification.NewCategory is null)
         {
             return;
         }
@@ -24,7 +24,7 @@ public class LogStreamCategoryChangeEventHandler(StreamerDbContext dbContext, IM
         var action = new StreamCategoryAction(
             moderatorId: notification.ModeratorId,
             streamerId: notification.StreamerId,
-            newCategory: notification.NewCategoryId.Value.ToString()
+            newCategory: notification.NewCategory
         );
 
         await dbContext.ModeratorActionTypes.AddAsync(action, cancellationToken);

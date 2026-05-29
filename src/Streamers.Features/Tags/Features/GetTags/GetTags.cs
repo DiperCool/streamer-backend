@@ -14,11 +14,17 @@ public class GetTagsHandler(StreamerDbContext streamerDbContext)
 {
     public async Task<Page<TagDto>> Handle(GetTags request, CancellationToken cancellationToken)
     {
-        var result = await streamerDbContext
-            .Tags.AsNoTracking()
-            .Select(x => new TagDto() { Id = x.Id, Title = x.Title })
-            .With(request.QueryContext)
+        var query = streamerDbContext.Tags.AsNoTracking();
+
+        var dtoQuery = query.Select(x => new TagDto() { Id = x.Id, Title = x.Title });
+
+        Page<TagDto> result = await dtoQuery
+            .With(request.QueryContext, DefaultOrder)
             .ToPageAsync(request.Paging, cancellationToken: cancellationToken);
+
         return result;
     }
+
+    private static SortDefinition<TagDto> DefaultOrder(SortDefinition<TagDto> sort) =>
+        sort.IfEmpty(o => o.AddAscending(t => t.Title));
 }

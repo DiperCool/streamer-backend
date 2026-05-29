@@ -1,5 +1,6 @@
 ﻿using GreenDonut.Data;
 using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;

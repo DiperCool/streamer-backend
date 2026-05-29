@@ -1,5 +1,6 @@
 ﻿using GreenDonut.Data;
 using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
@@ -19,6 +20,7 @@ public static partial class RoleQuery
     [UsePaging(MaxPageSize = 10)]
     [UseFiltering]
     [UseSorting]
+    [Authorize]
     public static async Task<Connection<RoleDto>> GetMyRoles(
         [Service] IMediator mediator,
         QueryContext<RoleDto> rcontext,
@@ -36,6 +38,7 @@ public static partial class RoleQuery
     [UsePaging(MaxPageSize = 10)]
     [UseFiltering]
     [UseSorting]
+    [AllowAnonymous]
     public static async Task<Connection<RoleDto>> GetRoles(
         string broadcasterId,
         Roles.Enums.RoleType roleType,
@@ -52,6 +55,7 @@ public static partial class RoleQuery
         return result.ToConnection();
     }
 
+    [Authorize]
     public static async Task<RoleDto> GetMyRoleAsync(
         string broadcasterId,
         [FromServices] IMediator mediator
@@ -60,6 +64,7 @@ public static partial class RoleQuery
         return await mediator.Send(new GetMyRole(broadcasterId));
     }
 
+    [AllowAnonymous]
     public static async Task<RoleDto> GetRoleAsync(Guid id, [FromServices] IMediator mediator)
     {
         return await mediator.Send(new GetRoleById(id));

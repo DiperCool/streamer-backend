@@ -36,6 +36,7 @@ public static partial class StreamerQuery
         return response;
     }
 
+    [AllowAnonymous]
     public static async Task<StreamerSummaryDto> GetStreamerAsync(
         string userName,
         [Service] IMediator mediator
@@ -45,6 +46,7 @@ public static partial class StreamerQuery
         return response;
     }
 
+    [AllowAnonymous]
     public static async Task<StreamerInteractionDto> GetStreamerInteractionAsync(
         string streamerId,
         [Service] IMediator mediator
@@ -53,6 +55,7 @@ public static partial class StreamerQuery
         return await mediator.Send(new GetStreamerInteraction(streamerId));
     }
 
+    [AllowAnonymous]
     [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]

@@ -16,6 +16,7 @@ namespace Streamers.Features.Chats.GraphQl;
 [QueryType]
 public static partial class ChatQuery
 {
+    [AllowAnonymous]
     public static async Task<ChatDto> GetChat(string streamerId, [Service] IMediator mediator)
     {
         return await mediator.Send(new GetChat(streamerId));
@@ -27,6 +28,7 @@ public static partial class ChatQuery
         return await mediator.Send(new GetChatSettings());
     }
 
+    [AllowAnonymous]
     [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]
@@ -45,6 +47,7 @@ public static partial class ChatQuery
         return result.ToConnection();
     }
 
+    [AllowAnonymous]
     [UseFiltering]
     [UseSorting]
     public static async Task<List<ChatMessageDto>> GetChatMessagesHistory(

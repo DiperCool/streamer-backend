@@ -15,6 +15,7 @@ namespace Streamers.Features.Transactions.Graphql;
 [QueryType]
 public static partial class TransactionQuery
 {
+    [Authorize]
     [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]
@@ -32,6 +33,7 @@ public static partial class TransactionQuery
         return result.ToConnection();
     }
 
+    [Authorize]
     [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]
@@ -51,6 +53,7 @@ public static partial class TransactionQuery
         return result.ToConnection();
     }
 
+    [Authorize]
     public static async Task<GetAdminTransactionStatisticsResponse> GetAdminTransactionStatisticsAsync(
         [Service] IMediator mediator,
         DateTime fromDate,

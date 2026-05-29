@@ -22,16 +22,19 @@ public static partial class StreamQuery
         return await mediator.Send(new GetStreamSettings());
     }
 
+    [AllowAnonymous]
     public static async Task<StreamDto> GetCurrentStream(string streamerId, IMediator mediator)
     {
         return await mediator.Send(new GetCurrentStream(streamerId));
     }
 
+    [AllowAnonymous]
     public static async Task<List<StreamDto>> GetTopStreams(IMediator mediator)
     {
         return await mediator.Send(new GetTopStreams());
     }
 
+    [AllowAnonymous]
     [UsePaging(MaxPageSize = 15)]
     [UseFiltering]
     [UseSorting]

@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Types;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Banners.Dtos;
@@ -9,6 +10,7 @@ namespace Streamers.Features.Banners.Graphql;
 [QueryType]
 public static partial class BannersQuery
 {
+    [AllowAnonymous]
     public static async Task<List<BannerDto>> GetBanners(
         string streamerId,
         [Service] IMediator mediator

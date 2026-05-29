@@ -11,6 +11,7 @@ namespace Streamers.Features.PaymentMethods.Graphql;
 [Authorize]
 public static class PaymentMethodQuery
 {
+    [AllowAnonymous]
     public static async Task<List<PaymentMethodDto>> GetPaymentMethods(
         [Service] IMediator mediator,
         CancellationToken cancellationToken

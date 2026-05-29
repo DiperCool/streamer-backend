@@ -11,16 +11,19 @@ namespace Streamers.Features.Vods.GraphQl;
 [Authorize]
 public static partial class VodMutations
 {
+    [Authorize]
     public static async Task<UpdateVodResponse> UpdateVod(UpdateVod request, IMediator mediator)
     {
         return await mediator.Send(request);
     }
 
+    [Authorize]
     public static async Task<RemoveVodResponse> RemoveVod(RemoveVod request, IMediator mediator)
     {
         return await mediator.Send(request);
     }
 
+    [Authorize]
     public static async Task<EditVodSettingsResponse> EditVodSettings(
         EditVodSettings request,
         IMediator mediator

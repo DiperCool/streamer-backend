@@ -1,5 +1,6 @@
 using GreenDonut.Data;
 using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
@@ -10,6 +11,7 @@ using Streamers.Features.ModerationActivities.Features.GetModerationActivitiesBy
 namespace Streamers.Features.ModerationActivities.Graphql;
 
 [QueryType]
+[Authorize]
 public static class ModerationActivitiesQuery
 {
     [UsePaging(MaxPageSize = 15)]

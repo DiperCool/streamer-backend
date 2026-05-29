@@ -1,5 +1,6 @@
 ﻿using GreenDonut.Data;
 using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
@@ -12,6 +13,7 @@ namespace Streamers.Features.Tags.Graphql;
 [QueryType]
 public static partial class TagsQuery
 {
+    [AllowAnonymous]
     [UsePaging(MaxPageSize = 10)]
     [UseFiltering]
     [UseSorting]

@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using HotChocolate.Authorization;
 using HotChocolate.Types;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Banners.Features.CreateBanner;
@@ -8,6 +9,7 @@ using Streamers.Features.Banners.Features.UpdateBanner;
 namespace Streamers.Features.Banners.Graphql;
 
 [MutationType]
+[Authorize]
 public static partial class BannersMutation
 {
     public static async Task<CreateBannerResponse> CreateBanner(

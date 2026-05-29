@@ -11,6 +11,7 @@ namespace Streamers.Features.Partners.Graphql;
 [Authorize]
 public static class PartnerMutation
 {
+    [AllowAnonymous]
     public static async Task<BecomePartnerResponse> BecomePartner(
         string streamerId,
         [Service] IMediator mediator,
@@ -20,6 +21,7 @@ public static class PartnerMutation
         return await mediator.Send(new BecomePartner(streamerId), cancellationToken);
     }
 
+    [AllowAnonymous]
     public static async Task<OnboardingLinkResponse> GenerateOnboardingLink(
         string streamerId,
         [Service] IMediator mediator,

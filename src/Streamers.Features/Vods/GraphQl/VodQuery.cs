@@ -15,6 +15,7 @@ namespace Streamers.Features.Vods.GraphQl;
 [QueryType]
 public static partial class VodQuery
 {
+    [AllowAnonymous]
     public static async Task<VodDto> GetVodAsync(Guid vodId, [Service] IMediator mediator)
     {
         return await mediator.Send(new GetVod(vodId));
@@ -26,6 +27,7 @@ public static partial class VodQuery
         return await mediator.Send(new GetVodSettings());
     }
 
+    [AllowAnonymous]
     [UsePaging(MaxPageSize = 10)]
     [UseFiltering]
     [UseSorting]

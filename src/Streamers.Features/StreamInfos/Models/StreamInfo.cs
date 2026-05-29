@@ -8,7 +8,7 @@ namespace Streamers.Features.StreamInfos.Models;
 public record StreamTitleChanged(string StreamerId, string NewTitle, string ModeratorId)
     : IDomainEvent;
 
-public record StreamCategoryChanged(string StreamerId, Guid? NewCategoryId, string ModeratorId)
+public record StreamCategoryChanged(string StreamerId, string? NewCategory, string ModeratorId)
     : IDomainEvent;
 
 public record StreamLanguageChanged(string StreamerId, string NewLanguage, string ModeratorId)
@@ -52,11 +52,11 @@ public class StreamInfo : Entity
             Raise(new StreamTitleChanged(StreamerId, Title, moderatorId));
         }
 
-        if (CategoryId != category?.Id)
+        if (CategoryId != category?.Id && category != null)
         {
             Category = category;
-            CategoryId = category?.Id;
-            Raise(new StreamCategoryChanged(StreamerId, CategoryId, moderatorId));
+            CategoryId = category.Id;
+            Raise(new StreamCategoryChanged(StreamerId, Category.Title, moderatorId));
         }
 
         Tags.Clear();

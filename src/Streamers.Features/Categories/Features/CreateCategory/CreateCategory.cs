@@ -23,10 +23,6 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategory>
         RuleFor(x => x.Title)
             .NotEmpty()
             .MaximumLength(100);
-
-        RuleFor(x => x.Image)
-            .Must(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-            .WithMessage("Image must be a valid absolute URI.");
     }
 }
 

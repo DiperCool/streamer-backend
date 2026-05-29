@@ -7,8 +7,8 @@ using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
 using Shared.Abstractions.Cqrs;
 using Streamers.Features.Payouts.Dtos;
-using Streamers.Features.Payouts.Features.GetPayouts;
 using Streamers.Features.Payouts.Features.GetAdminPayouts;
+using Streamers.Features.Payouts.Features.GetPayouts;
 
 namespace Streamers.Features.Payouts.Graphql;
 

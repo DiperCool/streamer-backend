@@ -92,9 +92,9 @@ public static class Extensions
         services.AddValidatorsFromAssemblyContaining<UpdateProfile.UpdateProfileValidator>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        builder.AddDefaultAuthentication();
 
         builder.Services.AddGraphQl();
-        builder.AddDefaultAuthentication();
         builder.Services.AddRabbitMq(builder.Configuration);
         builder.Services.AddRedis(builder.Configuration);
         builder.Services.AddAuth0Apis(builder.Configuration);
